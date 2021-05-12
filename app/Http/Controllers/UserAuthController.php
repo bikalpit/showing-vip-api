@@ -5,14 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 use App\Models\Users;
 use App\Models\ApiToken;
 use App\Models\UserPasswordReset;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use DB;
 use App\Mail\SignupMail;
 use App\Mail\ForgetPasswordMail;
+use Twilio\Rest\Client as TwilioClient;
+use Carbon\Carbon;
+use DB;
+use Auth;
 
 class UserAuthController extends Controller
 {
@@ -27,6 +29,10 @@ class UserAuthController extends Controller
 
 	    	if (Users::where('email', $request->email)->exists()) {
 	        	return $this->sendResponse("Email already exists!",200,false);
+	      }
+
+	      if (Users::where('phone', $request->phone)->exists()) {
+	        	return $this->sendResponse("Phone no. already exists!",200,false);
 	      }
 
 	      $time = strtotime(Carbon::now());
@@ -70,7 +76,7 @@ class UserAuthController extends Controller
 	      ]);
 
     		$user = Users::where(['email' => $request->email])->first();
-    		if (isset($user)) {
+    		if (!empty($user)) {
 	    			if (Hash::check($request->password, $user->password)) {
 	    					$token_string = hash("sha256", rand());
 				        $where = ['user_id'=>$user->uuid,'user_type'=>$user->role];
@@ -150,7 +156,7 @@ class UserAuthController extends Controller
 
     		$user = Users::where(['email' => $request->email])->first();
 
-	      if ($user) {
+	      if (!empty($user)) {
 						$this->configSMTP();
 						$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
       			$authentication = UserPasswordReset::updateOrCreate(['email' => $request->email],[
@@ -168,7 +174,6 @@ class UserAuthController extends Controller
 			          $msg = $e->getMessage();
 			          return $this->sendResponse($msg,200,false);
 			      }
-
 					  return $this->sendResponse("Email send successfully for reset password!");
 				}
     }
@@ -185,6 +190,7 @@ class UserAuthController extends Controller
 	      		$new_password = Hash::make($request->new_password);
 			   		$resetPassword = Users::where(['email' => $token->email])->update(['password'=>$new_password]);
 			   		if ($resetPassword) {
+			   				UserPasswordReset::where('token', $request->token)->delete();
 			   				return $this->sendResponse("Password reset successfully!");
 			   		}else{
 			   				return $this->sendResponse("Sorry, Something went wrong!", 200, false);
@@ -192,5 +198,82 @@ class UserAuthController extends Controller
 	      }else{
 	      		return $this->sendResponse("Sorry, Invalid token!", 200, false);
 	      }
+    }
+
+    public function verifyPhone(Request $request){
+    		$this->validate($request, [
+    				'phone' => 'required'
+	      ]);
+
+        $phone = $request->phone;
+        $otp = rand(1111,9999);
+
+        $user = Users::where('phone', $phone)->first();
+
+        if (!empty($user)) {
+        		try {
+				        $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '470b2516f774b07ba2c9bdf790266160');
+				        $message =  $this->twilioClient->messages->create(
+						        $phone,
+						        array(
+						            "from" => '+14243918787',
+						            "body" => 'your phone number OTP verification is '.$otp
+						        )
+				        );
+				    } catch(\Exception $e) {
+		          	//return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+				    		Users::where('phone', $phone)->update(['phone_verification_token'=>md5($otp)]);
+		          	return $this->sendResponse(['otp' => $otp]);
+		        }
+		        Users::where('phone', $phone)->update(['phone_verification_token'=>md5($otp)]);
+		        return $this->sendResponse(['otp' => $otp]);
+        }else{
+        		return $this->sendResponse("Sorry, User not found!", 200, false);
+        }
+		        
+    }
+
+    public function verifyPhoneOtp(Request $request){
+    		$this->validate($request, [
+    				'phone' => 'required',
+    				'otp' => 'required'
+	      ]);
+
+	      $phone = $request->phone;
+        $otp = $request->otp;
+
+        $user = Users::where('phone', $phone)->first();
+
+        if (!empty($user)) {
+        		$check = Users::where(['phone' => $phone, 'phone_verification_token' => md5($otp)])->first();
+        		if (!empty($check)) {
+        				$updateStatus = Users::where(['phone' => $phone, 'phone_verification_token' => md5($otp)])->update(['phone_verified' => "YES"]);
+        				if ($updateStatus) {
+        						return $this->sendResponse("Phone no. verified successfully!");
+        				}else{
+        						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+        				}
+        		}else{
+        				return $this->sendResponse("OTP is wrong!", 200, false);
+        		}
+        }else{
+        		return $this->sendResponse("Sorry, User not found!", 200, false);
+        }
+    }
+
+    public function userLogout(Request $request)
+    {
+        $loginUser = Auth::user();
+
+        if (!empty($loginUser)) {
+        		$result = ApiToken::where('user_id', $loginUser->user_id)->delete();
+		        if ($result) {
+		            return $this->sendResponse("Logout successfully!");
+		        }else{
+		            return $this->sendResponse("Sorry, Something went wrong!.",200,false);
+		        }
+        }else{
+        		return $this->sendResponse("Sorry, User not found!", 200, false);
+        }
     }
 }
