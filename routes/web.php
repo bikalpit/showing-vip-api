@@ -18,8 +18,7 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
-		/* User Auth APIs Start */
-		$router->post('user-signup',  ['uses'=>'UserAuthController@userSignUp']);
+		/* UserAuthController APIs Start */
 		$router->post('user-login',  ['uses'=>'UserAuthController@userLogin']);
 		$router->post('create-password',  ['uses'=>'UserAuthController@createPassword']);
 		$router->post('reset-password',  ['uses'=>'UserAuthController@resetPassword']);
@@ -28,5 +27,13 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('verify-phone',  ['uses'=>'UserAuthController@verifyPhone']);
 		$router->post('verify-phone-otp',  ['uses'=>'UserAuthController@verifyPhoneOtp']);
 		$router->post('user-logout',  ['uses'=>'UserAuthController@userLogout']);
-		/* User Auth APIs End */
+		/* UserAuthController APIs End */
+
+		/* UsersController APIs Start */
+		$router->post('seller-signup',  ['uses'=>'UsersController@sellerSignUp']);
+		$router->post('buyer-signup',  ['uses'=>'UsersController@buyerSignUp']);
+		$router->post('agent-signup',  ['uses'=>'UsersController@agentSignUp']);
+		$router->post('get-single-user',  ['uses'=>'UsersController@getSingleUser']);
+		$router->post('add-agent',  ['uses'=>'UsersController@addAgent']);
+		/* UsersController APIs End */
 });

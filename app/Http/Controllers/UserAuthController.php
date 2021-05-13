@@ -18,57 +18,6 @@ use Auth;
 
 class UserAuthController extends Controller
 {
-    public function userSignUp(Request $request){
-	    	$this->validate($request, [
-	      		'first_name' => 'required',
-	          'last_name' => 'required',
-	          'phone' => 'required',
-	      		'email' => 'required|email',
-	          'role' => 'required|in:SELLER,BUYER,AGENT'
-	      ]);
-
-	    	if (Users::where('email', $request->email)->exists()) {
-	        	return $this->sendResponse("Email already exists!",200,false);
-	      }
-
-	      if (Users::where('phone', $request->phone)->exists()) {
-	        	return $this->sendResponse("Phone no. already exists!",200,false);
-	      }
-
-	      $time = strtotime(Carbon::now());
-        $uuid = "usr".$time.rand(10,99)*rand(10,99);
-	      $user = new Users;
-        $user->uuid = $uuid;
-        $user->first_name = $request->first_name;
-        $user->last_name = $request->last_name;
-        $user->phone = $request->phone;
-        $user->email = $request->email;
-        $user->role = $request->role;
-        $user->phone_verified = "NO";
-        $user->email_verified = "NO";
-        $user->image = "default.png";
-        $result = $user->save();
-
-        if ($result) {
-						$this->configSMTP();
-						$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-      			Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
-			      $data = ['name'=>$request->first_name.' '.$request->last_name, 
-				                'verification_token'=>$verification_token, 
-				                'email'=>$request->email,
-				                'app_url'=>env('APP_URL')
-			              ];
-			      try{
-			          Mail::to($request->email)->send(new SignupMail($data));  
-			      }catch(\Exception $e){
-			          $msg = $e->getMessage();
-			          return $this->sendResponse($msg,200,false);
-			      }
-
-					  return $this->sendResponse("Signup successfull!");
-				}
-    }
-
     public function userLogin(Request $request){
     		$this->validate($request, [
 	      		'email' => 'required|email',
@@ -261,8 +210,7 @@ class UserAuthController extends Controller
         }
     }
 
-    public function userLogout(Request $request)
-    {
+    public function userLogout(Request $request){
         $loginUser = Auth::user();
 
         if (!empty($loginUser)) {

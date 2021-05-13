@@ -12,7 +12,5 @@ class UserPasswordReset extends Model
      */
     protected $table = 'user_password_reset';
 
-    protected $fillable = [
-        'email', 'token'
-    ];
+    protected $fillable = ['email', 'token'];
 }
