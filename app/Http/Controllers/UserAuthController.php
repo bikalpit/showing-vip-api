@@ -9,11 +9,8 @@ use Illuminate\Http\Request;
 use App\Models\Users;
 use App\Models\ApiToken;
 use App\Models\UserPasswordReset;
-use App\Mail\SignupMail;
 use App\Mail\ForgetPasswordMail;
 use Twilio\Rest\Client as TwilioClient;
-use Carbon\Carbon;
-use DB;
 use Auth;
 
 class UserAuthController extends Controller

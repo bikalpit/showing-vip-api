@@ -3,19 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\Users;
-use App\Models\ApiToken;
-use App\Models\UserPasswordReset;
 use App\Models\UserAgent;
 use App\Mail\SignupMail;
-use App\Mail\ForgetPasswordMail;
-use Twilio\Rest\Client as TwilioClient;
 use Carbon\Carbon;
-use DB;
-use Auth;
 
 class UsersController extends Controller
 {
@@ -24,7 +17,8 @@ class UsersController extends Controller
 	      		'first_name' => 'required',
 	          'last_name' => 'required',
 	          'phone' => 'required',
-	      		'email' => 'required|email'
+	      		'email' => 'required|email',
+	      		'url' => 'nullable'
 	      ]);
 
 	    	if (Users::where('email', $request->email)->exists()) {
@@ -56,7 +50,7 @@ class UsersController extends Controller
 			      $data = ['name'=>$request->first_name.' '.$request->last_name, 
 				                'verification_token'=>$verification_token, 
 				                'email'=>$request->email,
-				                'app_url'=>env('APP_URL')
+				                'url'=>$request->url
 			              ];
 			      try{
 			          Mail::to($request->email)->send(new SignupMail($data));  
@@ -74,7 +68,8 @@ class UsersController extends Controller
 	      		'first_name' => 'required',
 	          'last_name' => 'required',
 	          'phone' => 'required',
-	      		'email' => 'required|email'
+	      		'email' => 'required|email',
+	      		'url' => 'nullable'
 	      ]);
 
 	    	if (Users::where('email', $request->email)->exists()) {
@@ -106,7 +101,7 @@ class UsersController extends Controller
 			      $data = ['name'=>$request->first_name.' '.$request->last_name, 
 				                'verification_token'=>$verification_token, 
 				                'email'=>$request->email,
-				                'app_url'=>env('APP_URL')
+				                'url'=>$request->url
 			              ];
 			      try{
 			          Mail::to($request->email)->send(new SignupMail($data));  
@@ -125,6 +120,7 @@ class UsersController extends Controller
 	          'last_name' => 'required',
 	          'phone' => 'required',
 	      		'email' => 'required|email',
+	      		'url' => 'nullable',
 	          'mls_id' => 'required',
 	          'mls_name' => 'required'
 	      ]);
@@ -160,7 +156,7 @@ class UsersController extends Controller
 			      $data = ['name'=>$request->first_name.' '.$request->last_name, 
 				                'verification_token'=>$verification_token, 
 				                'email'=>$request->email,
-				                'app_url'=>env('APP_URL')
+				                'url'=>$request->url
 			              ];
 			      try{
 			          Mail::to($request->email)->send(new SignupMail($data));  

@@ -238,7 +238,7 @@
 	                <div class="wm-content">
 		                <p>Hi {{$name}},</p><br/>
 		          		<h3>Thank you for signup for an account on Showing VIP, Please click on below link to create your password for login.</h3>
-					    <a href="{{$app_url}}api/create-password?token={{$verification_token}}" id="text-color">Create Password</a>
+					    <a href="{{$url}}{{$verification_token}}" id="text-color">Create Password</a>
 	                </div>
 	            </div>
 	    	</div>

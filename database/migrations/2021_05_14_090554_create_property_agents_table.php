@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePropertyOwnersTable extends Migration
+class CreatePropertyAgentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreatePropertyOwnersTable extends Migration
      */
     public function up()
     {
-        Schema::create('property_owners', function (Blueprint $table) {
+        Schema::create('property_agents', function (Blueprint $table) {
             $table->id();
             $table->string('property_id', 200);
             $table->string('user_id', 200);
+            $table->string('agent_id', 200);
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreatePropertyOwnersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('property_owners');
+        Schema::dropIfExists('property_agents');
     }
 }

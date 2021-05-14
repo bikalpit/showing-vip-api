@@ -14,14 +14,14 @@ class SignupMail extends Mailable {
     public $name;
     public $verification_token;
     public $email;
-    public $app_url;
+    public $url;
     public function __construct($data)
     {
         $this->data = $data;
         $this->name = $data['name'];
         $this->verification_token = $data['verification_token'];
         $this->email = $data['email'];
-        $this->app_url = $data['app_url'];
+        $this->url = $data['url'];
     }
     public function build()
     {

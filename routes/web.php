@@ -36,4 +36,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('get-single-user',  ['uses'=>'UsersController@getSingleUser']);
 		$router->post('add-agent',  ['uses'=>'UsersController@addAgent']);
 		/* UsersController APIs End */
+
+		/* PropertiesController APIs Start */
+		$router->post('add-property',  ['uses'=>'PropertiesController@addProperty']);
+		/* PropertiesController APIs End */
 });
