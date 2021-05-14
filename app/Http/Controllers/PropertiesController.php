@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Properties;
+use App\Models\PropertyOwners;
+use App\Models\PropertyAgents;
 use Carbon\Carbon;
 
 class PropertiesController extends Controller
@@ -23,16 +25,16 @@ class PropertiesController extends Controller
 	          'elementary' => 'required',
 	          'middle' => 'required',
 	          'high' => 'required',
-	          'district' => 'required'
-	          'phone' => 'required'
-	          'office' => 'required'
-	          'hoa' => 'required'
-	          'taxes' => 'required'
-	          'parking' => 'required'
-	          'sources' => 'required'
+	          'district' => 'required',
+	          'phone' => 'required',
+	          'office' => 'required',
+	          'hoa' => 'required',
+	          'taxes' => 'required',
+	          'parking' => 'required',
+	          'sources' => 'required',
 	          'disclaimer' => 'required'
 	      ]);
-
+				//dd($request->all());
 	      $time = strtotime(Carbon::now());
         $uuid = "prty".$time.rand(10,99)*rand(10,99);
 	      $property = new Properties;
@@ -63,6 +65,62 @@ class PropertiesController extends Controller
 	      		return $this->sendResponse("Property added successfully!");
 	      }else{
 	      		return $this->sendResponse("Sorry, Something went wrong!.",200,false);
+	      }
+		}
+
+		public function userProperties(Request $request){
+				$this->validate($request, [
+	      		'user_id' => 'required'
+	      ]);
+
+	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
+
+	      if (sizeof($property_ids) > 0) {
+	      		$properties = Properties::whereIn('uuid', $property_ids)->get();
+	      		return $this->sendResponse($properties);
+	      }else{
+	      		return $this->sendResponse("Sorry, Property not found!.", 200, false);
+	      }
+		}
+
+		public function assignAgent(Request $request){
+				$this->validate($request, [
+	      		'property_id' => 'required',
+	      		'agent_id' => 'required',
+	      		'user_id' => 'required'
+	      ]);
+
+				$property = Properties::where('uuid', $request->property_id)->get();
+
+				if (!empty($property)) {
+						$property_agent = new PropertyAgents;
+						$property_agent->property_id = $request->property_id;
+						$property_agent->agent_id = $request->agent_id;
+						$property_agent->user_id = $request->user_id;
+						$result = $property_agent->save();
+						if ($result) {
+								return $this->sendResponse("Agent assigned successfully!");
+						}else{
+								return $this->sendResponse("Sorry, Something went wrong!.", 200, false);
+						}
+				}else{
+						return $this->sendResponse("Sorry, Property not found!.", 200, false);
+				}
+		}
+
+		public function removeAgent(Request $request){
+				$this->validate($request, [
+	      		'property_id' => 'required',
+	      		'agent_id' => 'required',
+	      		'user_id' => 'required'
+	      ]);
+
+	      $result = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id, 'user_id'=>$request->user_id])->delete();
+
+	      if ($result) {
+	      		return $this->sendResponse("Agent removed successfully!");
+	      }else{
+	      		return $this->sendResponse("Sorry, Something went wrong!.", 200, false);
 	      }
 		}
 }

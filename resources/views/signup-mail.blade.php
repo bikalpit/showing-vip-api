@@ -148,7 +148,7 @@
         }
 
         .btn-dashboard {
-            background-image: url(http://api.eventjio.com/email-template-image/greenbtn-bg.svg);
+            /*background-image: url(http://api.eventjio.com/email-template-image/greenbtn-bg.svg);*/
             background-size: cover;
             background-position: center;
             font-size: 15px;

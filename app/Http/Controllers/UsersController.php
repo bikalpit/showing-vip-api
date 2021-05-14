@@ -22,11 +22,11 @@ class UsersController extends Controller
 	      ]);
 
 	    	if (Users::where('email', $request->email)->exists()) {
-	        	return $this->sendResponse("Email already exists!",200,false);
+	        	return $this->sendResponse("Email already exists!", 200, false);
 	      }
 
 	      if (Users::where('phone', $request->phone)->exists()) {
-	        	return $this->sendResponse("Phone no. already exists!",200,false);
+	        	return $this->sendResponse("Phone no. already exists!", 200, false);
 	      }
 
 	      $time = strtotime(Carbon::now());
@@ -56,7 +56,7 @@ class UsersController extends Controller
 			          Mail::to($request->email)->send(new SignupMail($data));  
 			      }catch(\Exception $e){
 			          $msg = $e->getMessage();
-			          return $this->sendResponse($msg,200,false);
+			          return $this->sendResponse($msg, 200, false);
 			      }
 
 					  return $this->sendResponse("Signup successfull!");
@@ -73,11 +73,11 @@ class UsersController extends Controller
 	      ]);
 
 	    	if (Users::where('email', $request->email)->exists()) {
-	        	return $this->sendResponse("Email already exists!",200,false);
+	        	return $this->sendResponse("Email already exists!", 200, false);
 	      }
 
 	      if (Users::where('phone', $request->phone)->exists()) {
-	        	return $this->sendResponse("Phone no. already exists!",200,false);
+	        	return $this->sendResponse("Phone no. already exists!", 200, false);
 	      }
 
 	      $time = strtotime(Carbon::now());
@@ -107,7 +107,7 @@ class UsersController extends Controller
 			          Mail::to($request->email)->send(new SignupMail($data));  
 			      }catch(\Exception $e){
 			          $msg = $e->getMessage();
-			          return $this->sendResponse($msg,200,false);
+			          return $this->sendResponse($msg, 200, false);
 			      }
 
 					  return $this->sendResponse("Signup successfull!");
@@ -126,11 +126,11 @@ class UsersController extends Controller
 	      ]);
 
 	    	if (Users::where('email', $request->email)->exists()) {
-	        	return $this->sendResponse("Email already exists!",200,false);
+	        	return $this->sendResponse("Email already exists!", 200, false);
 	      }
 
 	      if (Users::where('phone', $request->phone)->exists()) {
-	        	return $this->sendResponse("Phone no. already exists!",200,false);
+	        	return $this->sendResponse("Phone no. already exists!", 200, false);
 	      }
 
 	      $time = strtotime(Carbon::now());
@@ -162,7 +162,7 @@ class UsersController extends Controller
 			          Mail::to($request->email)->send(new SignupMail($data));  
 			      }catch(\Exception $e){
 			          $msg = $e->getMessage();
-			          return $this->sendResponse($msg,200,false);
+			          return $this->sendResponse($msg, 200, false);
 			      }
 
 					  return $this->sendResponse("Signup successfull!");
@@ -199,5 +199,27 @@ class UsersController extends Controller
     		}else{
     				return $this->sendResponse("Sorry, Something went wrong!", 200, false);
     		}
+    }
+
+    public function getUsers(Request $request){
+    		$this->validate($request, [
+	      		'filter' => 'required|in:ALL,SELLER,BUYER,AGENT'
+	      ]);
+
+	      if ($request->filter == 'ALL') {
+	      		$users = Users::get();
+	      }elseif ($request->filter == 'SELLER') {
+	     			$users = Users::where('role', 'SELLER')->get();
+	      }elseif ($request->filter == 'BUYER') {
+	    			$users = Users::where('role', 'BUYER')->get();
+	      }elseif ($request->filter == 'AGENT') {
+	    			$users = Users::where('role', 'AGENT')->get();
+	      }
+
+	      if (sizeof($users) > 0) {
+	  				return $this->sendResponse($users);
+	      }else{
+	      		return $this->sendResponse("Sorry, Users not found!", 200, false);
+	      }
     }
 }
