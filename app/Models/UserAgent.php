@@ -12,4 +12,8 @@ class UserAgent extends Model
     protected $table = 'user_agent';
 
     protected $fillable = ['user_id','agent_id'];
+
+    public function agentProfile(){
+        return $this->hasOne('App\Models\Users', 'uuid', 'agent_id');
+    }
 }

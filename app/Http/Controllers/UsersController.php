@@ -37,7 +37,8 @@ class UsersController extends Controller
         $user->last_name = $request->last_name;
         $user->phone = $request->phone;
         $user->email = $request->email;
-        $user->role = "SELLER";
+        $user->role = "USER";
+        $user->sub_role = "SELLER";
         $user->phone_verified = "NO";
         $user->email_verified = "NO";
         $user->image = "default.png";
@@ -88,7 +89,8 @@ class UsersController extends Controller
         $user->last_name = $request->last_name;
         $user->phone = $request->phone;
         $user->email = $request->email;
-        $user->role = "BUYER";
+        $user->role = "USER";
+        $user->sub_role = "BUYER";
         $user->phone_verified = "NO";
         $user->email_verified = "NO";
         $user->image = "default.png";
@@ -220,6 +222,20 @@ class UsersController extends Controller
 	  				return $this->sendResponse($users);
 	      }else{
 	      		return $this->sendResponse("Sorry, Users not found!", 200, false);
+	      }
+    }
+
+    public function getAgents(Request $request){
+    		$this->validate($request, [
+	      		'user_id' => 'required'
+	      ]);
+
+	      $agents = UserAgent::with('agentProfile')->where('user_id', $request->user_id)->get();
+
+	      if (sizeof($agents) > 0) {
+	  				return $this->sendResponse($agents);
+	      }else{
+	      		return $this->sendResponse("Sorry, Agents not found!", 200, false);
 	      }
     }
 }

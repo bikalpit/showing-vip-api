@@ -11,11 +11,11 @@
             background-color: #FFF5EB;
         }
         body h4{
-           width: 70%;
-           display: block;
-           margin: auto;
-       margin-top: 95px;
-       font-weight: 500;
+            width: 70%;
+            display: block;
+            margin: auto;
+            margin-top: 95px;
+            font-weight: 500;
         }
 
         #wm {
@@ -35,7 +35,7 @@
          
         /* wm-section header-text */
         .wm-section1{
-           padding-bottom: 60px;
+            padding-bottom: 60px;
         }
         .wm-header-text h3{
             text-align: center;
@@ -44,8 +44,6 @@
             font-size: 18px;
             padding-top: 90px;
         }
-
-
 
         .wm-header h3 {
             text-align: center;
@@ -56,7 +54,7 @@
             line-height: 1.2;
         }
     
-    /* wm-header text & img & para */
+        /* wm-header text & img & para */
         .wm-header img {
             display: block;
             margin-left: auto;
@@ -82,8 +80,6 @@
             font-weight: 400;
         }
 
-      
-
         /*wm-content*/
         .wm-content {
             margin-top: 20px;
@@ -102,13 +98,8 @@
         .wm-content h3{
             margin-top: 20px;
             font-weight: 500;
-      margin-bottom: 33px
+            margin-bottom: 33px
         }
-
-       
-      
-
-
 
         ::marker {
             font-size: 30px;
@@ -121,8 +112,6 @@
             font-weight: 500;
         }
 
-      
-
         .wm-section-list .btn-more:focus {
             outline: none;
         }
@@ -132,7 +121,7 @@
             width: 70%;
             display: block;
             margin: auto;
-      margin-top: -16px;
+            margin-top: -16px;
         }
 
         .wm-section-contact p {
@@ -157,14 +146,12 @@
             margin-left: 14%;
             color: #fff;
             border: none;
-      background-color: transparent;
+            background-color: transparent;
         }
 
         .btn-dashboard {
             outline: none;
         }
-    
-    
 
         .wm-section-contact h3 {
             margin-top: 8%;
@@ -186,20 +173,22 @@
         }
 
         .wm-regards p {
-      padding: 49px 25px;
-      font-weight: 500;
-      padding-left: 8px;
+            padding: 49px 25px;
+            font-weight: 500;
+            padding-left: 8px;
         }
-    #wm-regard1{
-      margin-top: 14px;
-    }
-    #wm-cta{
-      margin-top: 21px;
-    }
-    #text-color{
-    color:blue;}
-    
-    
+
+        #wm-regard1{
+            margin-top: 14px;
+        }
+
+        #wm-cta{
+            margin-top: 21px;
+        }
+
+        #text-color{
+            color:blue;
+        }
            
         /*wm-footer*/
         .wm-footer {
@@ -214,17 +203,18 @@
         }
 
         .wm-footer-text {
-          text-align: center;
-          padding: 20px;
+            text-align: center;
+            padding: 20px;
         }
 
         .wm-footer-text h3 {
-         margin-top: 10px;
-         font-weight: 500;
+            margin-top: 10px;
+            font-weight: 500;
         }
+
         .wm-footer-text p {
-         margin-top: 15px;
-         color: #565657;
+            margin-top: 15px;
+            color: #565657;
         }
     </style>
 </head>

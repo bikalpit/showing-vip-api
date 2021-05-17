@@ -16,6 +16,7 @@ class PropertiesController extends Controller
 {
 		public function addProperty(Request $request){
 				$this->validate($request, [
+	      		'user_id' => 'required',
 	      		'mls_id' => 'required',
 	          'agent_id' => 'nullable',
 	          'property_verified' => 'required|in:P,VS,V',
@@ -62,12 +63,17 @@ class PropertiesController extends Controller
 	      $property->parking = $request->parking;
 	      $property->sources = $request->sources;
 	      $property->disclaimer = $request->disclaimer;
-	      $result = $property->save();
+	      $add_property = $property->save();
 
-	      if ($result) {
+	      $owner = new PropertyOwners;
+	      $owner->property_id = $property->uuid;
+	      $owner->user_id = $request->user_id;
+	      $property_owner = $owner->save();
+
+	      if ($property_owner) {
 	      		return $this->sendResponse("Property added successfully!");
 	      }else{
-	      		return $this->sendResponse("Sorry, Something went wrong!.", 200, false);
+	      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 	      }
 		}
 
@@ -82,7 +88,7 @@ class PropertiesController extends Controller
 	      		$properties = Properties::whereIn('uuid', $property_ids)->get();
 	      		return $this->sendResponse($properties);
 	      }else{
-	      		return $this->sendResponse("Sorry, Property not found!.", 200, false);
+	      		return $this->sendResponse("Sorry, Property not found!", 200, false);
 	      }
 		}
 
@@ -95,7 +101,7 @@ class PropertiesController extends Controller
 
 				$property = Properties::where('uuid', $request->property_id)->first();
 				$agent = Users::where('uuid', $request->agent_id)->first();
-				
+
 				if (!empty($property)) {
 						$property_agent = new PropertyAgents;
 						$property_agent->property_id = $request->property_id;
@@ -116,10 +122,10 @@ class PropertiesController extends Controller
 					      }
 								return $this->sendResponse("Agent assigned successfully!");
 						}else{
-								return $this->sendResponse("Sorry, Something went wrong!.", 200, false);
+								return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 						}
 				}else{
-						return $this->sendResponse("Sorry, Property not found!.", 200, false);
+						return $this->sendResponse("Sorry, Property not found!", 200, false);
 				}
 		}
 
@@ -135,7 +141,45 @@ class PropertiesController extends Controller
 	      if ($result) {
 	      		return $this->sendResponse("Agent removed successfully!");
 	      }else{
-	      		return $this->sendResponse("Sorry, Something went wrong!.", 200, false);
+	      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 	      }
+		}
+
+		public function verifyProperty(Request $request){
+				$this->validate($request, [
+	      		'property_id' => 'required'
+	      ]);
+
+	      $property = Properties::where('uuid', $request->property_id)->first();
+
+	      if (!empty($property)) {
+	      		$update = Properties::where('uuid', $request->property_id)->update(['property_verified'=>'V']);
+	      		if ($update) {
+	      				return $this->sendResponse("Property verified successfully!");
+	      		}else{
+			      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+			      }
+	      }else{
+						return $this->sendResponse("Sorry, Property not found!", 200, false);
+				}
+		}
+
+		public function verifiedProperties(Request $request){
+				$this->validate($request, [
+	      		'user_id' => 'required'
+	      ]);
+
+	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
+
+	      if (sizeof($property_ids) !== 0) {
+	      		$properties = Properties::whereIn('uuid', $property_ids)->where('property_verified', 'V')->get();
+	      		if (sizeof($properties) !== 0) {
+	      				return $this->sendResponse($properties);
+	      		}else{
+								return $this->sendResponse("Sorry, Verified property not found!", 200, false);
+						}
+	      }else{
+						return $this->sendResponse("Sorry, Property not found!", 200, false);
+				}
 		}
 }

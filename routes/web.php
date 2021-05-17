@@ -36,6 +36,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('get-single-user',  ['uses'=>'UsersController@getSingleUser']);
 		$router->post('add-agent',  ['uses'=>'UsersController@addAgent']);
 		$router->post('get-users',  ['uses'=>'UsersController@getUsers']);
+		$router->post('get-agents',  ['uses'=>'UsersController@getAgents']);
 		/* UsersController APIs End */
 
 		/* PropertiesController APIs Start */
@@ -43,5 +44,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('user-properties',  ['uses'=>'PropertiesController@userProperties']);
 		$router->post('assign-agent',  ['uses'=>'PropertiesController@assignAgent']);
 		$router->post('remove-agent',  ['uses'=>'PropertiesController@removeAgent']);
+		$router->post('verify-property',  ['uses'=>'PropertiesController@verifyProperty']);
+		$router->post('get-verified-properties',  ['uses'=>'PropertiesController@verifiedProperties']);
 		/* PropertiesController APIs End */
 });
