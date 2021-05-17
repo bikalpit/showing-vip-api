@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\Properties;
 use App\Models\PropertyOwners;
 use App\Models\PropertyAgents;
+use App\Models\Users;
+use App\Mail\AssignAgent;
 use Carbon\Carbon;
 
 class PropertiesController extends Controller
@@ -14,7 +17,7 @@ class PropertiesController extends Controller
 		public function addProperty(Request $request){
 				$this->validate($request, [
 	      		'mls_id' => 'required',
-	          'agent_id' => 'required',
+	          'agent_id' => 'nullable',
 	          'property_verified' => 'required|in:P,VS,V',
 	          'property_title' => 'required',
 	          'property_type' => 'required',
@@ -64,7 +67,7 @@ class PropertiesController extends Controller
 	      if ($result) {
 	      		return $this->sendResponse("Property added successfully!");
 	      }else{
-	      		return $this->sendResponse("Sorry, Something went wrong!.",200,false);
+	      		return $this->sendResponse("Sorry, Something went wrong!.", 200, false);
 	      }
 		}
 
@@ -90,8 +93,9 @@ class PropertiesController extends Controller
 	      		'user_id' => 'required'
 	      ]);
 
-				$property = Properties::where('uuid', $request->property_id)->get();
-
+				$property = Properties::where('uuid', $request->property_id)->first();
+				$agent = Users::where('uuid', $request->agent_id)->first();
+				
 				if (!empty($property)) {
 						$property_agent = new PropertyAgents;
 						$property_agent->property_id = $request->property_id;
@@ -99,6 +103,17 @@ class PropertiesController extends Controller
 						$property_agent->user_id = $request->user_id;
 						$result = $property_agent->save();
 						if ($result) {
+								$this->configSMTP();
+								$data = ['name'=>$agent->first_name.' '.$agent->last_name, 
+				                'property_id'=>$request->property_id,
+				                'property_name'=>$property->property_title
+			              ];
+								try{
+					          Mail::to($agent->email)->send(new AssignAgent($data));  
+					      }catch(\Exception $e){
+					          $msg = $e->getMessage();
+					          return $this->sendResponse($msg, 200, false);
+					      }
 								return $this->sendResponse("Agent assigned successfully!");
 						}else{
 								return $this->sendResponse("Sorry, Something went wrong!.", 200, false);

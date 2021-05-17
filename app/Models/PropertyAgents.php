@@ -9,7 +9,7 @@ class PropertyAgents extends Model
     /*
      * The table associated with the model.
      */
-    protected $table = 'property_owners';
+    protected $table = 'property_agents';
 
     protected $fillable = ['property_id','user_id','agent_id'];
 }

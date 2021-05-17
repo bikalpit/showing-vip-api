@@ -39,6 +39,7 @@ class UserAuthController extends Controller
 	          		$authentication['email']   = $user->email;
 	          		$authentication['phone'] = $user->phone;
 	      				$authentication['image'] = $user->image;
+	      				$authentication['sub_role'] = $user->sub_role;
 					      return $this->sendResponse($authentication);
 	    			}else{
 	    				  return $this->sendResponse("Email or Password is wrong!", 200, false);
@@ -209,7 +210,7 @@ class UserAuthController extends Controller
 
     public function userLogout(Request $request){
         $loginUser = Auth::user();
-
+        
         if (!empty($loginUser)) {
         		$result = ApiToken::where('user_id', $loginUser->user_id)->delete();
 		        if ($result) {

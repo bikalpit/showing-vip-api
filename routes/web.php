@@ -26,7 +26,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('reset-forget-password',  ['uses'=>'UserAuthController@resetForgetPassword']);
 		$router->post('verify-phone',  ['uses'=>'UserAuthController@verifyPhone']);
 		$router->post('verify-phone-otp',  ['uses'=>'UserAuthController@verifyPhoneOtp']);
-		$router->post('user-logout',  ['uses'=>'UserAuthController@userLogout']);
+		$router->post('user-logout',  ['middleware'=>'auth', 'uses'=>'UserAuthController@userLogout']);
 		/* UserAuthController APIs End */
 
 		/* UsersController APIs Start */

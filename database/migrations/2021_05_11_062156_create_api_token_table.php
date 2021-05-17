@@ -17,7 +17,7 @@ class CreateApiTokenTable extends Migration
             $table->id();
             $table->string('user_id', 200);
             $table->string('token', 200);
-            $table->enum('user_type', ['SA', 'SELLER', 'BUYER', 'AGENT']);
+            $table->enum('user_type', ['SA', 'USER', 'AGENT']);
             $table->timestamps();
         });
     }

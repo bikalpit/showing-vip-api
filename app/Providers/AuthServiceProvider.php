@@ -37,16 +37,13 @@ class AuthServiceProvider extends ServiceProvider
         });*/
 
         $this->app['auth']->viaRequest('api', function ($request) {
-            if ($request->header('api-token') && $request->header('agent-id') || $request->header('seller-id') || $request->header('buyer-id') || $request->header('super-admin-id')){
+            if ($request->header('api-token') && $request->header('agent-id') || $request->header('user-id') || $request->header('super-admin-id')){
                 if(!empty($request->header('agent-id'))){
                   $user_id = $request->header('agent-id');
                   $user_type = "AGENT";
-                }elseif(!empty($request->header('seller-id'))){
-                  $user_id = $request->header('seller-id');
-                  $user_type = "SELLER";
-                }elseif(!empty($request->header('buyer-id'))){
-                  $user_id = $request->header('buyer-id');
-                  $user_type = "BUYER";
+                }elseif(!empty($request->header('user-id'))){
+                  $user_id = $request->header('user-id');
+                  $user_type = "USER";
                 }elseif(!empty($request->header('super-admin-id'))){
                   $user_id = $request->header('super-admin-id');
                   $user_type = "SA";

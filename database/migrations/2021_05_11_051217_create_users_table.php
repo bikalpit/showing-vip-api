@@ -21,7 +21,8 @@ class CreateUsersTable extends Migration
             $table->string('phone', 200)->nullable();
             $table->string('email', 200);
             $table->string('password', 200)->nullable();
-            $table->enum('role', ['SELLER', 'BUYER', 'AGENT', 'SA'])->comment('SELLER - Seller | BUYER - Buyer | AGENT - Agent | SA - Super Admin');
+            $table->enum('role', ['USER', 'AGENT', 'SA'])->comment('USER - Buyer or Seller | AGENT - Agent | SA - Super Admin');
+            $table->enum('sub_role', ['SELLER', 'BUYER'])->comment('SELLER - Seller | BUYER - Buyer')->nullable();
             $table->enum('agent_role', ['LIST', 'BUY', 'SHOW'])->comment('LIST - Listing | BUY - Buying | SHOW - Showing')->nullable();
             $table->string('mls_id', 200)->nullable();
             $table->string('mls_name', 200)->nullable();
