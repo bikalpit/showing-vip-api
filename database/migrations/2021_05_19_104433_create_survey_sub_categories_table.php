@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserAgentTable extends Migration
+class CreateSurveySubCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateUserAgentTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_agent', function (Blueprint $table) {
+        Schema::create('survey_sub_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id', 200);
-            $table->string('agent_id', 200);
+            $table->string('uuid', 200);
+            $table->string('category_id', 200);
+            $table->string('name', 200);
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateUserAgentTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_agent');
+        Schema::dropIfExists('survey_sub_categories');
     }
 }

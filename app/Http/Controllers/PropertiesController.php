@@ -19,12 +19,12 @@ class PropertiesController extends Controller
 	      		'user_id' => 'required',
 	      		'mls_id' => 'required',
 	          'agent_id' => 'nullable',
-	          'property_verified' => 'required|in:P,VS,V',
-	          'property_title' => 'required',
-	          'property_type' => 'required',
-	          'property_size' => 'required',
-	          'property_status' => 'required',
-	          'property_year_built' => 'required',
+	          'verified' => 'required|in:P,VS,V',
+	          'title' => 'required',
+	          'type' => 'required',
+	          'size' => 'required',
+	          'status' => 'required',
+	          'year_built' => 'required',
 	          'lat_area' => 'required',
 	          'elementary' => 'required',
 	          'middle' => 'required',
@@ -45,12 +45,12 @@ class PropertiesController extends Controller
 	      $property->uuid = $uuid;
 	      $property->mls_id = $request->mls_id;
 	      $property->agent_id = $request->agent_id;
-	      $property->property_verified = $request->property_verified;
-	      $property->property_title = $request->property_title;
-	      $property->property_type = $request->property_type;
-	      $property->property_size = $request->property_size;
-	      $property->property_status = $request->property_status;
-	      $property->property_year_built = $request->property_year_built;
+	      $property->verified = $request->verified;
+	      $property->title = $request->title;
+	      $property->type = $request->type;
+	      $property->size = $request->size;
+	      $property->status = $request->status;
+	      $property->year_built = $request->year_built;
 	      $property->lat_area = $request->lat_area;
 	      $property->elementary = $request->elementary;
 	      $property->middle = $request->middle;
@@ -112,7 +112,7 @@ class PropertiesController extends Controller
 								$this->configSMTP();
 								$data = ['name'=>$agent->first_name.' '.$agent->last_name, 
 				                'property_id'=>$request->property_id,
-				                'property_name'=>$property->property_title
+				                'property_name'=>$property->title
 			              ];
 								try{
 					          Mail::to($agent->email)->send(new AssignAgent($data));  
@@ -153,7 +153,7 @@ class PropertiesController extends Controller
 	      $property = Properties::where('uuid', $request->property_id)->first();
 
 	      if (!empty($property)) {
-	      		$update = Properties::where('uuid', $request->property_id)->update(['property_verified'=>'V']);
+	      		$update = Properties::where('uuid', $request->property_id)->update(['verified'=>'V']);
 	      		if ($update) {
 	      				return $this->sendResponse("Property verified successfully!");
 	      		}else{
@@ -172,7 +172,7 @@ class PropertiesController extends Controller
 	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
 
 	      if (sizeof($property_ids) !== 0) {
-	      		$properties = Properties::whereIn('uuid', $property_ids)->where('property_verified', 'V')->get();
+	      		$properties = Properties::whereIn('uuid', $property_ids)->where('verified', 'V')->get();
 	      		if (sizeof($properties) !== 0) {
 	      				return $this->sendResponse($properties);
 	      		}else{

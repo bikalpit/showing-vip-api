@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePropertyShowingSurveyTable extends Migration
+class CreateSurveyCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreatePropertyShowingSurveyTable extends Migration
      */
     public function up()
     {
-        Schema::create('property_showing_survey', function (Blueprint $table) {
+        Schema::create('survey_categories', function (Blueprint $table) {
             $table->id();
             $table->string('uuid', 200);
-            $table->string('showing_setup_id', 200);
-            $table->string('survey', 200);
+            $table->string('name', 200);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -30,6 +28,6 @@ class CreatePropertyShowingSurveyTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('property_showing_survey');
+        Schema::dropIfExists('survey_categories');
     }
 }

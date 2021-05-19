@@ -47,4 +47,18 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('verify-property',  ['uses'=>'PropertiesController@verifyProperty']);
 		$router->post('get-verified-properties',  ['uses'=>'PropertiesController@verifiedProperties']);
 		/* PropertiesController APIs End */
+
+		/* ShowingController APIs Start */
+		$router->post('create-slots',  ['uses'=>'ShowingController@createSlots']);
+		$router->post('create-survey-category',  ['uses'=>'ShowingController@createSurveyCategory']);
+		$router->post('update-survey-category',  ['uses'=>'ShowingController@updateSurveyCategory']);
+		$router->post('get-all-categories',  ['uses'=>'ShowingController@getAllCategories']);
+		$router->post('get-single-category',  ['uses'=>'ShowingController@getSingleCategory']);
+		$router->post('delete-category',  ['uses'=>'ShowingController@deleteCategory']);
+		$router->post('create-survey-sub-category',  ['uses'=>'ShowingController@createSurveySubCategory']);
+		$router->post('update-survey-sub-category',  ['uses'=>'ShowingController@updateSurveySubCategory']);
+		$router->post('delete-sub-category',  ['uses'=>'ShowingController@deleteSubCategory']);
+		$router->post('create-showing-setup',  ['uses'=>'ShowingController@createShowingSetup']);
+		$router->post('get-single-showing-setup',  ['uses'=>'ShowingController@getSingleShowingSetup']);
+		/* ShowingController APIs End */
 });

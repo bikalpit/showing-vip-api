@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\Users;
-use App\Models\UserAgent;
+use App\Models\UserAgents;
 use App\Mail\SignupMail;
 use Carbon\Carbon;
 
@@ -191,7 +191,7 @@ class UsersController extends Controller
 	          'agent_id' => 'required'
 	      ]);
 
-    		$user_agent = new UserAgent;
+    		$user_agent = new UserAgents;
     		$user_agent->user_id = $request->user_id;
     		$user_agent->agent_id = $request->agent_id;
     		$result = $user_agent->save();
@@ -230,7 +230,7 @@ class UsersController extends Controller
 	      		'user_id' => 'required'
 	      ]);
 
-	      $agents = UserAgent::with('agentProfile')->where('user_id', $request->user_id)->get();
+	      $agents = UserAgents::with('agentProfile')->where('user_id', $request->user_id)->get();
 
 	      if (sizeof($agents) > 0) {
 	  				return $this->sendResponse($agents);

@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserAgent extends Model
+class UserAgents extends Model
 {
     /*
      * The table associated with the model.
      */
-    protected $table = 'user_agent';
+    protected $table = 'user_agents';
 
     protected $fillable = ['user_id','agent_id'];
 
