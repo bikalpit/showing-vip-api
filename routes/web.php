@@ -46,6 +46,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('remove-agent',  ['uses'=>'PropertiesController@removeAgent']);
 		$router->post('verify-property',  ['uses'=>'PropertiesController@verifyProperty']);
 		$router->post('get-verified-properties',  ['uses'=>'PropertiesController@verifiedProperties']);
+		$router->post('add-owner',  ['uses'=>'PropertiesController@addOwner']);
+		$router->post('agent-properties',  ['uses'=>'PropertiesController@agentProperties']);
 		/* PropertiesController APIs End */
 
 		/* ShowingController APIs Start */
@@ -59,6 +61,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('update-survey-sub-category',  ['uses'=>'ShowingController@updateSurveySubCategory']);
 		$router->post('delete-sub-category',  ['uses'=>'ShowingController@deleteSubCategory']);
 		$router->post('create-showing-setup',  ['uses'=>'ShowingController@createShowingSetup']);
+		$router->post('update-showing-setup',  ['uses'=>'ShowingController@updateShowingSetup']);
 		$router->post('get-single-showing-setup',  ['uses'=>'ShowingController@getSingleShowingSetup']);
 		/* ShowingController APIs End */
 });

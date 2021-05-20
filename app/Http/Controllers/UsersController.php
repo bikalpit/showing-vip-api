@@ -61,6 +61,8 @@ class UsersController extends Controller
 			      }
 
 					  return $this->sendResponse("Signup successfull!");
+				}else{
+						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 				}
     }
 
@@ -113,6 +115,8 @@ class UsersController extends Controller
 			      }
 
 					  return $this->sendResponse("Signup successfull!");
+				}else{
+						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 				}
     }
 
@@ -168,6 +172,8 @@ class UsersController extends Controller
 			      }
 
 					  return $this->sendResponse("Signup successfull!");
+				}else{
+						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 				}
     }
 

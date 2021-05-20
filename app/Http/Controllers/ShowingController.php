@@ -232,6 +232,57 @@ class ShowingController extends Controller
 	      }
     }
 
+    public function updateShowingSetup(Request $request){
+	    	$this->validate($request, [
+	      		'showing_setup_id' => 'required',
+	          'notification_email' => 'required',
+	          'notification_text' => 'required',
+	      		'type' => 'required|in:VALID,NO VALID',
+	      		'validator' => 'required',
+	      		'presence' => 'required',
+	      		'instructions' => 'required',
+	      		'lockbox_type' => 'required',
+	      		'lockbox_location' => 'required',
+	      		'start_date' => 'required',
+	      		'end_date' => 'required',
+	      		'timeframe' => 'required',
+	      		'overlap' => 'required|in:YES,NO',
+	      		'availability' => 'required',
+	      		'survey' => 'required'
+	      ]);
+
+	    	$showing_setup = PropertyShowingSetup::where('uuid', $request->showing_setup_id)->first();
+
+	    	if ($showing_setup) {
+			      $update_setup = PropertyShowingSetup::where('uuid', $request->showing_setup_id)->update([
+				      	'notification_email'=>$request->notification_email,
+				      	'notification_text'=>$request->notification_text,
+				      	'type'=>$request->type,
+				      	'validator'=>$request->validator,
+				      	'presence'=>$request->presence,
+				      	'instructions'=>$request->instructions,
+				      	'lockbox_type'=>$request->lockbox_type,
+				      	'lockbox_location'=>$request->lockbox_location,
+				      	'start_date'=>$request->start_date,
+				      	'end_date'=>$request->end_date,
+				      	'timeframe'=>$request->timeframe,
+				      	'overlap'=>$request->overlap,
+			      ]);
+
+			      $update_availibility = PropertyShowingAvailability::where('showing_setup_id', $request->showing_setup_id)->update([
+			      		'availability'=>json_encode($request->availability)
+			      ]);
+
+			      $update_survey = PropertyShowingSurvey::where('showing_setup_id', $request->showing_setup_id)->update([
+			      		'survey'=>json_encode($request->survey)
+			      ]);
+
+			      return $this->sendResponse("Showing setup updated successfully!");
+	    	}else{
+	    			return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
+	    	}
+    }
+
     public function getSingleShowingSetup(Request $request){
     		$this->validate($request, [
 	      		'property_id' => 'required'

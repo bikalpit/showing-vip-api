@@ -10,7 +10,10 @@ use App\Models\PropertyOwners;
 use App\Models\PropertyAgents;
 use App\Models\Users;
 use App\Mail\AssignAgent;
+use App\Mail\SignupMail;
+use App\Mail\AssignOwner;
 use Carbon\Carbon;
+use DB;
 
 class PropertiesController extends Controller
 {
@@ -181,5 +184,88 @@ class PropertiesController extends Controller
 	      }else{
 						return $this->sendResponse("Sorry, Property not found!", 200, false);
 				}
+		}
+
+		public function addOwner(Request $request){
+				$this->validate($request, [
+	      		'first_name' => 'required',
+	      		'last_name' => 'required',
+	      		'email' => 'required',
+	      		'user_id' => 'required',
+	      		'property_id' => 'required',
+	      		'url' => 'required'
+	      ]);
+
+	      $prop_owner = Users::where('uuid', $request->user_id)->first();
+	      $check = Users::where('email', $request->email)->first();
+	      $property = Properties::where('uuid', $request->property_id)->first();
+
+	      if ($check !== null) {
+	    			return $this->sendResponse("Sorry, Email already exist!", 200, false);
+	      }else{
+	      		\DB::beginTransaction();
+	      		try{
+								$time = strtotime(Carbon::now());
+				        $uuid = "usr".$time.rand(10,99)*rand(10,99);
+					      $user = new Users;
+				        $user->uuid = $uuid;
+				        $user->first_name = $request->first_name;
+				        $user->last_name = $request->last_name;
+				        $user->email = $request->email;
+				        $user->role = "USER";
+				        $user->sub_role = "SELLER";
+				        $user->phone_verified = "NO";
+				        $user->email_verified = "NO";
+				        $user->image = "default.png";
+				        $result = $user->save();
+
+				        $owner = new PropertyOwners;
+					      $owner->property_id = $property->uuid;
+					      $owner->user_id = $user->uuid;
+					      $property_owner = $owner->save();
+
+								$this->configSMTP();
+								$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+		      			Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+
+		      			$dataAssignOwner = ['name'=>$request->first_name.' '.$request->last_name,
+		      									'owner_name'=>$prop_owner->first_name.' '.$prop_owner->last_name,
+		      									'property_name'=>$property->title
+		      							];
+
+					      $dataSignupMail = ['name'=>$request->first_name.' '.$request->last_name,
+						                'verification_token'=>$verification_token,
+						                'email'=>$request->email,
+						                'url'=>$request->url
+					              ];
+					      try{
+					          Mail::to($request->email)->send(new AssignOwner($dataAssignOwner));
+					          Mail::to($request->email)->send(new SignupMail($dataSignupMail));
+					      }catch(\Exception $e){
+					          $msg = $e->getMessage();
+					          return $this->sendResponse($msg, 200, false);
+					      }
+
+							  return $this->sendResponse("Owner added successfully!");
+						} catch(\Exception $e) {
+			      		\DB::rollBack();
+			      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+			      }
+				}
+		}
+
+		public function agentProperties(Request $request){
+				$this->validate($request, [
+	      		'agent_id' => 'required'
+	      ]);
+
+	      $property_ids = PropertyAgents::where('agent_id', $request->agent_id)->pluck('property_id')->toArray();
+
+	      if (sizeof($property_ids) > 0) {
+	      		$properties = Properties::whereIn('uuid', $property_ids)->get();
+	      		return $this->sendResponse($properties);
+	      }else{
+	      		return $this->sendResponse("Sorry, Property not found!", 200, false);
+	      }
 		}
 }
