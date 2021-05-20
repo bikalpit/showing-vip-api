@@ -33,10 +33,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('seller-signup',  ['uses'=>'UsersController@sellerSignUp']);
 		$router->post('buyer-signup',  ['uses'=>'UsersController@buyerSignUp']);
 		$router->post('agent-signup',  ['uses'=>'UsersController@agentSignUp']);
-		$router->post('get-single-user',  ['uses'=>'UsersController@getSingleUser']);
-		$router->post('add-agent',  ['uses'=>'UsersController@addAgent']);
-		$router->post('get-users',  ['uses'=>'UsersController@getUsers']);
-		$router->post('get-agents',  ['uses'=>'UsersController@getAgents']);
+		$router->post('get-single-user',  ['middleware'=>'auth','uses'=>'UsersController@getSingleUser']);
+		$router->post('add-agent',  ['middleware'=>'auth','uses'=>'UsersController@addAgent']);
+		$router->post('get-users',  ['middleware'=>'auth','uses'=>'UsersController@getUsers']);
+		$router->post('get-agents',  ['middleware'=>'auth','uses'=>'UsersController@getAgents']);
 		/* UsersController APIs End */
 
 		/* PropertiesController APIs Start */
@@ -48,6 +48,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('get-verified-properties',  ['uses'=>'PropertiesController@verifiedProperties']);
 		$router->post('add-owner',  ['uses'=>'PropertiesController@addOwner']);
 		$router->post('agent-properties',  ['uses'=>'PropertiesController@agentProperties']);
+		$router->post('add-property',  ['middleware'=>'auth','uses'=>'PropertiesController@addProperty']);
+		$router->post('user-properties',  ['middleware'=>'auth','uses'=>'PropertiesController@userProperties']);
+		$router->post('assign-agent',  ['middleware'=>'auth','uses'=>'PropertiesController@assignAgent']);
+		$router->post('remove-agent',  ['middleware'=>'auth','uses'=>'PropertiesController@removeAgent']);
+		$router->post('verify-property',  ['middleware'=>'auth','uses'=>'PropertiesController@verifyProperty']);
+		$router->post('get-verified-properties',  ['middleware'=>'auth','uses'=>'PropertiesController@verifiedProperties']);
 		/* PropertiesController APIs End */
 
 		/* ShowingController APIs Start */
@@ -63,5 +69,20 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('create-showing-setup',  ['uses'=>'ShowingController@createShowingSetup']);
 		$router->post('update-showing-setup',  ['uses'=>'ShowingController@updateShowingSetup']);
 		$router->post('get-single-showing-setup',  ['uses'=>'ShowingController@getSingleShowingSetup']);
+		$router->post('create-survey-category',  ['middleware'=>'auth','uses'=>'ShowingController@createSurveyCategory']);
+		$router->post('update-survey-category',  ['middleware'=>'auth','uses'=>'ShowingController@updateSurveyCategory']);
+		$router->post('get-all-categories',  ['middleware'=>'auth','uses'=>'ShowingController@getAllCategories']);
+		$router->post('get-single-category',  ['middleware'=>'auth','uses'=>'ShowingController@getSingleCategory']);
+		$router->post('delete-category',  ['middleware'=>'auth','uses'=>'ShowingController@deleteCategory']);
+		$router->post('create-survey-sub-category',  ['middleware'=>'auth','uses'=>'ShowingController@createSurveySubCategory']);
+		$router->post('update-survey-sub-category',  ['middleware'=>'auth','uses'=>'ShowingController@updateSurveySubCategory']);
+		$router->post('delete-sub-category',  ['middleware'=>'auth','uses'=>'ShowingController@deleteSubCategory']);
+		$router->post('create-showing-setup',  ['middleware'=>'auth','uses'=>'ShowingController@createShowingSetup']);
+		$router->post('get-single-showing-setup',  ['middleware'=>'auth','uses'=>'ShowingController@getSingleShowingSetup']);
 		/* ShowingController APIs End */
+
+		/* Schedule Booking API Start*/
+		$router->post('create-schedule-booking',  ['middleware'=>'auth','uses'=>'BookingScheduleController@createBooking']);
+		$router->post('update-schedule-booking',  ['middleware'=>'auth','uses'=>'BookingScheduleController@updateBooking']);
+		/* Schedule Booking API End*/
 });
