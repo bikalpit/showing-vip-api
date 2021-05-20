@@ -21,8 +21,8 @@ class CreatePropertyBookingScheduleTable extends Migration
             $table->date('booking_date');
             $table->time('booking_time');
             $table->enum('status', ['P', 'A', 'R'])->comment('P - pending | A - accept | R - reject');
-            $table->string('cancel_by', 200);
-            $table->string('cancel_reason', 200);
+            $table->string('cancel_by', 200)->nullable();
+            $table->string('cancel_reason', 200)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

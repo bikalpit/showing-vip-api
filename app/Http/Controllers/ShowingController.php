@@ -225,6 +225,7 @@ class ShowingController extends Controller
 			      $survey->survey = json_encode($request->survey);
 			      $save_survey = $survey->save();
 
+				  DB::commit();
 			      return $this->sendResponse("Showing setup created successfully!");
 	      } catch(\Exception $e) {
 	      		\DB::rollBack();
