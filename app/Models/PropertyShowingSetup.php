@@ -25,4 +25,8 @@ class PropertyShowingSetup extends Model
     public function showingSurvey(){
         return $this->hasOne('App\Models\PropertyShowingSurvey', 'showing_setup_id', 'uuid');
     }
+
+    public function Property(){
+        return $this->hasOne('App\Models\Properties', 'uuid', 'property_id');
+    }
 }

@@ -289,7 +289,7 @@ class ShowingController extends Controller
 	      		'property_id' => 'required'
 	      ]);
 
-	      $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey')->where('property_id', $request->property_id)->first();
+	      $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey', 'Property')->where('property_id', $request->property_id)->first();
 
 	      if ($showing_setup) {
 	      		return $this->sendResponse($showing_setup);
