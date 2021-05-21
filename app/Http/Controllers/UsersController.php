@@ -253,10 +253,10 @@ class UsersController extends Controller
 	      		'phone' => 'required',
 	      		'email' => 'required',
 	      		'address' => 'required',
-	      		'city' => 'required',
-	      		'zipcode' => 'required',
-	      		'state' => 'required',
-	      		'country' => 'required',
+	      		'city' => 'nullable',
+	      		'zipcode' => 'nullable',
+	      		'state' => 'nullable',
+	      		'country' => 'nullable',
 	      		'about' => 'required',
 	      		'image' => 'nullable'
 	      ]);
