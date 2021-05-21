@@ -51,11 +51,11 @@ class BookingScheduleController extends Controller
 
             $this->configSMTP();
             $mail_data = [
-                'name'=>$request->first_name.' '.$request->last_name;
-                'validator_name'=>$validator->first_name.' '.$validator->last_name;
-                'property_name'=>$property->title;
-                'booking_date'=>$request->booking_date;
-                'booking_time'=>$request->booking_time;
+                'name'=>$request->first_name.' '.$request->last_name,
+                'validator_name'=>$validator->first_name.' '.$validator->last_name,
+                'property_name'=>$property->title,
+                'booking_date'=>$request->booking_date,
+                'booking_time'=>$request->booking_time
             ];
 
             if($propertyBookingSchedule->save()){
@@ -103,11 +103,11 @@ class BookingScheduleController extends Controller
                 ];
 
                 $mail_data = [
-                    'name'=>$request->first_name.' '.$request->last_name;
-                    'validator_name'=>$validator->first_name.' '.$validator->last_name;
-                    'property_name'=>$property->title;
-                    'booking_date'=>$request->booking_date;
-                    'booking_time'=>$request->booking_time;
+                    'name'=>$request->first_name.' '.$request->last_name,
+                    'validator_name'=>$validator->first_name.' '.$validator->last_name,
+                    'property_name'=>$property->title,
+                    'booking_date'=>$request->booking_date,
+                    'booking_time'=>$request->booking_time
                 ];
 
                 try{
@@ -120,8 +120,8 @@ class BookingScheduleController extends Controller
                     $propertyBookingSchedule->booking_time = $booking_time;
                     $propertyBookingSchedule->status = 'P';
                     $propertyBookingSchedule->save();
-                    Mail::to($request->email)->send(new SignupMail($data));
                     Mail::to($request->email)->send(new BookingMail($mail_data));
+                    Mail::to($request->email)->send(new SignupMail($data));
                     return $this->sendResponse("Insert Request Successfully!");
                 }catch(\Exception $e){
                     $msg = $e->getMessage();
@@ -162,16 +162,17 @@ class BookingScheduleController extends Controller
                 $msg = "Cancelled.";
             }
             if($result){
+                $this->configSMTP();
                 $data = [
-                    'name'=>$validator->first_name.' '.$validator->last_name;
-                    'property_name'=>$property->title;
-                    'status'=>$status;
-                    'booking_date'=>$request->booking_date;
-                    'booking_time'=>$request->booking_time;
+                    'name'=>$validator->first_name.' '.$validator->last_name,
+                    'property_name'=>$property->title,
+                    'status'=>$status,
+                    'booking_date'=>$request->booking_date,
+                    'booking_time'=>$request->booking_time
                 ];
 
                 try{
-                    Mail::to($request->email)->send(new BookingUpdate($data));
+                    Mail::to($validator->email)->send(new BookingUpdate($data));
                     return $this->sendResponse("Booking ".$msg);
                 }catch(\Exception $e){
                     $msg = $e->getMessage();
