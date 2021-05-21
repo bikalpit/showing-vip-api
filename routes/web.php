@@ -82,8 +82,13 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('get-single-showing-setup',  ['middleware'=>'auth','uses'=>'ShowingController@getSingleShowingSetup']);
 		/* ShowingController APIs End */
 
-		/* Schedule Booking API Start*/
+		/* BookingScheduleController API Start*/
 		$router->post('create-schedule-booking',  ['middleware'=>'auth','uses'=>'BookingScheduleController@createBooking']);
 		$router->post('update-schedule-booking',  ['middleware'=>'auth','uses'=>'BookingScheduleController@updateBooking']);
-		/* Schedule Booking API End*/
+		/* BookingScheduleController API End*/
+
+		/*AgentController APIs Start*/
+		$router->post('get-clients',  ['middleware'=>'auth','uses'=>'AgentController@getClientWithProperty']);
+		$router->post('get-single-client',  ['middleware'=>'auth','uses'=>'AgentController@getSingleClient']);
+		/*AgentController APIs End*/
 });
