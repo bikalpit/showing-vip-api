@@ -244,4 +244,49 @@ class UsersController extends Controller
 	      		return $this->sendResponse("Sorry, Agents not found!", 200, false);
 	      }
     }
+
+    public function updateProfile(Request $request){
+    		$this->validate($request, [
+	      		'user_id' => 'required',
+	      		'first_name' => 'required',
+	      		'last_name' => 'required',
+	      		'phone' => 'required',
+	      		'email' => 'required',
+	      		'address' => 'required',
+	      		'city' => 'required',
+	      		'zipcode' => 'required',
+	      		'state' => 'required',
+	      		'country' => 'required',
+	      		'about' => 'required',
+	      		'image' => 'nullable'
+	      ]);
+
+	      $update = Users::where('uuid', $request->user_id)->update([
+	      		'first_name'=>$request->first_name,
+	      		'last_name'=>$request->last_name,
+	      		'phone'=>$request->phone,
+	      		'email'=>$request->email,
+	      		'address'=>$request->address,
+	      		'city'=>$request->city,
+	      		'zipcode'=>$request->zipcode,
+	      		'state'=>$request->state,
+	      		'country'=>$request->country,
+	      		'about'=>$request->about
+	      ]);
+
+	      if($request->has('image')){
+            if($request->image != '')
+            {
+                $path = app()->basePath('public/user-images/');
+                $fileName = $this->singleImageUpload($path, $request->image);
+                Users::where('uuid', $request->user_id)->update(['image'=>$fileName]);
+            }
+        }
+
+        if ($update) {
+        		return $this->sendResponse("Profile updated successfully!");
+        }else{
+        		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+        }
+    }
 }

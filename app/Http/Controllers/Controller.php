@@ -23,4 +23,29 @@ class Controller extends BaseController
             'mail.password' => "ijqswgrmryipmrnt",
         ]);
     }
+
+    public function singleImageUpload($myPath,$image)
+    {
+        $folderPath = $myPath;//app()->basePath('public/staff-images/');
+        $fileName =  rand().'Image.png';
+        $base64Image = $image;
+        $base64Image = trim($base64Image);
+        $base64Image = str_replace('data:image/png;base64,', '', $base64Image);
+        $base64Image = str_replace('data:image/jpg;base64,', '', $base64Image);
+        $base64Image = str_replace('data:image/jpeg;base64,', '', $base64Image);
+        $base64Image = str_replace('data:image/gif;base64,', '', $base64Image);
+        $base64Image = str_replace(' ', '+', $base64Image);
+
+        $imageData = base64_decode($base64Image);
+        $filePath = $folderPath . $fileName;
+        if(file_put_contents($filePath, $imageData)){
+            $finalImage = $fileName; 
+        }
+        else
+        {
+            $finalImage = "default.png";
+        } 
+        
+        return $finalImage;
+    }
 }
