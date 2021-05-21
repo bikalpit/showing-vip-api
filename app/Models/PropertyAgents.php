@@ -12,4 +12,13 @@ class PropertyAgents extends Model
     protected $table = 'property_agents';
 
     protected $fillable = ['property_id','user_id','agent_id'];
+
+    public function property()
+    {
+        return $this->hasOne('App\Models\Properties','uuid','property_id');
+    }
+    public function owner()
+    {
+        return $this->hasOne('App\Models\Users','uuid','user_id');
+    }
 }
