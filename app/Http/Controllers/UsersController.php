@@ -263,8 +263,6 @@ class UsersController extends Controller
 
     		$user = Users::where('uuid', $request->user_id)->first();
 
-    		$users = Users::get();
-
     		if ($request->email !== $user->email) {
     				$emailCheck = Users::where('email', $request->email)->first();
     				if (!empty($emailCheck)) {

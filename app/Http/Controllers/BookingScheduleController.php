@@ -13,6 +13,7 @@ use App\Mail\SignupMail;
 use App\Mail\BookingMail;
 use App\Mail\BookingUpdate;
 use Carbon\Carbon;
+use Twilio\Rest\Client as TwilioClient;
 
 class BookingScheduleController extends Controller
 {
@@ -31,7 +32,6 @@ class BookingScheduleController extends Controller
         $phone = $request->phone;
         $email = $request->email;
         $property_id = $request->property_id;
-        $time = strtotime(Carbon::now());
         $booking_date = $request->booking_date;
         $booking_time = $request->booking_time;
         $property = Properties::where('uuid', $property_id)->first();
@@ -40,6 +40,7 @@ class BookingScheduleController extends Controller
 
         if ($request->has('buyer_id')) {
             $users = Users::where('uuid',$request->buyer_id)->first();
+            $time = strtotime(Carbon::now());
             $uuid = "sch".$time.rand(10,99)*rand(10,99);
             $propertyBookingSchedule = new PropertyBookingSchedule;
             $propertyBookingSchedule->uuid = $uuid;
@@ -51,7 +52,7 @@ class BookingScheduleController extends Controller
 
             $this->configSMTP();
             $mail_data = [
-                'name'=>$request->first_name.' '.$request->last_name,
+                'name'=>$users->first_name.' '.$users->last_name,
                 'validator_name'=>$validator->first_name.' '.$validator->last_name,
                 'property_name'=>$property->title,
                 'booking_date'=>$request->booking_date,
@@ -59,17 +60,29 @@ class BookingScheduleController extends Controller
             ];
 
             if ($propertyBookingSchedule->save()) {
-                try{
-                    Mail::to($request->email)->send(new BookingMail($mail_data));
+                try {
+                    $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
+                    $message =  $this->twilioClient->messages->create(
+                        '+919624730644',
+                        array(
+                            "from" => '+14243918787',
+                            "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$users->first_name.' '.$users->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                        )
+                    );
+                } catch(\Exception $e) {
+
+                }
+
+                try {
+                    Mail::to($users->email)->send(new BookingMail($mail_data));
                     return $this->sendResponse("Insert Request Successfully!");
-                }catch(\Exception $e){
+                } catch(\Exception $e) {
                     $msg = $e->getMessage();
                     return $this->sendResponse($msg, 200, false);
                 }
             }else{
                 return $this->sendResponse("Sorry, Something went wrong!");
             }
-
         }else{
             if (Users::where('email', $request->email)->exists()) {
                 return $this->sendResponse("Email already exists!", 200, false);
@@ -92,9 +105,24 @@ class BookingScheduleController extends Controller
             $user->image = "default.png";
             $result = $user->save();
             if ($result) {
+
+                try {
+                    $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
+                    $message =  $this->twilioClient->messages->create(
+                        '+919624730644',
+                        array(
+                            "from" => '+14243918787',
+                            "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$request->first_name.' '.$request->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                        )
+                    );
+                } catch(\Exception $e) {
+
+                }
+
                 $this->configSMTP();
                 $verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
                 Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+
                 $data = [
                     'name'=>$request->first_name.' '.$request->last_name, 
                     'verification_token'=>$verification_token, 
@@ -110,7 +138,7 @@ class BookingScheduleController extends Controller
                     'booking_time'=>$request->booking_time
                 ];
 
-                try{
+                try {
                     $uuid = "sch".$time.rand(10,99)*rand(10,99);
                     $propertyBookingSchedule = new PropertyBookingSchedule;
                     $propertyBookingSchedule->uuid = $uuid;
@@ -123,7 +151,7 @@ class BookingScheduleController extends Controller
                     Mail::to($request->email)->send(new BookingMail($mail_data));
                     Mail::to($request->email)->send(new SignupMail($data));
                     return $this->sendResponse("Insert Request Successfully!");
-                }catch(\Exception $e){
+                } catch(\Exception $e) {
                     $msg = $e->getMessage();
                     return $this->sendResponse($msg, 200, false);
                 }
@@ -131,8 +159,8 @@ class BookingScheduleController extends Controller
                 return $this->sendResponse("Sorry, Something went wrong!");
             }
         }
-        
     }
+
     public function updateBooking(Request $request)
     {
         $this->validate($request, [
@@ -157,24 +185,38 @@ class BookingScheduleController extends Controller
             $update['cancel_reason'] = $reason;
             $result = PropertyBookingSchedule::where('uuid',$id)->update($update);
             if ($status == 'A') {
-                $msg = "Approved.";
+                $msg = "Approved";
             }else{
-                $msg = "Cancelled.";
+                $msg = "Cancelled";
             }
+
             if ($result) {
                 $this->configSMTP();
                 $data = [
                     'name'=>$validator->first_name.' '.$validator->last_name,
                     'property_name'=>$property->title,
-                    'status'=>$status,
+                    'status'=>$msg,
                     'booking_date'=>$request->booking_date,
                     'booking_time'=>$request->booking_time
                 ];
 
-                try{
+                try {
+                    $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
+                    $message =  $this->twilioClient->messages->create(
+                        '+919624730644',
+                        array(
+                            "from" => '+14243918787',
+                            "body" => 'Your booking request has been '.$msg.' for this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                        )
+                    );
+                } catch(\Exception $e) {
+
+                }
+
+                try {
                     Mail::to($validator->email)->send(new BookingUpdate($data));
                     return $this->sendResponse("Booking ".$msg);
-                }catch(\Exception $e){
+                } catch(\Exception $e) {
                     $msg = $e->getMessage();
                     return $this->sendResponse($msg, 200, false);
                 }

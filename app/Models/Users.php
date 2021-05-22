@@ -28,6 +28,6 @@ class Users extends Model
     }
     public function getImageAttribute($value)
     {
-        return env('APP_URL').'user-images/'.$value;
+        return env('APP_URL').'public/user-images/'.$value;
     }
 }

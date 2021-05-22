@@ -159,7 +159,7 @@ class UserAuthController extends Controller
 
         if (!empty($user)) {
         		try {
-				        $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '470b2516f774b07ba2c9bdf790266160');
+				        $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
 				        $message =  $this->twilioClient->messages->create(
 						        $phone,
 						        array(
@@ -168,7 +168,6 @@ class UserAuthController extends Controller
 						        )
 				        );
 				    } catch(\Exception $e) {
-		          	//return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 				    		Users::where('phone', $phone)->update(['phone_verification_token'=>md5($otp)]);
 		          	return $this->sendResponse(['otp' => $otp]);
 		        }
