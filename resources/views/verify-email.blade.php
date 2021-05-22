@@ -227,8 +227,7 @@
 	            <div class="wm-section-content" id="wm-content-head">
 	                <div class="wm-content">
 		                <p>Hi {{$name}},</p><br/>
-		          		<h3>Please click on below link to verify your Email.</h3>
-					    <a href="{{$url}}{{$verification_token}}" id="text-color">Verify Email</a>
+		          		<h3>Your email verification OTP is {{$otp}}.</h3>
 	                </div>
 	            </div>
 	    	</div>

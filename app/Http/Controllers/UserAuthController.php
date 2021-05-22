@@ -226,25 +226,23 @@ class UserAuthController extends Controller
 
     public function sendVerifyEmail(Request $request){
     		$this->validate($request, [
-    				'email' => 'required',
-    				'url' => 'required'
+    				'email' => 'required'
 	      ]);
 
     		$user = Users::where('email', $request->email)->first();
 
         if (!empty($user)) {
         		$this->configSMTP();
-        		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+        		$otp = rand(1111,9999);
 			      $data = [
 			      		'name'=>$user->first_name.' '.$user->last_name, 
-		            'verification_token'=>$verification_token,
-		            'url'=>$request->url
+		            'otp'=>$otp
 		        ];
 
 		        try{
 			          Mail::to($request->email)->send(new VerifyEmail($data));
-			          Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
-			          return $this->sendResponse("Verification email sent successfully!");
+			          Users::where('email', $request->email)->update(['email_verification_token'=>md5($otp)]);
+			          return $this->sendResponse(['otp' => $otp]);
 			      }catch(\Exception $e){
 			          $msg = $e->getMessage();
 			          return $this->sendResponse($msg, 200, false);
@@ -256,16 +254,16 @@ class UserAuthController extends Controller
 
     public function verifyEmail(Request $request){
     		$this->validate($request, [
-    				'token' => 'required'
+    				'otp' => 'required'
 	      ]);
 
-    		$token = Users::where('email_verification_token', $request->token)->first();
-
-    		if (!empty($token)) {
-    				Users::where('email_verification_token', $request->token)->update(['email_verified'=>'YES']);
+    		$otp = Users::where('email_verification_token', md5($request->otp))->first();
+    		
+    		if (!empty($otp)) {
+    				Users::where('email_verification_token', md5($request->otp))->update(['email_verified'=>'YES']);
     				return $this->sendResponse("Email verified successfully!");
     		}else{
-        		return $this->sendResponse("Sorry, Invalid token!", 200, false);
+        		return $this->sendResponse("Sorry, Invalid OTP!", 200, false);
         }
     }
 }

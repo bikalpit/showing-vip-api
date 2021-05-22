@@ -12,14 +12,12 @@ class VerifyEmail extends Mailable {
     //build the message.
     public $data;
     public $name;
-    public $verification_token;
-    public $url;
+    public $otp;
     public function __construct($data)
     {
         $this->data = $data;
         $this->name = $data['name'];
-        $this->verification_token = $data['verification_token'];
-        $this->url = $data['url'];
+        $this->otp = $data['otp'];
     }
     public function build()
     {
