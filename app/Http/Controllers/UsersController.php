@@ -261,6 +261,28 @@ class UsersController extends Controller
 	      		'image' => 'nullable'
 	      ]);
 
+    		$user = Users::where('uuid', $request->user_id)->first();
+
+    		$users = Users::get();
+
+    		if ($request->email !== $user->email) {
+    				$emailCheck = Users::where('email', $request->email)->first();
+    				if (!empty($emailCheck)) {
+    						return $this->sendResponse("Email already exist!", 200, false);
+    				}else{
+    						Users::where('uuid', $request->user_id)->update(['email_verified'=>'NO']);
+    				}
+    		}
+
+    		if ($request->phone !== $user->phone) {
+    				$phoneCheck = Users::where('phone', $request->phone)->first();
+    				if (!empty($phoneCheck)) {
+    						return $this->sendResponse("Phone already exist!", 200, false);
+    				}else{
+    						Users::where('uuid', $request->user_id)->update(['phone_verified'=>'NO']);
+    				}
+    		}
+
 	      $update = Users::where('uuid', $request->user_id)->update([
 	      		'first_name'=>$request->first_name,
 	      		'last_name'=>$request->last_name,

@@ -21,7 +21,6 @@ class PropertiesController extends Controller
 				$this->validate($request, [
 	      		'user_id' => 'required',
 	      		'mls_id' => 'required',
-	          'agent_id' => 'nullable',
 	          'verified' => 'required|in:P,VS,V',
 	          'title' => 'required',
 	          'type' => 'required',
@@ -47,7 +46,6 @@ class PropertiesController extends Controller
 	      $property = new Properties;
 	      $property->uuid = $uuid;
 	      $property->mls_id = $request->mls_id;
-	      $property->agent_id = $request->agent_id;
 	      $property->verified = $request->verified;
 	      $property->title = $request->title;
 	      $property->type = $request->type;

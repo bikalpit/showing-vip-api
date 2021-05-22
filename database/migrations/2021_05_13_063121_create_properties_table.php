@@ -17,7 +17,6 @@ class CreatePropertiesTable extends Migration
             $table->id();
             $table->string('uuid', 200);
             $table->string('mls_id', 200);
-            $table->string('agent_id', 200);
             $table->enum('verified', ['P', 'VS', 'V'])->comment('P - pending | VS - verification send | V - verified');
             $table->string('title', 200);
             $table->string('type', 200);

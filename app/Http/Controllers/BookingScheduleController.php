@@ -38,7 +38,7 @@ class BookingScheduleController extends Controller
         $showing_setup = PropertyShowingSetup::where('property_id', $property_id)->first();
         $validator = Users::where('uuid', $showing_setup->validator)->first();
 
-        if($request->has('buyer_id')){
+        if ($request->has('buyer_id')) {
             $users = Users::where('uuid',$request->buyer_id)->first();
             $uuid = "sch".$time.rand(10,99)*rand(10,99);
             $propertyBookingSchedule = new PropertyBookingSchedule;
@@ -58,7 +58,7 @@ class BookingScheduleController extends Controller
                 'booking_time'=>$request->booking_time
             ];
 
-            if($propertyBookingSchedule->save()){
+            if ($propertyBookingSchedule->save()) {
                 try{
                     Mail::to($request->email)->send(new BookingMail($mail_data));
                     return $this->sendResponse("Insert Request Successfully!");
@@ -91,7 +91,7 @@ class BookingScheduleController extends Controller
             $user->email_verified = "NO";
             $user->image = "default.png";
             $result = $user->save();
-            if($result){
+            if ($result) {
                 $this->configSMTP();
                 $verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
                 Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
@@ -152,16 +152,16 @@ class BookingScheduleController extends Controller
         $validator = Users::where('uuid', $booking->buyer_id)->first();
         $property = Properties::where('uuid', $booking->property_id)->first();
 
-        if(!empty($users)){
+        if (!empty($users)) {
             $update['status'] = $status;
             $update['cancel_reason'] = $reason;
             $result = PropertyBookingSchedule::where('uuid',$id)->update($update);
-            if($status == 'A'){
+            if ($status == 'A') {
                 $msg = "Approved.";
             }else{
                 $msg = "Cancelled.";
             }
-            if($result){
+            if ($result) {
                 $this->configSMTP();
                 $data = [
                     'name'=>$validator->first_name.' '.$validator->last_name,
