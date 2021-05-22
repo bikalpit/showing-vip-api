@@ -111,10 +111,12 @@ class PropertiesController extends Controller
 						$result = $property_agent->save();
 						if ($result) {
 								$this->configSMTP();
-								$data = ['name'=>$agent->first_name.' '.$agent->last_name, 
-				                'property_id'=>$request->property_id,
-				                'property_name'=>$property->title
-			              ];
+								$data = [
+										'name'=>$agent->first_name.' '.$agent->last_name, 
+		                'property_id'=>$request->property_id,
+		                'property_name'=>$property->title
+	              ];
+	              
 								try{
 					          Mail::to($agent->email)->send(new AssignAgent($data));  
 					      }catch(\Exception $e){
@@ -226,16 +228,19 @@ class PropertiesController extends Controller
 								$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 		      			Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
 
-		      			$dataAssignOwner = ['name'=>$request->first_name.' '.$request->last_name,
-		      									'owner_name'=>$prop_owner->first_name.' '.$prop_owner->last_name,
-		      									'property_name'=>$property->title
-		      							];
+		      			$dataAssignOwner = [
+		      					'name'=>$request->first_name.' '.$request->last_name,
+  									'owner_name'=>$prop_owner->first_name.' '.$prop_owner->last_name,
+  									'property_name'=>$property->title
+  							];
 
-					      $dataSignupMail = ['name'=>$request->first_name.' '.$request->last_name,
-						                'verification_token'=>$verification_token,
-						                'email'=>$request->email,
-						                'url'=>$request->url
-					              ];
+					      $dataSignupMail = [
+					      		'name'=>$request->first_name.' '.$request->last_name,
+		                'verification_token'=>$verification_token,
+		                'email'=>$request->email,
+		                'url'=>$request->url
+	              ];
+
 					      try{
 					          Mail::to($request->email)->send(new AssignOwner($dataAssignOwner));
 					          Mail::to($request->email)->send(new SignupMail($dataSignupMail));

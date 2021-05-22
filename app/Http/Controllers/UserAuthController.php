@@ -10,6 +10,7 @@ use App\Models\Users;
 use App\Models\ApiToken;
 use App\Models\UserPasswordReset;
 use App\Mail\ForgetPasswordMail;
+use App\Mail\VerifyEmail;
 use Twilio\Rest\Client as TwilioClient;
 use Auth;
 
@@ -109,11 +110,12 @@ class UserAuthController extends Controller
       			$authentication = UserPasswordReset::updateOrCreate(['email' => $request->email],[
 									              'token' => $verification_token
 								            ]);
-			      $data = ['name'=>$user->first_name.' '.$user->last_name,
-			      						'verification_token'=>$verification_token,
-			      						'email'=>$request->email,
-			      						'app_url'=>env('APP_URL')
-			      				];
+			      $data = [
+			      		'name'=>$user->first_name.' '.$user->last_name,
+    						'verification_token'=>$verification_token,
+    						'email'=>$request->email,
+    						'app_url'=>env('APP_URL')
+    				];
 
 			      try{
 			          Mail::to($request->email)->send(new ForgetPasswordMail($data));  
@@ -219,6 +221,51 @@ class UserAuthController extends Controller
 		        }
         }else{
         		return $this->sendResponse("Sorry, User not found!", 200, false);
+        }
+    }
+
+    public function sendVerifyEmail(Request $request){
+    		$this->validate($request, [
+    				'email' => 'required',
+    				'url' => 'required'
+	      ]);
+
+    		$user = Users::where('email', $request->email)->first();
+
+        if (!empty($user)) {
+        		$this->configSMTP();
+        		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+			      $data = [
+			      		'name'=>$user->first_name.' '.$user->last_name, 
+		            'verification_token'=>$verification_token,
+		            'url'=>$request->url
+		        ];
+
+		        try{
+			          Mail::to($request->email)->send(new VerifyEmail($data));
+			          Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+			          return $this->sendResponse("Verification email sent successfully!");
+			      }catch(\Exception $e){
+			          $msg = $e->getMessage();
+			          return $this->sendResponse($msg, 200, false);
+			      }
+        }else{
+        		return $this->sendResponse("Sorry, User not found!", 200, false);
+        }
+    }
+
+    public function verifyEmail(Request $request){
+    		$this->validate($request, [
+    				'token' => 'required'
+	      ]);
+
+    		$token = Users::where('email_verification_token', $request->token)->first();
+
+    		if (!empty($token)) {
+    				Users::where('email_verification_token', $request->token)->update(['email_verified'=>'YES']);
+    				return $this->sendResponse("Email verified successfully!");
+    		}else{
+        		return $this->sendResponse("Sorry, Invalid token!", 200, false);
         }
     }
 }

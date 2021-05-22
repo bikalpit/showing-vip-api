@@ -48,11 +48,14 @@ class UsersController extends Controller
 						$this->configSMTP();
 						$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
       			Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
-			      $data = ['name'=>$request->first_name.' '.$request->last_name, 
-				                'verification_token'=>$verification_token, 
-				                'email'=>$request->email,
-				                'url'=>$request->url
-			              ];
+
+			      $data = [
+			      		'name'=>$request->first_name.' '.$request->last_name, 
+                'verification_token'=>$verification_token, 
+                'email'=>$request->email,
+                'url'=>$request->url
+			      ];
+			      
 			      try{
 			          Mail::to($request->email)->send(new SignupMail($data));  
 			      }catch(\Exception $e){
@@ -102,11 +105,14 @@ class UsersController extends Controller
 						$this->configSMTP();
 						$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
       			Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
-			      $data = ['name'=>$request->first_name.' '.$request->last_name, 
-				                'verification_token'=>$verification_token, 
-				                'email'=>$request->email,
-				                'url'=>$request->url
-			              ];
+
+			      $data = [
+			      		'name'=>$request->first_name.' '.$request->last_name, 
+                'verification_token'=>$verification_token, 
+                'email'=>$request->email,
+                'url'=>$request->url
+            ];
+
 			      try{
 			          Mail::to($request->email)->send(new SignupMail($data));  
 			      }catch(\Exception $e){
@@ -159,11 +165,14 @@ class UsersController extends Controller
 						$this->configSMTP();
 						$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
       			Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
-			      $data = ['name'=>$request->first_name.' '.$request->last_name, 
-				                'verification_token'=>$verification_token, 
-				                'email'=>$request->email,
-				                'url'=>$request->url
-			              ];
+
+			      $data = [
+			      		'name'=>$request->first_name.' '.$request->last_name, 
+                'verification_token'=>$verification_token, 
+                'email'=>$request->email,
+                'url'=>$request->url
+            ];
+
 			      try{
 			          Mail::to($request->email)->send(new SignupMail($data));  
 			      }catch(\Exception $e){

@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Showing VIP - Booking Update</title>
+    <title>Showing VIP - Verify Email</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
@@ -222,12 +222,13 @@
 	    <div id="wm">
 	        <div class="wm-section1">
 	            <div class="wm-header-text">
-	                <h3>Booking Update</h3>
+	                <h3>Verify Email</h3>
 	            </div>
 	            <div class="wm-section-content" id="wm-content-head">
 	                <div class="wm-content">
 		                <p>Hi {{$name}},</p><br/>
-		          		<h3>Your booking request has been {{$status}} for this {{$property_name}} property on {{$booking_date}} {{$booking_time}}</h3>
+		          		<h3>Please click on below link to verify your Email.</h3>
+					    <a href="{{$url}}{{$verification_token}}" id="text-color">Verify Email</a>
 	                </div>
 	            </div>
 	    	</div>

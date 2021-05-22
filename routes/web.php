@@ -27,6 +27,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('verify-phone',  ['uses'=>'UserAuthController@verifyPhone']);
 		$router->post('verify-phone-otp',  ['uses'=>'UserAuthController@verifyPhoneOtp']);
 		$router->post('user-logout',  ['middleware'=>'auth', 'uses'=>'UserAuthController@userLogout']);
+		$router->post('send-verify-email',  ['uses'=>'UserAuthController@sendVerifyEmail']);
+		$router->post('verify-email',  ['uses'=>'UserAuthController@verifyEmail']);
 		/* UserAuthController APIs End */
 
 		/* UsersController APIs Start */
