@@ -259,14 +259,63 @@ class PropertiesController extends Controller
 
 		public function agentProperties(Request $request){
 				$this->validate($request, [
-	      		'agent_id' => 'required'
+	      		'agent_id' => 'required',
+	      		'search' => 'nullable',
+	      		'sorting' => 'nullable|in:ASC,DESC'
 	      ]);
 
+				$search_item = $request->search;
+				$sorting = $request->sorting;
+				
 	      $property_ids = PropertyAgents::where('agent_id', $request->agent_id)->pluck('property_id')->toArray();
 
 	      if (sizeof($property_ids) > 0) {
-	      		$properties = Properties::whereIn('uuid', $property_ids)->get();
-	      		return $this->sendResponse($properties);
+	      		if ($sorting !== '') {
+	      				if ($sorting == 'ASC') {
+	      						if ($search_item !== '') {
+												$properties = Properties::whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
+														$query->where('mls_id', 'LIKE', '%'.$search_item.'%');
+				              			//->orWhere('ga_customer.email', 'LIKE', '%'.$search_item.'%')
+												})->orderBy('created_at', 'ASC')->get();
+										}else{
+												$properties = Properties::whereIn('uuid', $property_ids)->orderBy('created_at', 'ASC')->get();
+										}
+	      				}elseif ($sorting == 'DESC') {
+	      						if ($search_item !== '') {
+	      								$properties = Properties::whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
+														$query->where('mls_id', 'LIKE', '%'.$search_item.'%');
+				              			//->orWhere('ga_customer.email', 'LIKE', '%'.$search_item.'%')
+												})->orderBy('created_at', 'DESC')->get();
+										}else{
+												$properties = Properties::whereIn('uuid', $property_ids)->orderBy('created_at', 'DESC')->get();
+										}
+	      				}else{
+	      						if ($search_item !== '') {
+												$properties = Properties::whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
+														$query->where('mls_id', 'LIKE', '%'.$search_item.'%');
+				              			//->orWhere('ga_customer.email', 'LIKE', '%'.$search_item.'%')
+												})->get();
+										}else{
+												$properties = Properties::whereIn('uuid', $property_ids)->get();
+										}
+	      				}
+	      		}else{
+	      				if ($search_item !== '') {
+										$properties = Properties::whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
+												$query->where('mls_id', 'LIKE', '%'.$search_item.'%');
+		              			//->orWhere('ga_customer.email', 'LIKE', '%'.$search_item.'%')
+										})->get();
+								}else{
+										$properties = Properties::whereIn('uuid', $property_ids)->get();
+								}
+	      		}
+			      		
+
+	      		if (sizeof($properties) > 0) {
+	      				return $this->sendResponse($properties);
+	      		}else{
+			      		return $this->sendResponse("Sorry, Property not found!", 200, false);
+			      }
 	      }else{
 	      		return $this->sendResponse("Sorry, Property not found!", 200, false);
 	      }
