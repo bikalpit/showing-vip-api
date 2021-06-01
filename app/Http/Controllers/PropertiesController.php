@@ -20,50 +20,18 @@ class PropertiesController extends Controller
 		public function addProperty(Request $request){
 				$this->validate($request, [
 	      		'user_id' => 'required',
-	      		'mls_id' => 'required',
-	          'verified' => 'required|in:P,VS,V',
-	          'title' => 'required',
-	          'type' => 'required',
-	          'size' => 'required',
-	          'status' => 'required',
-	          'year_built' => 'required',
-	          'lat_area' => 'required',
-	          'elementary' => 'required',
-	          'middle' => 'required',
-	          'high' => 'required',
-	          'district' => 'required',
-	          'phone' => 'required',
-	          'office' => 'required',
-	          'hoa' => 'required',
-	          'taxes' => 'required',
-	          'parking' => 'required',
-	          'sources' => 'required',
-	          'disclaimer' => 'required'
+	          'data' => 'required'
 	      ]);
-				//dd($request->all());
+
+	      $data = json_decode($request->data);
+				$mls_id = $data->property[2][1]->hmdo_mls_id[1];
+
 	      $time = strtotime(Carbon::now());
         $uuid = "prty".$time.rand(10,99)*rand(10,99);
 	      $property = new Properties;
 	      $property->uuid = $uuid;
-	      $property->mls_id = $request->mls_id;
-	      $property->verified = $request->verified;
-	      $property->title = $request->title;
-	      $property->type = $request->type;
-	      $property->size = $request->size;
-	      $property->status = $request->status;
-	      $property->year_built = $request->year_built;
-	      $property->lat_area = $request->lat_area;
-	      $property->elementary = $request->elementary;
-	      $property->middle = $request->middle;
-	      $property->high = $request->high;
-	      $property->district = $request->district;
-	      $property->phone = $request->phone;
-	      $property->office = $request->office;
-	      $property->hoa = $request->hoa;
-	      $property->taxes = $request->taxes;
-	      $property->parking = $request->parking;
-	      $property->sources = $request->sources;
-	      $property->disclaimer = $request->disclaimer;
+	      $property->mls_id = $mls_id;
+	      $property->data = $request->data;
 	      $add_property = $property->save();
 
 	      $owner = new PropertyOwners;
@@ -75,6 +43,27 @@ class PropertiesController extends Controller
 	      		return $this->sendResponse("Property added successfully!");
 	      }else{
 	      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+	      }
+		}
+
+		public function updateProperty(Request $request){
+				$this->validate($request, [
+	      		'property_id' => 'required',
+	          'data' => 'required'
+	      ]);
+
+	      $property = Properties::where('uuid', $request->property_id)->first();
+
+	      if (!empty($property)) {
+	      		$update_property = Properties::where('uuid', $request->property_id)->update(['data'=>$request->data]);
+
+	      		if ($update_property) {
+	      				return $this->sendResponse("Property updated successfully!");
+	      		}else{
+	      				return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+	      		}
+	      }else{
+	      		return $this->sendResponse("Sorry, Property not found!", 200, false);
 	      }
 		}
 
