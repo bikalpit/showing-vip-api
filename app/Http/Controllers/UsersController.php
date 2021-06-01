@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\Users;
 use App\Models\UserAgents;
+use App\Models\AgentInfo;
 use App\Mail\SignupMail;
 use Carbon\Carbon;
 
@@ -134,9 +135,10 @@ class UsersController extends Controller
 	      		'email' => 'required|email',
 	      		'url' => 'nullable',
 	          'mls_id' => 'required',
-	          'mls_name' => 'required'
+	          'mls_name' => 'required',
+	          'agent_info' => 'required'
 	      ]);
-
+	      
 	    	if (Users::where('email', $request->email)->exists()) {
 	        	return $this->sendResponse("Email already exists!", 200, false);
 	      }
@@ -162,6 +164,30 @@ class UsersController extends Controller
         $result = $user->save();
 
         if ($result) {
+
+        		$agent_info = new AgentInfo;
+        		$agent_info->agent_id = $uuid;
+        		$agent_info->hmdo_lastupdated = $request->agent_info['hmdo_lastupdated'][1];
+        		$agent_info->hmdo_mls_originator = $request->agent_info['hmdo_mls_originator'][1];
+        		$agent_info->hmdo_agent_name = $request->agent_info['hmdo_agent_name'][1];
+        		$agent_info->hmdo_agent_title = $request->agent_info['hmdo_agent_title'][1];
+        		$agent_info->hmdo_agent_photo_url = $request->agent_info['hmdo_agent_photo_url'][1];
+        		$agent_info->hmdo_agent_email = $request->agent_info['hmdo_agent_email'][1];
+        		$agent_info->hmdo_office_main_phone = $request->agent_info['hmdo_office_main_phone'][1];
+        		$agent_info->hmdo_office_direct_phone = $request->agent_info['hmdo_office_direct_phone'][1];
+        		$agent_info->hmdo_office_mobile_phone = $request->agent_info['hmdo_office_mobile_phone'][1];
+        		$agent_info->hmdo_agent_skills = $request->agent_info['hmdo_agent_skills'][1];
+        		$agent_info->hmdo_office_id = $request->agent_info['hmdo_office_id'][1];
+        		$agent_info->hmdo_office_name = $request->agent_info['hmdo_office_name'][1];
+        		$agent_info->hmdo_office_photo = $request->agent_info['hmdo_office_photo'][1];
+        		$agent_info->hmdo_office_street = $request->agent_info['hmdo_office_street'][1];
+        		$agent_info->hmdo_office_city = $request->agent_info['hmdo_office_city'][1];
+        		$agent_info->hmdo_office_zipcode = $request->agent_info['hmdo_office_zipcode'][1];
+        		$agent_info->hmdo_office_state = $request->agent_info['hmdo_office_state'][1];
+        		$agent_info->hmdo_office_phone = $request->agent_info['hmdo_office_phone'][1];
+        		$agent_info->hmdo_office_website = $request->agent_info['hmdo_office_website'][1];
+        		$agent_info->save();
+
 						$this->configSMTP();
 						$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
       			Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
