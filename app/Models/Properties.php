@@ -12,7 +12,7 @@ class Properties extends Model
      */
     protected $table = 'properties';
 
-    protected $fillable = ['uuid','mls_id','data'];
+    protected $fillable = ['uuid','mls_id','data','verified'];
 
     use SoftDeletes;
     

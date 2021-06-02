@@ -18,6 +18,7 @@ class CreatePropertiesTable extends Migration
             $table->string('uuid', 200);
             $table->string('mls_id', 200);
             $table->longText('data', 200);
+            $table->enum('verified', ['YES', 'NO'])->comment('YES - Verified | NO - Unverified');
             $table->timestamps();
             $table->softDeletes();
         });

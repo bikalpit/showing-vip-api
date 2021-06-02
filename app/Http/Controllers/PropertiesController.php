@@ -31,6 +31,7 @@ class PropertiesController extends Controller
 	      $property->uuid = $uuid;
 	      $property->mls_id = $mls_id;
 	      $property->data = json_encode($request->data);
+	      $property->verified = 'NO';
 	      $add_property = $property->save();
 
 	      $owner = new PropertyOwners;
@@ -48,13 +49,14 @@ class PropertiesController extends Controller
 		public function updateProperty(Request $request){
 				$this->validate($request, [
 	      		'property_id' => 'required',
+	      		'verified' => 'required|in:YES,NO',
 	          'data' => 'required'
 	      ]);
 
 	      $property = Properties::where('uuid', $request->property_id)->first();
 
 	      if (!empty($property)) {
-	      		$update_property = Properties::where('uuid', $request->property_id)->update(['data'=>json_encode($request->data)]);
+	      		$update_property = Properties::where('uuid', $request->property_id)->update(['data'=>json_encode($request->data), 'verified'=>$request->verified]);
 
 	      		if ($update_property) {
 	      				return $this->sendResponse("Property updated successfully!");
