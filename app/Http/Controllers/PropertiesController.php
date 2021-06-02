@@ -165,7 +165,7 @@ class PropertiesController extends Controller
 	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
 
 	      if (sizeof($property_ids) !== 0) {
-	      		$properties = Properties::whereIn('uuid', $property_ids)->where('verified', 'V')->get();
+	      		$properties = Properties::whereIn('uuid', $property_ids)->where('verified', 'YES')->get();
 	      		if (sizeof($properties) !== 0) {
 	      				return $this->sendResponse($properties);
 	      		}else{
