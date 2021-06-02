@@ -23,15 +23,14 @@ class PropertiesController extends Controller
 	          'data' => 'required'
 	      ]);
 
-	      $data = json_decode($request->data);
-				$mls_id = $data->property[2][1]->hmdo_mls_id[1];
+				$mls_id = $request->data['property'][2][1]['hmdo_mls_id']['1'];
 
 	      $time = strtotime(Carbon::now());
         $uuid = "prty".$time.rand(10,99)*rand(10,99);
 	      $property = new Properties;
 	      $property->uuid = $uuid;
 	      $property->mls_id = $mls_id;
-	      $property->data = $request->data;
+	      $property->data = json_encode($request->data);
 	      $add_property = $property->save();
 
 	      $owner = new PropertyOwners;
@@ -55,7 +54,7 @@ class PropertiesController extends Controller
 	      $property = Properties::where('uuid', $request->property_id)->first();
 
 	      if (!empty($property)) {
-	      		$update_property = Properties::where('uuid', $request->property_id)->update(['data'=>$request->data]);
+	      		$update_property = Properties::where('uuid', $request->property_id)->update(['data'=>json_encode($request->data)]);
 
 	      		if ($update_property) {
 	      				return $this->sendResponse("Property updated successfully!");
