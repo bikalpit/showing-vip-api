@@ -45,6 +45,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		/* PropertiesController APIs Start */
 		$router->post('add-property',  ['uses'=>'PropertiesController@addProperty']);
 		$router->post('update-property',  ['uses'=>'PropertiesController@updateProperty']);
+		$router->post('get-property',  ['uses'=>'PropertiesController@getProperty']);
 		$router->post('user-properties',  ['uses'=>'PropertiesController@userProperties']);
 		$router->post('assign-agent',  ['uses'=>'PropertiesController@assignAgent']);
 		$router->post('remove-agent',  ['uses'=>'PropertiesController@removeAgent']);

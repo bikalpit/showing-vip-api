@@ -17,6 +17,7 @@ class PropertyAgents extends Model
     {
         return $this->hasOne('App\Models\Properties','uuid','property_id');
     }
+    
     public function owner()
     {
         return $this->hasOne('App\Models\Users','uuid','user_id');

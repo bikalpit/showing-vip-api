@@ -68,6 +68,20 @@ class PropertiesController extends Controller
 	      }
 		}
 
+		public function getProperty(Request $request){
+				$this->validate($request, [
+	      		'property_id' => 'required'
+	      ]);
+
+	      $property = Properties::where('uuid', $request->property_id)->first();
+
+	      if (!empty($property)) {
+	      		return $this->sendResponse($property);
+	      }else{
+	      		return $this->sendResponse("Sorry, Property not found!", 200, false);
+	      }
+		}
+
 		public function userProperties(Request $request){
 				$this->validate($request, [
 	      		'user_id' => 'required'
