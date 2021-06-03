@@ -95,4 +95,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('get-clients',  ['middleware'=>'auth','uses'=>'AgentController@getClientWithProperty']);
 		$router->post('get-single-client',  ['middleware'=>'auth','uses'=>'AgentController@getSingleClient']);
 		/*AgentController APIs End*/
+
+		/*SettingsController APIs Start*/
+		$router->post('set-setting',  ['middleware'=>'auth','uses'=>'SettingsController@createSetting']);
+		$router->post('get-single-setting',  ['middleware'=>'auth','uses'=>'SettingsController@getSingleSetting']);
+		$router->post('get-all-setting',  ['uses'=>'SettingsController@getAllSetting']);
+		$router->post('update-setting',  ['uses'=>'SettingsController@getAllSetting']);
+		/*SettingsController APIs End*/
 });
