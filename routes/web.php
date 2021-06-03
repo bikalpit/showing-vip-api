@@ -100,6 +100,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('set-setting',  ['middleware'=>'auth','uses'=>'SettingsController@createSetting']);
 		$router->post('get-single-setting',  ['middleware'=>'auth','uses'=>'SettingsController@getSingleSetting']);
 		$router->post('get-all-setting',  ['uses'=>'SettingsController@getAllSetting']);
-		$router->post('update-setting',  ['uses'=>'SettingsController@getAllSetting']);
+		$router->post('update-setting',  ['middleware'=>'auth','uses'=>'SettingsController@updateSetting']);
 		/*SettingsController APIs End*/
 });
