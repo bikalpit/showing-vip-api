@@ -39,4 +39,17 @@ class AgentController extends Controller
             return $this->sendResponse("Sorry!Something Wrong!.",200,false);
         }
     }
+    public function GetRandomAgents(Request $request)
+    {
+        $this->validate($request, [
+            'number' => 'required'
+        ]);
+        $skip = $request->number;
+        $result = Users::where('role','AGENT')->skip($skip)->take(4)->get();
+        if($result){
+            return $this->sendResponse($result);
+        }else{
+            return $this->sendResponse("Sorry!Something wrong!.",200,false);
+        }
+    }
 }
