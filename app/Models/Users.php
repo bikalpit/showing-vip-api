@@ -30,4 +30,8 @@ class Users extends Model
     {
         return env('APP_URL').'public/user-images/'.$value;
     }
+    public function agentInfo()
+    {
+        return $this->hasOne('App\Models\AgentInfo','agent_id','uuid');
+    }
 }

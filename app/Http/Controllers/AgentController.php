@@ -45,7 +45,7 @@ class AgentController extends Controller
             'number' => 'required'
         ]);
         $skip = $request->number;
-        $result = Users::where('role','AGENT')->skip($skip)->take(4)->get();
+        $result = Users::with('agentInfo')->where('role','AGENT')->skip($skip)->take(4)->get();
         if($result){
             return $this->sendResponse($result);
         }else{
@@ -59,7 +59,7 @@ class AgentController extends Controller
         ]);
         $agents = UserAgents::where('user_id',$request->user_id)->pluck('agent_id')->toArray();
         if(sizeof($agents)>0){
-            $result = Users::whereIn('uuid',$agents)->get();
+            $result = Users::with('agentInfo')->whereIn('uuid',$agents)->get();
             return $this->sendResponse($result);
         }else{
             return $this->sendResponse("Agent not found!.",200,false);
