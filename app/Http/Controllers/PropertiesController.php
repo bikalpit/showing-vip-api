@@ -160,7 +160,7 @@ class PropertiesController extends Controller
 	      $property = Properties::where('uuid', $request->property_id)->first();
 
 	      if (!empty($property)) {
-	      		$update = Properties::where('uuid', $request->property_id)->update(['verified'=>'V']);
+	      		$update = Properties::where('uuid', $request->property_id)->update(['verified'=>'YES']);
 	      		if ($update) {
 	      				return $this->sendResponse("Property verified successfully!");
 	      		}else{

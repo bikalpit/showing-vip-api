@@ -95,4 +95,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('get-clients',  ['middleware'=>'auth','uses'=>'AgentController@getClientWithProperty']);
 		$router->post('get-single-client',  ['middleware'=>'auth','uses'=>'AgentController@getSingleClient']);
 		/*AgentController APIs End*/
+
+		/*SuperAdminController APIs Start*/
+		$router->post('all-agents',  ['uses'=>'SuperAdminController@allAgents']);
+		$router->post('all-users',  ['uses'=>'SuperAdminController@allUsers']);
+		$router->post('all-properties',  ['uses'=>'SuperAdminController@allProperties']);
+		$router->post('all-showings',  ['uses'=>'SuperAdminController@allShowings']);
+		$router->post('all-surveys',  ['uses'=>'SuperAdminController@allSurveys']);
+		/*SuperAdminController APIs End*/
 });

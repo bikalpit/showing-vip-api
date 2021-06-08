@@ -17,4 +17,9 @@ class PropertyShowingSurvey extends Model
     use SoftDeletes;
     
     protected $dates = ['deleted_at'];
+
+    public function showing()
+    {
+        return $this->hasOne('App\Models\PropertyShowingSetup','uuid','showing_setup_id');
+    }
 }
