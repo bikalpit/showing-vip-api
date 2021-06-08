@@ -9,9 +9,11 @@ use App\Models\Properties;
 use App\Models\PropertyOwners;
 use App\Models\PropertyAgents;
 use App\Models\Users;
+use App\Models\PropertyVerification;
 use App\Mail\AssignAgent;
 use App\Mail\SignupMail;
 use App\Mail\AssignOwner;
+use App\Mail\PropertyVerification;
 use Carbon\Carbon;
 use DB;
 
@@ -154,17 +156,46 @@ class PropertiesController extends Controller
 
 		public function verifyProperty(Request $request){
 				$this->validate($request, [
-	      		'property_id' => 'required'
+	      		'property_id' => 'required',
+	      		'agent_id' => 'required',
+	      		'user_id' => 'required',
+	      		'property_link' => 'required'	
 	      ]);
 
 	      $property = Properties::where('uuid', $request->property_id)->first();
-
+	      $agent = Users::where('uuid', $request->agent_id)->first();
+	      $owner = Users::where('uuid', $request->user_id)->first();
+	      dd($owner);
 	      if (!empty($property)) {
-	      		$update = Properties::where('uuid', $request->property_id)->update(['verified'=>'YES']);
-	      		if ($update) {
-	      				return $this->sendResponse("Property verified successfully!");
-	      		}else{
-			      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+	      		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+
+	      		$this->configSMTP();
+						$data = [
+								'name'=>$agent->first_name.' '.$agent->last_name,
+								'owner_name'=>$user_id->first_name.' '.$user_id->last_name,
+                'property_link'=>$request->property_link,
+                'site_url'=>env('APP_URL'),
+                'token'=>$verification_token
+            ];
+
+						try{
+			          Mail::to($agent->email)->send(new PropertyVerification($data));
+
+			          $property_varification = new PropertyVerification;
+			          $property_varification->property_id = $request->property_id;
+			          $property_varification->agent_id = $request->agent_id;
+			          $property_varification->user_id = $request->user_id;
+			          $property_varification->token = $verification_token;
+			          $result = $property_varification->save();
+
+			          if ($result) {
+			      				return $this->sendResponse("Verification mail sent successfully to agent!");
+			      		}else{
+					      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+					      }
+			      }catch(\Exception $e){
+			          $msg = $e->getMessage();
+			          return $this->sendResponse($msg, 200, false);
 			      }
 	      }else{
 						return $this->sendResponse("Sorry, Property not found!", 200, false);

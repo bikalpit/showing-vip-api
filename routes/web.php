@@ -57,7 +57,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
 		/* ShowingController APIs Start */
 		$router->post('create-slots',  ['uses'=>'ShowingController@createSlots']);
-		$router->post('update-showing-setup',  ['uses'=>'ShowingController@updateShowingSetup']);
+		$router->post('update-showing-setup',  ['middleware'=>'auth','uses'=>'ShowingController@updateShowingSetup']);
 		$router->post('create-survey-category',  ['middleware'=>'auth','uses'=>'ShowingController@createSurveyCategory']);
 		$router->post('update-survey-category',  ['middleware'=>'auth','uses'=>'ShowingController@updateSurveyCategory']);
 		$router->post('get-all-categories',  ['middleware'=>'auth','uses'=>'ShowingController@getAllCategories']);
@@ -70,6 +70,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('get-single-showing-setup',  ['middleware'=>'auth','uses'=>'ShowingController@getSingleShowingSetup']);
 		$router->post('create-showing-availability',  ['middleware'=>'auth','uses'=>'ShowingController@createShowingAvailability']);
 		$router->post('create-showing-survey',  ['middleware'=>'auth','uses'=>'ShowingController@createShowingSurvey']);
+		$router->post('update-showing-availability',  ['middleware'=>'auth','uses'=>'ShowingController@updateShowingAvailability']);
+		$router->post('update-showing-survey',  ['middleware'=>'auth','uses'=>'ShowingController@updateShowingSurvey']);
 		/* ShowingController APIs End */
 
 		/* BookingScheduleController API Start*/

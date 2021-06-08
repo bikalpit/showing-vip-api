@@ -280,14 +280,23 @@ class ShowingController extends Controller
 	      		'start_date' => 'nullable',
 	      		'end_date' => 'nullable',
 	      		'timeframe' => 'nullable',
-	      		'overlap' => 'nullable|in:YES,NO',
-	      		'availability' => 'nullable',
-	      		'survey' => 'nullable'
+	      		'overlap' => 'nullable|in:YES,NO'
 	      ]);
 
 	    	$showing_setup = PropertyShowingSetup::where('uuid', $request->showing_setup_id)->first();
 
 	    	if ($showing_setup) {
+	    			if ($request->start_date == '') {
+			      		$start_date = null;
+			      }else{
+			      		$start_date = $request->start_date;
+			      }
+			      if ($request->end_date == '') {
+			      		$end_date = null;
+			      }else{
+			      		$end_date = $request->end_date;
+			      }
+
 			      $update_setup = PropertyShowingSetup::where('uuid', $request->showing_setup_id)->update([
 				      	'notification_email'=>$request->notification_email,
 				      	'notification_text'=>$request->notification_text,
@@ -297,22 +306,64 @@ class ShowingController extends Controller
 				      	'instructions'=>$request->instructions,
 				      	'lockbox_type'=>$request->lockbox_type,
 				      	'lockbox_location'=>$request->lockbox_location,
-				      	'start_date'=>$request->start_date,
-				      	'end_date'=>$request->end_date,
+				      	'start_date'=>$start_date,
+				      	'end_date'=>$end_date,
 				      	'timeframe'=>$request->timeframe,
 				      	'overlap'=>$request->overlap,
 			      ]);
 
+			      if ($update_setup) {
+				  			return $this->sendResponse("Showing setup updated successfully!");
+				  	}else{
+				  			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+				  	}
+	    	}else{
+	    			return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
+	    	}
+    }
+
+    public function updateShowingAvailability(Request $request){
+    		$this->validate($request, [
+	      		'showing_setup_id' => 'nullable',
+	      		'availability' => 'nullable'
+	      ]);
+
+    		$showing_setup = PropertyShowingSetup::where('uuid', $request->showing_setup_id)->first();
+
+	    	if ($showing_setup) {
 			      $update_availibility = PropertyShowingAvailability::where('showing_setup_id', $request->showing_setup_id)->update([
 			      		'availability'=>json_encode($request->availability)
 			      ]);
 
+			      if ($update_availibility) {
+				  			return $this->sendResponse("Showing availability updated successfully!");
+				  	}else{
+				  			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+				  	}
+				}else{
+	    			return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
+	    	}
+    }
+
+    public function updateShowingSurvey(Request $request){
+    		$this->validate($request, [
+	      		'showing_setup_id' => 'nullable',
+	      		'survey' => 'nullable'
+	      ]);
+
+    		$showing_setup = PropertyShowingSetup::where('uuid', $request->showing_setup_id)->first();
+    		
+    		if ($showing_setup) {
 			      $update_survey = PropertyShowingSurvey::where('showing_setup_id', $request->showing_setup_id)->update([
 			      		'survey'=>json_encode($request->survey)
 			      ]);
 
-			      return $this->sendResponse("Showing setup updated successfully!");
-	    	}else{
+			      if ($update_survey) {
+				  			return $this->sendResponse("Showing survey updated successfully!");
+				  	}else{
+				  			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+				  	}
+				}else{
 	    			return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
 	    	}
     }
