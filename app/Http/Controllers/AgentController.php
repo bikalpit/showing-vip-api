@@ -39,4 +39,30 @@ class AgentController extends Controller
             return $this->sendResponse("Sorry!Something Wrong!.",200,false);
         }
     }
+    public function GetRandomAgents(Request $request)
+    {
+        $this->validate($request, [
+            'number' => 'required'
+        ]);
+        $skip = $request->number;
+        $result = Users::with('agentInfo')->where('role','AGENT')->skip($skip)->take(4)->get();
+        if($result){
+            return $this->sendResponse($result);
+        }else{
+            return $this->sendResponse("Sorry!Something wrong!.",200,false);
+        }
+    }
+    public function getUserAgents(Request $request)
+    {
+        $this->validate($request, [
+            'user_id' => 'required'
+        ]);
+        $agents = UserAgents::where('user_id',$request->user_id)->pluck('agent_id')->toArray();
+        if(sizeof($agents)>0){
+            $result = Users::with('agentInfo')->whereIn('uuid',$agents)->get();
+            return $this->sendResponse($result);
+        }else{
+            return $this->sendResponse("Agent not found!.",200,false);
+        }
+    }
 }

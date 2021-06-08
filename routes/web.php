@@ -43,14 +43,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		/* UsersController APIs End */
 
 		/* PropertiesController APIs Start */
-		$router->post('add-property',  ['uses'=>'PropertiesController@addProperty']);
 		$router->post('update-property',  ['uses'=>'PropertiesController@updateProperty']);
 		$router->post('get-property',  ['uses'=>'PropertiesController@getProperty']);
-		$router->post('user-properties',  ['uses'=>'PropertiesController@userProperties']);
-		$router->post('assign-agent',  ['uses'=>'PropertiesController@assignAgent']);
-		$router->post('remove-agent',  ['uses'=>'PropertiesController@removeAgent']);
-		$router->post('verify-property',  ['uses'=>'PropertiesController@verifyProperty']);
-		$router->post('get-verified-properties',  ['uses'=>'PropertiesController@verifiedProperties']);
 		$router->post('add-owner',  ['uses'=>'PropertiesController@addOwner']);
 		$router->post('agent-properties',  ['uses'=>'PropertiesController@agentProperties']);
 		$router->post('add-property',  ['middleware'=>'auth','uses'=>'PropertiesController@addProperty']);
@@ -63,17 +57,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
 		/* ShowingController APIs Start */
 		$router->post('create-slots',  ['uses'=>'ShowingController@createSlots']);
-		$router->post('create-survey-category',  ['uses'=>'ShowingController@createSurveyCategory']);
-		$router->post('update-survey-category',  ['uses'=>'ShowingController@updateSurveyCategory']);
-		$router->post('get-all-categories',  ['uses'=>'ShowingController@getAllCategories']);
-		$router->post('get-single-category',  ['uses'=>'ShowingController@getSingleCategory']);
-		$router->post('delete-category',  ['uses'=>'ShowingController@deleteCategory']);
-		$router->post('create-survey-sub-category',  ['uses'=>'ShowingController@createSurveySubCategory']);
-		$router->post('update-survey-sub-category',  ['uses'=>'ShowingController@updateSurveySubCategory']);
-		$router->post('delete-sub-category',  ['uses'=>'ShowingController@deleteSubCategory']);
-		$router->post('create-showing-setup',  ['uses'=>'ShowingController@createShowingSetup']);
 		$router->post('update-showing-setup',  ['uses'=>'ShowingController@updateShowingSetup']);
-		$router->post('get-single-showing-setup',  ['uses'=>'ShowingController@getSingleShowingSetup']);
 		$router->post('create-survey-category',  ['middleware'=>'auth','uses'=>'ShowingController@createSurveyCategory']);
 		$router->post('update-survey-category',  ['middleware'=>'auth','uses'=>'ShowingController@updateSurveyCategory']);
 		$router->post('get-all-categories',  ['middleware'=>'auth','uses'=>'ShowingController@getAllCategories']);
@@ -94,6 +78,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		/*AgentController APIs Start*/
 		$router->post('get-clients',  ['middleware'=>'auth','uses'=>'AgentController@getClientWithProperty']);
 		$router->post('get-single-client',  ['middleware'=>'auth','uses'=>'AgentController@getSingleClient']);
+		$router->post('get-random-agents', ['middleware'=>'auth','uses'=>'AgentController@GetRandomAgents']);
+		$router->post('get-user-agents', ['middleware'=>'auth','uses'=>'AgentController@getUserAgents']);
 		/*AgentController APIs End*/
 
 		/*SuperAdminController APIs Start*/
@@ -103,4 +89,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('all-showings',  ['uses'=>'SuperAdminController@allShowings']);
 		$router->post('all-surveys',  ['uses'=>'SuperAdminController@allSurveys']);
 		/*SuperAdminController APIs End*/
+
+		/*SettingsController APIs Start*/
+		$router->post('set-setting',  ['middleware'=>'auth','uses'=>'SettingsController@createSetting']);
+		$router->post('get-single-setting',  ['middleware'=>'auth','uses'=>'SettingsController@getSingleSetting']);
+		$router->post('get-all-setting',  ['uses'=>'SettingsController@getAllSetting']);
+		$router->post('update-setting',  ['middleware'=>'auth','uses'=>'SettingsController@updateSetting']);
+		/*SettingsController APIs End*/
 });
