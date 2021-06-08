@@ -172,21 +172,21 @@ class ShowingController extends Controller
 
     public function createShowingSetup(Request $request){
 	    	$this->validate($request, [
-	      		'property_id' => 'required',
-	          'notification_email' => 'required',
-	          'notification_text' => 'required',
-	      		'type' => 'required|in:VALID,NO VALID',
-	      		'validator' => 'required',
-	      		'presence' => 'required',
-	      		'instructions' => 'required',
-	      		'lockbox_type' => 'required',
-	      		'lockbox_location' => 'required',
-	      		'start_date' => 'required',
-	      		'end_date' => 'required',
-	      		'timeframe' => 'required',
-	      		'overlap' => 'required|in:YES,NO',
-	      		'availability' => 'required',
-	      		'survey' => 'required'
+	      		'property_id' => 'nullable',
+	          'notification_email' => 'nullable',
+	          'notification_text' => 'nullable',
+	      		'type' => 'nullable|in:VALID,NO VALID',
+	      		'validator' => 'nullable',
+	      		'presence' => 'nullable',
+	      		'instructions' => 'nullable',
+	      		'lockbox_type' => 'nullable',
+	      		'lockbox_location' => 'nullable',
+	      		'start_date' => 'nullable',
+	      		'end_date' => 'nullable',
+	      		'timeframe' => 'nullable',
+	      		'overlap' => 'nullable|in:YES,NO',
+	      		'availability' => 'nullable',
+	      		'survey' => 'nullable'
 	      ]);
 
 	      $time = strtotime(Carbon::now());
@@ -235,21 +235,21 @@ class ShowingController extends Controller
 
     public function updateShowingSetup(Request $request){
 	    	$this->validate($request, [
-	      		'showing_setup_id' => 'required',
-	          'notification_email' => 'required',
-	          'notification_text' => 'required',
-	      		'type' => 'required|in:VALID,NO VALID',
-	      		'validator' => 'required',
-	      		'presence' => 'required',
-	      		'instructions' => 'required',
-	      		'lockbox_type' => 'required',
-	      		'lockbox_location' => 'required',
-	      		'start_date' => 'required',
-	      		'end_date' => 'required',
-	      		'timeframe' => 'required',
-	      		'overlap' => 'required|in:YES,NO',
-	      		'availability' => 'required',
-	      		'survey' => 'required'
+	      		'showing_setup_id' => 'nullable',
+	          'notification_email' => 'nullable',
+	          'notification_text' => 'nullable',
+	      		'type' => 'nullable|in:VALID,NO VALID',
+	      		'validator' => 'nullable',
+	      		'presence' => 'nullable',
+	      		'instructions' => 'nullable',
+	      		'lockbox_type' => 'nullable',
+	      		'lockbox_location' => 'nullable',
+	      		'start_date' => 'nullable',
+	      		'end_date' => 'nullable',
+	      		'timeframe' => 'nullable',
+	      		'overlap' => 'nullable|in:YES,NO',
+	      		'availability' => 'nullable',
+	      		'survey' => 'nullable'
 	      ]);
 
 	    	$showing_setup = PropertyShowingSetup::where('uuid', $request->showing_setup_id)->first();
