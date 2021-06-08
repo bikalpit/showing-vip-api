@@ -13,7 +13,7 @@ use App\Models\PropertyVerification;
 use App\Mail\AssignAgent;
 use App\Mail\SignupMail;
 use App\Mail\AssignOwner;
-use App\Mail\PropertyVerification;
+use App\Mail\PropertyVerificationMail;
 use Carbon\Carbon;
 use DB;
 
@@ -179,7 +179,7 @@ class PropertiesController extends Controller
             ];
 
 						try{
-			          Mail::to($agent->email)->send(new PropertyVerification($data));
+			          Mail::to($agent->email)->send(new PropertyVerificationMail($data));
 
 			          $property_varification = new PropertyVerification;
 			          $property_varification->property_id = $request->property_id;
