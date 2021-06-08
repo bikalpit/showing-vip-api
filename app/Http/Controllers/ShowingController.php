@@ -184,53 +184,86 @@ class ShowingController extends Controller
 	      		'start_date' => 'nullable',
 	      		'end_date' => 'nullable',
 	      		'timeframe' => 'nullable',
-	      		'overlap' => 'nullable|in:YES,NO',
-	      		'availability' => 'nullable',
-	      		'survey' => 'nullable'
+	      		'overlap' => 'nullable|in:YES,NO'
 	      ]);
 
 	      $time = strtotime(Carbon::now());
 
-	      \DB::beginTransaction();
-	      try{
-	      		$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
-			      $setup = new PropertyShowingSetup;
-			      $setup->uuid = $setup_uuid;
-			      $setup->property_id = $request->property_id;
-			      $setup->notification_email = $request->notification_email;
-			      $setup->notification_text = $request->notification_text;
-			      $setup->type = $request->type;
-			      $setup->validator = $request->validator;
-			      $setup->presence = $request->presence;
-			      $setup->instructions = $request->instructions;
-			      $setup->lockbox_type = $request->lockbox_type;
-			      $setup->lockbox_location = $request->lockbox_location;
-			      $setup->start_date = $request->start_date;
-			      $setup->end_date = $request->end_date;
-			      $setup->timeframe = $request->timeframe;
-			      $setup->overlap = $request->overlap;
-			      $save_setup = $setup->save();
-
-		        $availability_uuid = "avlb".$time.rand(10,99)*rand(10,99);
-			      $availability = new PropertyShowingAvailability;
-			      $availability->uuid = $availability_uuid;
-			      $availability->showing_setup_id = $setup_uuid;
-			      $availability->availability = json_encode($request->availability);
-			      $save_availability = $availability->save();
-
-			      $survey_uuid = "srvy".$time.rand(10,99)*rand(10,99);
-			      $survey = new PropertyShowingSurvey;
-			      $survey->uuid = $survey_uuid;
-			      $survey->showing_setup_id = $setup_uuid;
-			      $survey->survey = json_encode($request->survey);
-			      $save_survey = $survey->save();
-
-				  DB::commit();
-			      return $this->sendResponse("Showing setup created successfully!");
-	      } catch(\Exception $e) {
-	      		\DB::rollBack();
-	      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+    		$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
+	      $setup = new PropertyShowingSetup;
+	      $setup->uuid = $setup_uuid;
+	      $setup->property_id = $request->property_id;
+	      $setup->notification_email = $request->notification_email;
+	      $setup->notification_text = $request->notification_text;
+	      $setup->type = $request->type;
+	      $setup->validator = $request->validator;
+	      $setup->presence = $request->presence;
+	      $setup->instructions = $request->instructions;
+	      $setup->lockbox_type = $request->lockbox_type;
+	      $setup->lockbox_location = $request->lockbox_location;
+	      if ($request->start_date == '') {
+	      		$setup->start_date = null;
+	      }else{
+	      		$setup->start_date = $request->start_date;
 	      }
+	      if ($request->end_date == '') {
+	      		$setup->end_date = null;
+	      }else{
+	      		$setup->end_date = $request->end_date;
+	      }
+	      $setup->timeframe = $request->timeframe;
+	      $setup->overlap = $request->overlap;
+	      $save_setup = $setup->save();
+
+		  	if ($save_setup) {
+		  			return $this->sendResponse("Showing setup created successfully!");
+		  	}else{
+		  			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+		  	}
+    }
+
+    public function createShowingAvailability(Request $request){
+    		$this->validate($request, [
+	      		'showing_setup_id' => 'nullable',
+	          'availability' => 'nullable'
+	      ]);
+
+    		$time = strtotime(Carbon::now());
+
+	      $availability_uuid = "avlb".$time.rand(10,99)*rand(10,99);
+	      $availability = new PropertyShowingAvailability;
+	      $availability->uuid = $availability_uuid;
+	      $availability->showing_setup_id = $request->showing_setup_id;
+	      $availability->availability = json_encode($request->availability);
+	      $save_availability = $availability->save();
+
+	      if ($save_availability) {
+		  			return $this->sendResponse("Showing availability created successfully!");
+		  	}else{
+		  			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+		  	}
+    }
+
+    public function createShowingSurvey(Request $request){
+    		$this->validate($request, [
+	      		'showing_setup_id' => 'nullable',
+	          'survey' => 'nullable'
+	      ]);
+
+    		$time = strtotime(Carbon::now());
+
+	      $survey_uuid = "srvy".$time.rand(10,99)*rand(10,99);
+	      $survey = new PropertyShowingSurvey;
+	      $survey->uuid = $survey_uuid;
+	      $survey->showing_setup_id = $request->showing_setup_id;
+	      $survey->survey = json_encode($request->survey);
+	      $save_survey = $survey->save();
+
+	      if ($save_survey) {
+		  			return $this->sendResponse("Showing survey created successfully!");
+		  	}else{
+		  			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+		  	}
     }
 
     public function updateShowingSetup(Request $request){

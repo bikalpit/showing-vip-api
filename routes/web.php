@@ -68,6 +68,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('delete-sub-category',  ['middleware'=>'auth','uses'=>'ShowingController@deleteSubCategory']);
 		$router->post('create-showing-setup',  ['middleware'=>'auth','uses'=>'ShowingController@createShowingSetup']);
 		$router->post('get-single-showing-setup',  ['middleware'=>'auth','uses'=>'ShowingController@getSingleShowingSetup']);
+		$router->post('create-showing-availability',  ['middleware'=>'auth','uses'=>'ShowingController@createShowingAvailability']);
+		$router->post('create-showing-survey',  ['middleware'=>'auth','uses'=>'ShowingController@createShowingSurvey']);
 		/* ShowingController APIs End */
 
 		/* BookingScheduleController API Start*/
