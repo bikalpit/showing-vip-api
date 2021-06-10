@@ -6,13 +6,14 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class PropertyVerification extends Mailable {
+class PropertyVerificationMail extends Mailable {
     use Queueable,
         SerializesModels;
     //build the message.
     public $data;
     public $name;
     public $owner_name;
+    public $property_id;
     public $property_link;
     public $site_url;
     public $token;
@@ -21,6 +22,7 @@ class PropertyVerification extends Mailable {
         $this->data = $data;
         $this->name = $data['name'];
         $this->owner_name = $data['owner_name'];
+        $this->property_id = $data['property_id'];
         $this->property_link = $data['property_link'];
         $this->site_url = $data['site_url'];
         $this->token = $data['token'];

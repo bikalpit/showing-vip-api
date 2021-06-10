@@ -53,6 +53,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('remove-agent',  ['middleware'=>'auth','uses'=>'PropertiesController@removeAgent']);
 		$router->post('verify-property',  ['middleware'=>'auth','uses'=>'PropertiesController@verifyProperty']);
 		$router->post('get-verified-properties',  ['middleware'=>'auth','uses'=>'PropertiesController@verifiedProperties']);
+		$router->get('verified-property',  ['uses'=>'PropertiesController@verifiedProperty']);
 		/* PropertiesController APIs End */
 
 		/* ShowingController APIs Start */

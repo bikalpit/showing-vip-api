@@ -10,6 +10,7 @@ use App\Models\PropertyOwners;
 use App\Models\PropertyAgents;
 use App\Models\Users;
 use App\Models\PropertyVerification;
+use App\Models\PropertyShowingSetup;
 use App\Mail\AssignAgent;
 use App\Mail\SignupMail;
 use App\Mail\AssignOwner;
@@ -165,14 +166,15 @@ class PropertiesController extends Controller
 	      $property = Properties::where('uuid', $request->property_id)->first();
 	      $agent = Users::where('uuid', $request->agent_id)->first();
 	      $owner = Users::where('uuid', $request->user_id)->first();
-	      dd($owner);
+	      
 	      if (!empty($property)) {
 	      		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 
 	      		$this->configSMTP();
 						$data = [
 								'name'=>$agent->first_name.' '.$agent->last_name,
-								'owner_name'=>$user_id->first_name.' '.$user_id->last_name,
+								'owner_name'=>$owner->first_name.' '.$owner->last_name,
+                'property_id'=>$request->property_id,
                 'property_link'=>$request->property_link,
                 'site_url'=>env('APP_URL'),
                 'token'=>$verification_token
@@ -180,6 +182,8 @@ class PropertiesController extends Controller
 
 						try{
 			          Mail::to($agent->email)->send(new PropertyVerificationMail($data));
+
+			          PropertyVerification::where('property_id', $request->property_id)->delete();
 
 			          $property_varification = new PropertyVerification;
 			          $property_varification->property_id = $request->property_id;
@@ -354,5 +358,39 @@ class PropertiesController extends Controller
 	      }else{
 	      		return $this->sendResponse("Sorry, Property not found!", 200, false);
 	      }
+		}
+
+		public function verifiedProperty(Request $request){
+				
+				$check = PropertyVerification::where('token', $request->token)->first();
+				if (!empty($check)) {
+						$status = 'verified';
+
+						$time = strtotime(Carbon::now());
+
+		    		$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
+			      $setup = new PropertyShowingSetup;
+			      $setup->uuid = $setup_uuid;
+			      $setup->property_id = $request->property;
+			      $setup->notification_email = 'YES';
+			      $setup->notification_text = 'YES';
+			      $setup->type = 'VALID';
+			      $setup->validator = null;
+			      $setup->presence = null;
+			      $setup->instructions = null;
+			      $setup->lockbox_type = null;
+			      $setup->lockbox_location = null;
+	      		$setup->start_date = null;
+	      		$setup->end_date = null;
+			      $setup->timeframe = '30';
+			      $setup->overlap = 'NO';
+			      $save_setup = $setup->save();
+
+			      Properties::where('uuid', $request->property)->update(['verified' => 'YES']);
+				}else{
+						$status = 'expired';
+				}
+
+				return view('verified-property', ["status"=>$status]);
 		}
 }

@@ -226,13 +226,12 @@
 	            </div>
 	            <div class="wm-section-content" id="wm-content-head">
 	                <div class="wm-content">
-		                <p>Hi {{$name}},</p><br/>
-		          		<h3>Here is you property verification mail, Please see below info of property</h3><br>
+		                <p>Hi {{$name}},</p>
+		          		Here is you property verification mail, Please see below info of property
                         <p><b>Owner name :</b> {{$owner_name}}</p>
-                        <p><b>Property info :</b> {{$property_link}}</p><br><br>
+                        <b>Property info :</b> <a href="{{$property_link}}">{{$property_link}}</a><br>
                         <p>Click on below link to verify property</p>
-                        <p>{{$property_link}}</p>
-					    <!-- <a href="{{$site_url}}?token={{$token}}" id="text-color">Create Password</a> -->
+					    <a href="{{$site_url}}/api/verified-property?token={{$token}}&property={{$property_id}}">{{$site_url}}/api/verified-property?token={{$token}}&property={{$property_id}}</a>
 	                </div>
 	            </div>
 	    	</div>
