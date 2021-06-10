@@ -10,17 +10,24 @@ use App\Models\PropertyShowingSurvey;
 use App\Models\SurveyCategories;
 use App\Models\SurveySubCategories;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use DB;
 
 class ShowingController extends Controller
 {
-		public function createSlots(Request $request){
-				$this->validate($request, [
-	      		'interval' => 'required'
+	public function createSlots(Request $request){
+		$this->validate($request, [
+			'interval'  => 'required',
+			'start_date'=> 'required|date',
+			'end_date'  => 'required|date'
 	      ]);
 
-				$interval = $request->interval*60;
-
+		$startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
+		$endDate = Carbon::createFromFormat('Y-m-d', $request->end_date);
+		$dateRange = CarbonPeriod::create($startDate, $endDate);
+		$dateArray = $dateRange->toArray();  
+		
+		$interval = $request->interval*60;
         $open_time = strtotime('00:00');
         $close_time = strtotime('24:00');
 
@@ -30,7 +37,12 @@ class ShowingController extends Controller
             $output[] = date("h:i A", $i);
         }
 
-        return $this->sendResponse($output);
+		foreach($dateArray as $newDate)
+		{
+			$date = $newDate->format('F d l');
+			$lastResult[] = array('date'=>$date,'slots'=>$output);
+		}
+        return $this->sendResponse($lastResult);
     }
 
 		public function createSurveyCategory(Request $request){
