@@ -150,14 +150,14 @@ class ShowingController extends Controller
 		public function updateSurveySubCategory(Request $request){
 				$this->validate($request, [
 	      		'sub_category_id' => 'required',
-	      		'name' => 'required'
+				  'name' => 'required',
+				  'category_id'=>'required'
 	      ]);
 
 				$sub_category = SurveySubCategories::where('uuid', $request->sub_category_id)->first();
 
 				if ($sub_category) {
-	      		$update_sub_category = SurveySubCategories::where('uuid', $request->sub_category_id)->update(['name'=>$request->name]);
-
+	      			$update_sub_category = SurveySubCategories::where('uuid', $request->sub_category_id)->update(['name'=>$request->name,'category_id'=>$request->category_id]);
 			      if ($update_sub_category) {
 			      		return $this->sendResponse("Sub-Category updated successfully!");
 			      }else{
