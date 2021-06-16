@@ -101,4 +101,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('get-all-setting',  ['uses'=>'SettingsController@getAllSetting']);
 		$router->post('update-setting',  ['middleware'=>'auth','uses'=>'SettingsController@updateSetting']);
 		/*SettingsController APIs End*/
+
+		/*LockboxTypeController APIs Start*/
+		$router->post('create-lockbox-type',  ['uses'=>'LockboxTypeController@createLockboxType']);
+		$router->post('update-lockbox-type',  ['uses'=>'LockboxTypeController@updateLockboxType']);
+		$router->post('get-all-lockbox-type',  ['uses'=>'LockboxTypeController@getAllLockboxType']);
+		$router->post('get-single-lockbox-type',  ['uses'=>'LockboxTypeController@getSingleLockboxType']);
+		$router->post('delete-lockbox-type',  ['uses'=>'LockboxTypeController@deleteLockboxType']);
+		/*LockboxTypeController APIs End*/
 });
