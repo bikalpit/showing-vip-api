@@ -29,4 +29,8 @@ class PropertyShowingSetup extends Model
     public function Property(){
         return $this->hasOne('App\Models\Properties', 'uuid', 'property_id');
     }
+
+    public function Validator(){
+        return $this->hasOne('App\Models\Users', 'uuid', 'validator');
+    }
 }
