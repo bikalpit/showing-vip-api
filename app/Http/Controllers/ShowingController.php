@@ -34,7 +34,7 @@ class ShowingController extends Controller
         $output = [];
         for( $i=$open_time; $i<$close_time; $i+=$interval) 
 				{
-            $output[] = date("h:i A", $i);
+            $output[] = array('slot'=>date("h:i A", $i), 'status'=>'');
         }
 
 				foreach($dateArray as $newDate)
