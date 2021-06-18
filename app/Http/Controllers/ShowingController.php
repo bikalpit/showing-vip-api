@@ -193,6 +193,7 @@ class ShowingController extends Controller
 	      		'instructions' => 'nullable',
 	      		'lockbox_type' => 'nullable',
 	      		'lockbox_location' => 'nullable',
+	      		'lockbox_code' => 'nullable',
 	      		'start_date' => 'nullable',
 	      		'end_date' => 'nullable',
 	      		'timeframe' => 'nullable',
@@ -213,6 +214,7 @@ class ShowingController extends Controller
 	      $setup->instructions = $request->instructions;
 	      $setup->lockbox_type = $request->lockbox_type;
 	      $setup->lockbox_location = $request->lockbox_location;
+	      $setup->lockbox_code = $request->lockbox_code;
 	      if ($request->start_date == '') {
 	      		$setup->start_date = null;
 	      }else{
@@ -289,6 +291,7 @@ class ShowingController extends Controller
 	      		'instructions' => 'nullable',
 	      		'lockbox_type' => 'nullable',
 	      		'lockbox_location' => 'nullable',
+	      		'lockbox_code' => 'nullable',
 	      		'start_date' => 'nullable',
 	      		'end_date' => 'nullable',
 	      		'timeframe' => 'nullable',
@@ -318,6 +321,7 @@ class ShowingController extends Controller
 				      	'instructions'=>$request->instructions,
 				      	'lockbox_type'=>$request->lockbox_type,
 				      	'lockbox_location'=>$request->lockbox_location,
+				      	'lockbox_code'=>$request->lockbox_code,
 				      	'start_date'=>$start_date,
 				      	'end_date'=>$end_date,
 				      	'timeframe'=>$request->timeframe,

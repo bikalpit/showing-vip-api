@@ -25,6 +25,7 @@ class CreatePropertyShowingSetupTable extends Migration
             $table->longText('instructions')->nullable();
             $table->string('lockbox_type', 200)->nullable();
             $table->longText('lockbox_location')->nullable();
+            $table->string('lockbox_code', 200)->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->time('timeframe')->nullable();

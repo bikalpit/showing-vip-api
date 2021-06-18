@@ -36,6 +36,10 @@ class PropertyShowingSetup extends Model
     }
 
     public function getValidatorAttribute($value){
-        return Users::whereIn('uuid', json_decode($value))->get();
+        if ($value == null || $value == '') {
+            return null;
+        }else{
+            return Users::whereIn('uuid', json_decode($value))->get();    
+        }
     }
 }
