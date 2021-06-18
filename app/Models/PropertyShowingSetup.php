@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Users;
 
 class PropertyShowingSetup extends Model
 {
@@ -31,6 +32,10 @@ class PropertyShowingSetup extends Model
     }
 
     public function Validator(){
-        return $this->hasOne('App\Models\Users', 'uuid', 'validator');
+        return $this->hasMany('App\Models\Users', 'uuid', 'validator');
+    }
+
+    public function getValidatorAttribute($value){
+        return Users::whereIn('uuid', json_decode($value))->get();
     }
 }
