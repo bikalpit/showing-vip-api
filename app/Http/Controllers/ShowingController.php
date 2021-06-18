@@ -347,9 +347,19 @@ class ShowingController extends Controller
     		$showing_setup = PropertyShowingSetup::where('uuid', $request->showing_setup_id)->first();
 
 	    	if ($showing_setup) {
-			      $update_availibility = PropertyShowingAvailability::where('showing_setup_id', $request->showing_setup_id)->update([
-			      		'availability'=>json_encode($request->availability)
-			      ]);
+	    			$showing_availability = PropertyShowingAvailability::where('showing_setup_id', $request->showing_setup_id)->first();
+	    			if ($showing_availability) {
+	    					$update_availibility = PropertyShowingAvailability::where('showing_setup_id', $request->showing_setup_id)->update([
+	    							'availability'=>json_encode($request->availability)
+			      		]);
+	    			}else{
+	    					$time = strtotime(Carbon::now());
+			    			$availability_uuid = "avlb".$time.rand(10,99)*rand(10,99);
+			    			$update_availibility = PropertyShowingAvailability::updateOrCreate(
+			    					['showing_setup_id'=>$request->showing_setup_id],
+			    					['uuid'=>$availability_uuid, 'availability'=>json_encode($request->availability)]
+			    			);
+	    			}
 
 			      if ($update_availibility) {
 				  			return $this->sendResponse("Showing availability updated successfully!");
