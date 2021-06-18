@@ -12,7 +12,7 @@ class PropertyShowingSurvey extends Model
      */
     protected $table = 'property_showing_survey';
 
-    protected $fillable = ['uuid','showing_setup_id','question_id'];
+    protected $fillable = ['uuid','showing_setup_id','survey'];
 
     use SoftDeletes;
     

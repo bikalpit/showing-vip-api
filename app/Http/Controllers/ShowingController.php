@@ -380,9 +380,20 @@ class ShowingController extends Controller
     		$showing_setup = PropertyShowingSetup::where('uuid', $request->showing_setup_id)->first();
     		
     		if ($showing_setup) {
-			      $update_survey = PropertyShowingSurvey::where('showing_setup_id', $request->showing_setup_id)->update([
-			      		'survey'=>json_encode($request->survey)
-			      ]);
+    				$showing_survey = PropertyShowingSurvey::where('showing_setup_id', $request->showing_setup_id)->first();
+    				if ($showing_survey) {
+    						$update_survey = PropertyShowingSurvey::where('showing_setup_id', $request->showing_setup_id)->update([
+					      		'survey'=>json_encode($request->survey)
+					      ]);
+    				}else{
+    						$time = strtotime(Carbon::now());
+	      				$survey_uuid = "srvy".$time.rand(10,99)*rand(10,99);
+	      				$update_survey = PropertyShowingSurvey::updateOrCreate(
+			    					['showing_setup_id'=>$request->showing_setup_id],
+			    					['uuid'=>$survey_uuid, 'survey'=>json_encode($request->survey)]
+			    			);
+    				}
+			      
 
 			      if ($update_survey) {
 				  			return $this->sendResponse("Showing survey updated successfully!");
