@@ -171,6 +171,7 @@ class BookingScheduleController extends Controller
             'status'     => 'required|in:A,R',
             'reason'     => 'nullable'
         ]);
+
         $user_id = $request->user_id;
         $id      = $request->booking_id;
         $status  = $request->status;
@@ -225,6 +226,38 @@ class BookingScheduleController extends Controller
             }
         }else{
             return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+        }
+    }
+
+    public function getShowingBookings(Request $request)
+    {
+        $this->validate($request, [
+            'property_id'   => 'required'
+        ]);
+
+        $all_bookings = [];
+        $future_bookings = [];
+        $past_bookings = [];
+        $today_bookings = [];
+        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent')->where('property_id',$request->property_id)->get();
+        $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey')->where('property_id',$request->property_id)->first();
+        if (sizeof($bookings) > 0) {
+            foreach ($bookings as $booking) {
+                $booking['showing_setup'] = $showing_setup;
+                $booking['office'] = '';
+                if (strtotime(date('Y-m-d')) < strtotime($booking->booking_date)) {
+                    $future_bookings[] = $booking;
+                }else if (strtotime(date('Y-m-d')) > strtotime($booking->booking_date)) {
+                    $past_bookings[] = $booking;
+                }else if (strtotime(date('Y-m-d')) == strtotime($booking->booking_date)) {
+                    $today_bookings[] = $booking;
+                }
+            }
+
+            $all_bookings = array('future' => $future_bookings, 'past' => $past_bookings, 'today' => $today_bookings);
+            return $this->sendResponse($all_bookings);
+        }else{
+            return $this->sendResponse("Sorry, Bookings not found!", 200, false);
         }
     }
 }

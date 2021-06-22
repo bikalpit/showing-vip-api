@@ -18,6 +18,7 @@ class CreatePropertyBookingScheduleTable extends Migration
             $table->string('uuid', 200);
             $table->string('buyer_id', 200);
             $table->string('property_id', 200);
+            $table->string('agent_id', 200);
             $table->date('booking_date');
             $table->time('booking_time');
             $table->enum('status', ['P', 'A', 'R'])->comment('P - pending | A - accept | R - reject');

@@ -78,6 +78,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		/* BookingScheduleController API Start*/
 		$router->post('create-schedule-booking',  ['middleware'=>'auth','uses'=>'BookingScheduleController@createBooking']);
 		$router->post('update-schedule-booking',  ['middleware'=>'auth','uses'=>'BookingScheduleController@updateBooking']);
+		$router->post('get-showing-bookings',  ['middleware'=>'auth','uses'=>'BookingScheduleController@getShowingBookings']);
 		/* BookingScheduleController API End*/
 
 		/*AgentController APIs Start*/

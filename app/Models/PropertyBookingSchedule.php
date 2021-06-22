@@ -12,9 +12,24 @@ class PropertyBookingSchedule extends Model
      */
     protected $table = 'property_booking_schedule';
 
-    protected $fillable = ['uuid','buyer_id','property_id','booking_date','booking_time','status','cancel_by','cancel_reason'];
+    protected $fillable = ['uuid','buyer_id','property_id','agent_id','booking_date','booking_time','status','cancel_by','cancel_reason'];
 
     use SoftDeletes;
     
     protected $dates = ['deleted_at'];
+
+    public function Property()
+    {
+    		return $this->hasOne('App\Models\Properties', 'uuid', 'property_id');
+    }
+
+    public function Buyer()
+    {
+    		return $this->hasOne('App\Models\Users', 'uuid', 'buyer_id');
+    }
+
+    public function Agent()
+    {
+    		return $this->hasOne('App\Models\Users', 'uuid', 'agent_id');
+    }
 }
