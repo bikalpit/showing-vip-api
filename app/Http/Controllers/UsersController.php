@@ -271,7 +271,7 @@ class UsersController extends Controller
 	      		'user_id' => 'required'
 	      ]);
 
-	      $agents = UserAgents::with('agentProfile')->where('user_id', $request->user_id)->get();
+	      $agents = UserAgents::with('agentProfile.agentInfo')->where('user_id', $request->user_id)->get();
 
 	      if (sizeof($agents) > 0) {
 	  				return $this->sendResponse($agents);

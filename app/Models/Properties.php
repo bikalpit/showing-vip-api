@@ -17,4 +17,16 @@ class Properties extends Model
     use SoftDeletes;
     
     protected $dates = ['deleted_at'];
+
+    public function Valuecheck(){
+        return $this->hasOne('App\Models\PropertyValuecheck', 'property_id', 'uuid');
+    }
+
+    public function Zillow(){
+        return $this->hasOne('App\Models\PropertyZillow', 'property_id', 'uuid');
+    }
+
+    public function Homendo(){
+        return $this->hasOne('App\Models\PropertyHomendo', 'property_id', 'uuid');
+    }
 }

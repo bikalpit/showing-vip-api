@@ -144,7 +144,7 @@ class PropertiesController extends Controller
 	      $owner->property_id = $property->uuid;
 	      $owner->user_id = $request->user_id;
 	      $property_owner = $owner->save();
-
+	      
 	      if ($property_owner) {
 	      		return $this->sendResponse("Property added successfully!");
 	      }else{
@@ -179,7 +179,7 @@ class PropertiesController extends Controller
 	      		'property_id' => 'required'
 	      ]);
 
-	      $property = Properties::where('uuid', $request->property_id)->first();
+	      $property = Properties::with('Valuecheck', 'Zillow', 'Homendo')->where('uuid', $request->property_id)->first();
 
 	      if (!empty($property)) {
 	      		return $this->sendResponse($property);
@@ -196,7 +196,7 @@ class PropertiesController extends Controller
 	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
 
 	      if (sizeof($property_ids) > 0) {
-	      		$properties = Properties::whereIn('uuid', $property_ids)->get();
+	      		$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
 	      		return $this->sendResponse($properties);
 	      }else{
 	      		return $this->sendResponse("Sorry, Property not found!", 200, false);
@@ -317,7 +317,7 @@ class PropertiesController extends Controller
 	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
 
 	      if (sizeof($property_ids) !== 0) {
-	      		$properties = Properties::whereIn('uuid', $property_ids)->where('verified', 'YES')->get();
+	      		$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->where('verified', 'YES')->get();
 	      		if (sizeof($properties) !== 0) {
 	      				return $this->sendResponse($properties);
 	      		}else{
@@ -415,40 +415,40 @@ class PropertiesController extends Controller
 	      		if ($sorting !== '') {
 	      				if ($sorting == 'ASC') {
 	      						if ($search_item !== '') {
-												$properties = Properties::whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
+												$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
 														$query->where('mls_id', 'LIKE', '%'.$search_item.'%');
 				              			//->orWhere('ga_customer.email', 'LIKE', '%'.$search_item.'%')
 												})->orderBy('created_at', 'ASC')->get();
 										}else{
-												$properties = Properties::whereIn('uuid', $property_ids)->orderBy('created_at', 'ASC')->get();
+												$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->orderBy('created_at', 'ASC')->get();
 										}
 	      				}elseif ($sorting == 'DESC') {
 	      						if ($search_item !== '') {
-	      								$properties = Properties::whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
+	      								$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
 														$query->where('mls_id', 'LIKE', '%'.$search_item.'%');
 				              			//->orWhere('ga_customer.email', 'LIKE', '%'.$search_item.'%')
 												})->orderBy('created_at', 'DESC')->get();
 										}else{
-												$properties = Properties::whereIn('uuid', $property_ids)->orderBy('created_at', 'DESC')->get();
+												$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->orderBy('created_at', 'DESC')->get();
 										}
 	      				}else{
 	      						if ($search_item !== '') {
-												$properties = Properties::whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
+												$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
 														$query->where('mls_id', 'LIKE', '%'.$search_item.'%');
 				              			//->orWhere('ga_customer.email', 'LIKE', '%'.$search_item.'%')
 												})->get();
 										}else{
-												$properties = Properties::whereIn('uuid', $property_ids)->get();
+												$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
 										}
 	      				}
 	      		}else{
 	      				if ($search_item !== '') {
-										$properties = Properties::whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
+										$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->where(function($query) use ($search_item) {
 												$query->where('mls_id', 'LIKE', '%'.$search_item.'%');
 		              			//->orWhere('ga_customer.email', 'LIKE', '%'.$search_item.'%')
 										})->get();
 								}else{
-										$properties = Properties::whereIn('uuid', $property_ids)->get();
+										$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
 								}
 	      		}
 			      		
