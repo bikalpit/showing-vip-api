@@ -16,7 +16,7 @@ class SuperAdminController extends Controller
 {
 		public function allAgents(Request $request){
 				
-				$all_agents = Users::where('role', 'AGENT')->get();
+				$all_agents = Users::with('agentInfo')->where('role', 'AGENT')->get();
 
 				if (sizeof($all_agents) > 0) {
 						return $this->sendResponse($all_agents);
