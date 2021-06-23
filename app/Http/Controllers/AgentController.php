@@ -22,6 +22,7 @@ class AgentController extends Controller
             return $this->sendResponse("No Properties found!.",200,false);
         }
     }
+
     public function getSingleClient(Request $request)
     {
         $this->validate($request, [
@@ -32,13 +33,14 @@ class AgentController extends Controller
                         ->pluck('property_id')->toArray();
         $result = Users::where('uuid',$request->client_id)->first();
         if($result){
-            $allProperty = Properties::whereIn('uuid',$properteyIds)->get();
+            $allProperty = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid',$properteyIds)->get();
             $finalArray = ['profile'=>$result,'property_list'=>$allProperty];
             return $this->sendResponse($finalArray);
         }else{
             return $this->sendResponse("Sorry!Something Wrong!.",200,false);
         }
     }
+
     public function GetRandomAgents(Request $request)
     {
         $this->validate($request, [
@@ -52,6 +54,7 @@ class AgentController extends Controller
             return $this->sendResponse("Sorry!Something wrong!.",200,false);
         }
     }
+
     public function getUserAgents(Request $request)
     {
         $this->validate($request, [
@@ -65,4 +68,16 @@ class AgentController extends Controller
             return $this->sendResponse("Agent not found!.",200,false);
         }
     }
+
+    /*public function agentProperties(Request $request)
+    {
+        $this->validate($request, [
+            'agent_id' => 'required'
+        ]);
+
+        $properties_ids = PropertyAgents::where(['agent_id'=>$request->agent_id])
+                        ->pluck('property_id')->toArray();
+
+        dd($properties_ids);
+    }*/
 }

@@ -161,6 +161,7 @@ class UsersController extends Controller
         $user->phone_verified = "NO";
         $user->email_verified = "NO";
         $user->image = "default.png";
+        $user->website_url = $request->agent_info['hmdo_office_website'][1];
         $result = $user->save();
 
         if ($result) {
@@ -293,6 +294,7 @@ class UsersController extends Controller
 	      		'state' => 'nullable',
 	      		'country' => 'nullable',
 	      		'about' => 'required',
+	      		'website_url' => 'nullable',
 	      		'image' => 'nullable'
 	      ]);
 
@@ -326,7 +328,8 @@ class UsersController extends Controller
 	      		'zipcode'=>$request->zipcode,
 	      		'state'=>$request->state,
 	      		'country'=>$request->country,
-	      		'about'=>$request->about
+	      		'about'=>$request->about,
+	      		'website_url'=>$request->website_url
 	      ]);
 
 	      if($request->has('image')){

@@ -38,6 +38,7 @@ class CreateUsersTable extends Migration
             $table->string('state', 200)->nullable();
             $table->string('country', 200)->nullable();
             $table->longText('about')->nullable();
+            $table->string('website_url', 500)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
