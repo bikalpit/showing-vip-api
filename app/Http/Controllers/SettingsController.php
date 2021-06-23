@@ -21,6 +21,20 @@ class SettingsController extends Controller
         if($firstCheck){
             return $this->sendResponse("setting already exists!.",200,false);
         }
+
+        if ($request->option_key == 'design_element') {
+            if($request->option_value['bg_image'] !== '')
+            {
+                $path = app()->basePath('public/setting-images/');
+                $fileName = $this->singleImageUpload($path, $request->option_value['bg_image']);
+                $option_value = $request->option_value;
+                $option_value['bg_image'] = env('APP_URL').'public/setting-images/'.$fileName;
+                $request->merge([
+                    'option_value' => $option_value,
+                ]);
+            }
+        }
+        
         $time = strtotime(Carbon::now());
         $uuid = "set".$time.rand(10,99)*rand(10,99);
 
@@ -29,11 +43,12 @@ class SettingsController extends Controller
         $settings->option_key = $request->option_key;
         $settings->option_value = json_encode($request->option_value);
         if($settings->save()){
-            return $this->sendResponse("Setting created!.");
+            return $this->sendResponse("Setting created!");
         }else{
-            return $this->sendResponse("Something wrong!.",200,false);
+            return $this->sendResponse("Something wrong!",200,false);
         }
     }
+
     public function getSingleSetting(Request $request)
     {
         $this->validate($request, [
@@ -43,18 +58,20 @@ class SettingsController extends Controller
         if($result){
             return $this->sendResponse($result);
         }else{
-            return $this->sendResponse("Sorry!Setting not found!.",200,false);
+            return $this->sendResponse("Sorry, Setting not found!",200,false);
         }
     }
+
     public function getAllSetting(Request $request)
     {
         $result = Settings::all();
         if($result){
             return $this->sendResponse($result);
         }else{
-            return $this->sendResponse("setting not found!.",200,false);
+            return $this->sendResponse("setting not found!",200,false);
         }
     }
+
     public function updateSetting(Request $request)
     {
         $this->validate($request, [
@@ -64,9 +81,9 @@ class SettingsController extends Controller
         $update['option_value'] = json_encode($request->option_value);
         $result = Settings::where('uuid',$request->uuid)->update($update);
         if($result){
-            return $this->sendResponse("Setting Updated!.");
+            return $this->sendResponse("Setting Updated!");
         }else{
-            return $this->sendResponse("Something wrong!.",200,false);
+            return $this->sendResponse("Something wrong!",200,false);
         }
     }
 }
