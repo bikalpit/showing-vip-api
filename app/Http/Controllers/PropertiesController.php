@@ -490,6 +490,12 @@ class PropertiesController extends Controller
 			      $save_setup = $setup->save();
 
 			      Properties::where('uuid', $request->property)->update(['verified' => 'YES']);
+			      
+			      $property_agent = new PropertyAgents;
+						$property_agent->property_id = $check->property_id;
+						$property_agent->agent_id = $check->agent_id;
+						$property_agent->user_id = $check->user_id;
+						$result = $property_agent->save();
 				}else{
 						$status = 'expired';
 				}
