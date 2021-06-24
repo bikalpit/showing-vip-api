@@ -23,8 +23,7 @@ class SettingsController extends Controller
         }
 
         if ($request->option_key == 'design_element') {
-            if($request->option_value['bg_image'] !== '')
-            {
+            if ($request->option_value['bg_image'] !== '') {
                 $path = app()->basePath('public/setting-images/');
                 $fileName = $this->singleImageUpload($path, $request->option_value['bg_image']);
                 $option_value = $request->option_value;
@@ -78,6 +77,28 @@ class SettingsController extends Controller
             'uuid' => 'required',
             'option_value'=>'required'
         ]);
+
+        $setting = Settings::where('uuid', $request->uuid)->first();
+        $setting_option_value = json_decode($setting->option_value);
+        $setting_bg_image = $setting_option_value->bg_image;
+        $image_name = substr($setting_bg_image, strrpos($setting_bg_image, '/') + 1);
+        //dd($image_name);
+        if ($setting->option_key == 'design_element') {
+            if ($request->option_value['bg_image'] !== '') {
+                $path = app()->basePath('public/setting-images/');
+                $fileName = $this->singleImageUpload($path, $request->option_value['bg_image']);
+                unlink($path.'/'.$image_name);
+                $option_value = $request->option_value;
+                $option_value['bg_image'] = env('APP_URL').'public/setting-images/'.$fileName;
+            }else{
+                $option_value['bg_image'] = $setting_bg_image;
+            }
+
+            $request->merge([
+                'option_value' => $option_value,
+            ]);
+        }
+
         $update['option_value'] = json_encode($request->option_value);
         $result = Settings::where('uuid',$request->uuid)->update($update);
         if($result){

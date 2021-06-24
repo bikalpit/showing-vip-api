@@ -68,16 +68,4 @@ class AgentController extends Controller
             return $this->sendResponse("Agent not found!.",200,false);
         }
     }
-
-    /*public function agentProperties(Request $request)
-    {
-        $this->validate($request, [
-            'agent_id' => 'required'
-        ]);
-
-        $properties_ids = PropertyAgents::where(['agent_id'=>$request->agent_id])
-                        ->pluck('property_id')->toArray();
-
-        dd($properties_ids);
-    }*/
 }
