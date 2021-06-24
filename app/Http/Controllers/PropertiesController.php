@@ -196,8 +196,18 @@ class PropertiesController extends Controller
 	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
 
 	      if (sizeof($property_ids) > 0) {
+	      		$all_properties = [];
 	      		$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
-	      		return $this->sendResponse($properties);
+	      		foreach ($properties as $property) {
+		      			$user_ids = PropertyOwners::where('property_id', $property->uuid)->pluck('user_id')->toArray();
+		      			if (sizeof($user_ids) < 0) {
+		      					$property['owners'] = null;
+		      			}else{
+		      					$property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
+		      			}
+		      			$all_properties[] = $property;
+	      		}
+	      		return $this->sendResponse($all_properties);
 	      }else{
 	      		return $this->sendResponse("Sorry, Property not found!", 200, false);
 	      }
