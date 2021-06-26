@@ -37,7 +37,7 @@ class BookingScheduleController extends Controller
         $property = Properties::where('uuid', $property_id)->first();
         $showing_setup = PropertyShowingSetup::where('property_id', $property_id)->first();
         $validator = Users::where('uuid', $showing_setup->validator)->first();
-
+        
         if ($request->has('buyer_id')) {
             $users = Users::where('uuid',$request->buyer_id)->first();
             $time = strtotime(Carbon::now());
@@ -48,7 +48,12 @@ class BookingScheduleController extends Controller
             $propertyBookingSchedule->property_id = $property_id;
             $propertyBookingSchedule->booking_date = $booking_date;
             $propertyBookingSchedule->booking_time = $booking_time;
-            $propertyBookingSchedule->status = 'P';
+            if ($showing_setup->type == 'VALID') {
+                $propertyBookingSchedule->status = 'P';
+            }else{
+                $propertyBookingSchedule->status = 'A';
+            }
+            $propertyBookingSchedule->cancel_at = null;
 
             $this->configSMTP();
             $mail_data = [
@@ -188,6 +193,7 @@ class BookingScheduleController extends Controller
         if (!empty($users)) {
             $update['status'] = $status;
             $update['cancel_reason'] = $reason;
+            $update['cancel_at'] = date('Y-m-d H:i:s');
             $result = PropertyBookingSchedule::where('uuid',$id)->update($update);
             if ($status == 'A') {
                 $msg = "Approved";

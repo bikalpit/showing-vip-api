@@ -12,7 +12,7 @@ class PropertyBookingSchedule extends Model
      */
     protected $table = 'property_booking_schedule';
 
-    protected $fillable = ['uuid','buyer_id','property_id','agent_id','booking_date','booking_time','status','cancel_by','cancel_reason'];
+    protected $fillable = ['uuid','buyer_id','property_id','agent_id','booking_date','booking_time','status','cancel_by','cancel_reason','cancel_at'];
 
     use SoftDeletes;
     
