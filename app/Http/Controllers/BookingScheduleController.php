@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Users;
 use App\Models\PropertyBookingSchedule;
 use App\Models\PropertyShowingSetup;
+use App\Models\PropertyShowingAvailability;
 use App\Models\Properties;
 use App\Mail\SignupMail;
 use App\Mail\BookingMail;
@@ -17,8 +18,7 @@ use Twilio\Rest\Client as TwilioClient;
 
 class BookingScheduleController extends Controller
 {
-    public function createBooking(Request $request)
-    {
+    public function createBooking(Request $request){
         $this->validate($request, [
             'first_name' => 'required',
             'last_name'  => 'required',
@@ -161,15 +161,15 @@ class BookingScheduleController extends Controller
         }
     }
 
-    public function updateBooking(Request $request)
-    {
+    public function updateBooking(Request $request){
         $this->validate($request, [
-            'booking_id' => 'required',
-            'booking_date' => 'required',
-            'booking_time' => 'required',
-            'user_id'    => 'required',
-            'status'     => 'required|in:A,R',
-            'reason'     => 'nullable'
+            'booking_id'        => 'required',
+            'booking_date'      => 'required',
+            'booking_time'      => 'required',
+            'user_id'           => 'required',
+            'status'            => 'required|in:A,R,P',
+            'reason'            => 'nullable',
+            'keep_slot'         => 'required'
         ]);
 
         $user_id = $request->user_id;
@@ -180,7 +180,9 @@ class BookingScheduleController extends Controller
         $booking = PropertyBookingSchedule::where('uuid',$id)->first();
         $validator = Users::where('uuid', $booking->buyer_id)->first();
         $property = Properties::where('uuid', $booking->property_id)->first();
-
+        $setup = PropertyShowingSetup::where('property_id', $booking->property_id)->first();
+        $availibility = PropertyShowingAvailability::where('showing_setup_id', $setup->uuid)->first();
+        dd(json_decode($availibility));
         if (!empty($users)) {
             $update['status'] = $status;
             $update['cancel_reason'] = $reason;
@@ -216,7 +218,7 @@ class BookingScheduleController extends Controller
 
                 try {
                     Mail::to($validator->email)->send(new BookingUpdate($data));
-                    return $this->sendResponse("Booking ".$msg);
+                    return $this->sendResponse("Showing ".$msg);
                 } catch(\Exception $e) {
                     $msg = $e->getMessage();
                     return $this->sendResponse($msg, 200, false);
@@ -229,8 +231,7 @@ class BookingScheduleController extends Controller
         }
     }
 
-    public function getShowingBookings(Request $request)
-    {
+    public function getShowingBookings(Request $request){
         $this->validate($request, [
             'property_id'   => 'required'
         ]);

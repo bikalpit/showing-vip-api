@@ -160,7 +160,11 @@ class UsersController extends Controller
         $user->mls_name = $request->mls_name;
         $user->phone_verified = "NO";
         $user->email_verified = "NO";
-        $user->image = "default.png";
+        if ($request->agent_info['hmdo_agent_photo_url'][1] == null || $request->agent_info['hmdo_agent_photo_url'][1] == '') {
+        	$user->image = "default.png";
+        }else{
+        	$user->image = $request->agent_info['hmdo_agent_photo_url'][1];
+        }
         $user->about = $request->agent_info['hmdo_agent_skills'][1];
         $user->website_url = $request->agent_info['hmdo_office_website'][1];
         $result = $user->save();
@@ -289,7 +293,7 @@ class UsersController extends Controller
 	      		'last_name' => 'required',
 	      		'phone' => 'required',
 	      		'email' => 'required',
-	      		'address' => 'required',
+	      		'address' => 'nullable',
 	      		'city' => 'nullable',
 	      		'zipcode' => 'nullable',
 	      		'state' => 'nullable',
