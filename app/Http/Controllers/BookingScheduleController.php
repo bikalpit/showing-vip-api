@@ -182,18 +182,35 @@ class BookingScheduleController extends Controller
         $property = Properties::where('uuid', $booking->property_id)->first();
         $setup = PropertyShowingSetup::where('property_id', $booking->property_id)->first();
         $availibility = PropertyShowingAvailability::where('showing_setup_id', $setup->uuid)->first();
-        dd(json_decode($availibility));
+        $get_availibility = json_decode($availibility);
+        $availibility_data = json_decode($get_availibility->availability);
+
         if (!empty($users)) {
             $update['status'] = $status;
             $update['cancel_reason'] = $reason;
             $result = PropertyBookingSchedule::where('uuid',$id)->update($update);
             if ($status == 'A') {
                 $msg = "Approved";
-            }else{
+            }elseif ($status == 'R') {
                 $msg = "Cancelled";
+            }else{
+                $msg = "Pending";
             }
 
             if ($result) {
+                if ($request->keep_slot == 'close') {
+                    foreach ($availibility_data as $data) {
+                        if ($data->date == $request->booking_date) {
+                            foreach ($data->slots as $slot) {
+                                if ($slot->slot == $request->booking_time) {
+                                    $slot->status = 'booked';
+                                }
+                            }
+                        }
+                    }
+                    PropertyShowingAvailability::where('showing_setup_id', $setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
+                }
+
                 $this->configSMTP();
                 $data = [
                     'name'=>$validator->first_name.' '.$validator->last_name,

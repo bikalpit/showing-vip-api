@@ -87,16 +87,19 @@ class SettingsController extends Controller
             if ($request->option_value['bg_image'] !== '') {
                 $path = app()->basePath('public/setting-images/');
                 $fileName = $this->singleImageUpload($path, $request->option_value['bg_image']);
-                unlink($path.'/'.$image_name);
+                if ($image_name) {
+                    unlink($path.'/'.$image_name);
+                }
                 $option_value = $request->option_value;
                 $option_value['bg_image'] = env('APP_URL').'public/setting-images/'.$fileName;
+                $request->merge([
+                    'option_value' => $option_value,
+                ]);
             }else{
                 $option_value['bg_image'] = $setting_bg_image;
             }
 
-            $request->merge([
-                'option_value' => $option_value,
-            ]);
+            
         }
 
         $update['option_value'] = json_encode($request->option_value);
