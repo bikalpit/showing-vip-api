@@ -161,6 +161,7 @@ class UsersController extends Controller
         $user->phone_verified = "NO";
         $user->email_verified = "NO";
         $user->image = "default.png";
+        $user->about = $request->agent_info['hmdo_agent_skills'][1];
         $user->website_url = $request->agent_info['hmdo_office_website'][1];
         $result = $user->save();
 
