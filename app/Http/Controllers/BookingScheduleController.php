@@ -29,6 +29,7 @@ class BookingScheduleController extends Controller
             'booking_time'=> 'required',
             'buyer_id'    => 'nullable'
         ]);
+        
         $phone = $request->phone;
         $email = $request->email;
         $property_id = $request->property_id;
@@ -37,7 +38,7 @@ class BookingScheduleController extends Controller
         $property = Properties::where('uuid', $property_id)->first();
         $showing_setup = PropertyShowingSetup::where('property_id', $property_id)->first();
         $validator = Users::where('uuid', $showing_setup->validator)->first();
-        
+
         if ($request->has('buyer_id')) {
             $users = Users::where('uuid',$request->buyer_id)->first();
             $time = strtotime(Carbon::now());
@@ -210,6 +211,8 @@ class BookingScheduleController extends Controller
                             foreach ($data->slots as $slot) {
                                 if ($slot->slot == $request->booking_time) {
                                     $slot->status = 'booked';
+                                }else{
+                                    $slot->status = 'confirm';
                                 }
                             }
                         }
