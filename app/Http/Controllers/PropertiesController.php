@@ -343,17 +343,21 @@ class PropertiesController extends Controller
 	      		'first_name' => 'required',
 	      		'last_name' => 'required',
 	      		'email' => 'required',
+	      		'phone' => 'required',
 	      		'user_id' => 'required',
 	      		'property_id' => 'required',
 	      		'url' => 'required'
 	      ]);
 
 	      $prop_owner = Users::where('uuid', $request->user_id)->first();
-	      $check = Users::where('email', $request->email)->first();
+	      $email_check = Users::where('email', $request->email)->first();
+	      $phone_check = Users::where('phone', $request->phone)->first();
 	      $property = Properties::where('uuid', $request->property_id)->first();
 
-	      if ($check !== null) {
+	      if ($email_check !== null) {
 	    			return $this->sendResponse("Sorry, Email already exist!", 200, false);
+	      }elseif ($phone_check !== null) {
+	    			return $this->sendResponse("Sorry, Phone no. already exist!", 200, false);
 	      }else{
 	      		\DB::beginTransaction();
 	      		try{
@@ -364,6 +368,7 @@ class PropertiesController extends Controller
 				        $user->first_name = $request->first_name;
 				        $user->last_name = $request->last_name;
 				        $user->email = $request->email;
+				        $user->phone = $request->phone;
 				        $user->role = "USER";
 				        $user->sub_role = "SELLER";
 				        $user->phone_verified = "NO";
