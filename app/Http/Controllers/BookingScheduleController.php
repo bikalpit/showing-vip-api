@@ -287,4 +287,14 @@ class BookingScheduleController extends Controller
             return $this->sendResponse("Sorry, Bookings not found!", 200, false);
         }
     }
+
+    public function allShowingBookings(Request $request){
+
+        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->get();
+        if (sizeof($bookings) > 0) {
+            return $this->sendResponse($bookings);
+        }else{
+            return $this->sendResponse("Sorry, Showings not found!", 200, false);
+        }
+    }
 }
