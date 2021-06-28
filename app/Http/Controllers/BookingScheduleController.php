@@ -291,6 +291,9 @@ class BookingScheduleController extends Controller
             foreach ($bookings as $booking) {
                 $booking['showing_setup'] = $showing_setup;
                 $booking['office'] = '';
+
+                $booking_count = PropertyBookingSchedule::where(['property_id'=>$booking->property_id, 'buyer_id'=>$booking->buyer_id])->get();
+                $booking['booking_count'] = sizeof($booking_count);
                 if (strtotime(date('Y-m-d')) < strtotime($booking->booking_date)) {
                     $future_bookings[] = $booking;
                 }else if (strtotime(date('Y-m-d')) > strtotime($booking->booking_date)) {
