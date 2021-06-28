@@ -10,6 +10,7 @@ use App\Models\PropertyBookingSchedule;
 use App\Models\PropertyShowingSetup;
 use App\Models\PropertyShowingAvailability;
 use App\Models\Properties;
+use App\Models\PropertyHomendo;
 use App\Mail\SignupMail;
 use App\Mail\BookingMail;
 use App\Mail\BookingUpdate;
@@ -27,7 +28,8 @@ class BookingScheduleController extends Controller
             'property_id'=> 'required',
             'booking_date'=> 'required|date|date_format:Y-m-d',
             'booking_time'=> 'required',
-            'buyer_id'    => 'nullable'
+            'buyer_id'    => 'nullable',
+            'agent_id'    => 'required'
         ]);
         
         $phone = $request->phone;
@@ -36,8 +38,12 @@ class BookingScheduleController extends Controller
         $booking_date = $request->booking_date;
         $booking_time = $request->booking_time;
         $property = Properties::where('uuid', $property_id)->first();
+        $homendo = PropertyHomendo::where('property_id', $property_id)->first();
         $showing_setup = PropertyShowingSetup::where('property_id', $property_id)->first();
-        $validator = Users::where('uuid', $showing_setup->validator)->first();
+        $validator = $showing_setup->validator[0];
+        $availibility = PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->first();
+        $get_availibility = json_decode($availibility);
+        $availibility_data = json_decode($get_availibility->availability);
 
         if ($request->has('buyer_id')) {
             $users = Users::where('uuid',$request->buyer_id)->first();
@@ -54,18 +60,23 @@ class BookingScheduleController extends Controller
             }else{
                 $propertyBookingSchedule->status = 'A';
             }
+            $propertyBookingSchedule->agent_id = $request->agent_id;
             $propertyBookingSchedule->cancel_at = null;
 
             $this->configSMTP();
-            $mail_data = [
-                'name'=>$users->first_name.' '.$users->last_name,
-                'validator_name'=>$validator->first_name.' '.$validator->last_name,
-                'property_name'=>$property->title,
-                'booking_date'=>$request->booking_date,
-                'booking_time'=>$request->booking_time
-            ];
 
             if ($propertyBookingSchedule->save()) {
+                foreach ($availibility_data as $data) {
+                    if ($data->date == date('F d l', strtotime($booking_date))) {
+                        foreach ($data->slots as $slot) {
+                            if ($slot->slot == date('H:i A', strtotime($booking_time))) {
+                                $slot->status = 'booked';
+                            }
+                        }
+                    }
+                }
+                PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
+
                 try {
                     $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
                     $message =  $this->twilioClient->messages->create(
@@ -79,8 +90,16 @@ class BookingScheduleController extends Controller
 
                 }
 
+                $mail_data = [
+		                'name'=>$users->first_name.' '.$users->last_name,
+		                'validator_name'=>$validator->first_name.' '.$validator->last_name,
+		                'property_name'=>$homendo->hmdo_mls_propname,
+		                'booking_date'=>$request->booking_date,
+		                'booking_time'=>$request->booking_time
+		            ];
+
                 try {
-                    Mail::to($users->email)->send(new BookingMail($mail_data));
+                    Mail::to($validator->email)->send(new BookingMail($mail_data));
                     return $this->sendResponse("Insert Request Successfully!");
                 } catch(\Exception $e) {
                     $msg = $e->getMessage();
@@ -111,7 +130,6 @@ class BookingScheduleController extends Controller
             $user->image = "default.png";
             $result = $user->save();
             if ($result) {
-
                 try {
                     $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
                     $message =  $this->twilioClient->messages->create(
@@ -139,7 +157,7 @@ class BookingScheduleController extends Controller
                 $mail_data = [
                     'name'=>$request->first_name.' '.$request->last_name,
                     'validator_name'=>$validator->first_name.' '.$validator->last_name,
-                    'property_name'=>$property->title,
+                    'property_name'=>$homendo->hmdo_mls_propname,
                     'booking_date'=>$request->booking_date,
                     'booking_time'=>$request->booking_time
                 ];
@@ -186,6 +204,7 @@ class BookingScheduleController extends Controller
         $booking = PropertyBookingSchedule::where('uuid',$id)->first();
         $validator = Users::where('uuid', $booking->buyer_id)->first();
         $property = Properties::where('uuid', $booking->property_id)->first();
+        $homendo = PropertyHomendo::where('property_id', $booking->property_id)->first();
         $setup = PropertyShowingSetup::where('property_id', $booking->property_id)->first();
         $availibility = PropertyShowingAvailability::where('showing_setup_id', $setup->uuid)->first();
         $get_availibility = json_decode($availibility);
@@ -220,15 +239,6 @@ class BookingScheduleController extends Controller
                     PropertyShowingAvailability::where('showing_setup_id', $setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
                 }
 
-                $this->configSMTP();
-                $data = [
-                    'name'=>$validator->first_name.' '.$validator->last_name,
-                    'property_name'=>$property->title,
-                    'status'=>$msg,
-                    'booking_date'=>$request->booking_date,
-                    'booking_time'=>$request->booking_time
-                ];
-
                 try {
                     $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
                     $message =  $this->twilioClient->messages->create(
@@ -241,6 +251,15 @@ class BookingScheduleController extends Controller
                 } catch(\Exception $e) {
 
                 }
+
+                $this->configSMTP();
+                $data = [
+                    'name'=>$validator->first_name.' '.$validator->last_name,
+                    'property_name'=>$homendo->hmdo_mls_propname,
+                    'status'=>$msg,
+                    'booking_date'=>$request->booking_date,
+                    'booking_time'=>$request->booking_time
+                ];
 
                 try {
                     Mail::to($validator->email)->send(new BookingUpdate($data));

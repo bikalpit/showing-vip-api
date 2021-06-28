@@ -227,7 +227,7 @@
 	            <div class="wm-section-content" id="wm-content-head">
 	                <div class="wm-content">
 		                <p>Hi {{$validator_name}},</p><br/>
-		          		<h3>{{$name}} want to visit your this {{$property_name}} property on {{$booking_date}} {{$booking_time}} </h3>
+		          		<h3>{{$name}} want to visit your {{$property_name}} property on {{$booking_date}} {{$booking_time}} </h3>
 	                </div>
 	            </div>
 	    	</div>
