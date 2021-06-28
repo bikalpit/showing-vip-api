@@ -69,6 +69,15 @@ class AgentController extends Controller
         }
     }
 
+    public function addAgentProperties(Request $request){
+        $this->validate($request, [
+            'agent_id' => 'required',
+            'properties' => 'required'
+        ]);
+
+        dd($request->properties);
+    }
+
     public function addClient(Request $request){
         $this->validate($request, [
             'first_name' => 'required',
