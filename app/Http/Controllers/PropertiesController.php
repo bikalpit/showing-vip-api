@@ -425,6 +425,7 @@ class PropertiesController extends Controller
 				$sorting = $request->sorting;
 				
 	      $property_ids = PropertyAgents::where('agent_id', $request->agent_id)->pluck('property_id')->toArray();
+	      $all_properties = [];
 
 	      if (sizeof($property_ids) > 0) {
 	      		if ($sorting !== '') {
@@ -466,10 +467,19 @@ class PropertiesController extends Controller
 										$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
 								}
 	      		}
-			      		
 
 	      		if (sizeof($properties) > 0) {
-	      				return $this->sendResponse($properties);
+	      				foreach ($properties as $property) {
+			      				$user_ids = PropertyOwners::where('property_id', $property->uuid)->pluck('user_id')->toArray();
+			      				
+			      				if (sizeof($user_ids) < 0) {
+				      					$property['owners'] = null;
+				      			}else{
+				      					$property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
+				      			}
+				      			$all_properties[] = $property;
+			      		}
+	      				return $this->sendResponse($all_properties);
 	      		}else{
 			      		return $this->sendResponse("Sorry, Property not found!", 200, false);
 			      }

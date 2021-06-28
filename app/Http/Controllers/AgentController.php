@@ -69,11 +69,26 @@ class AgentController extends Controller
         }
     }
 
-    /*public function myClients(Request $request){
+    public function addClient(Request $request){
         $this->validate($request, [
-            'agent_id' => 'required'
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required',
+            'phone' => 'required',
+            'role' => 'required',
+            'agent_id' => 'required',
+            'property_id' => 'required',
+            'url' => 'required'
         ]);
 
-        
-    }*/
+        $email_check = Users::where('email', $request->email)->first();
+        $phone_check = Users::where('phone', $request->phone)->first();
+        $property = Properties::where('uuid', $request->property_id)->first();
+
+        if ($email_check !== null) {
+            return $this->sendResponse("Sorry, Email already exist!", 200, false);
+        }elseif ($phone_check !== null) {
+            return $this->sendResponse("Sorry, Phone no. already exist!", 200, false);
+        }
+    }
 }
