@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Users;
 use App\Models\ApiToken;
 use App\Models\UserPasswordReset;
+use App\Models\AgentInfo;
 use App\Mail\ForgetPasswordMail;
 use App\Mail\VerifyEmail;
 use Twilio\Rest\Client as TwilioClient;
@@ -41,7 +42,14 @@ class UserAuthController extends Controller
 	          		$authentication['phone'] = $user->phone;
 	      				$authentication['image'] = $user->image;
 	      				$authentication['sub_role'] = $user->sub_role;
-					      return $this->sendResponse($authentication);
+	      				
+	      				if ($user->role == 'AGENT') {
+		      					$agent_info = AgentInfo::where('agent_id', $user->uuid)->first();
+		      					$response = array('authentication'=>$authentication, 'agent_info'=>$agent_info);
+		      					return $this->sendResponse($response);
+	      				}else{
+	      						return $this->sendResponse($authentication);
+	      				}
 	    			}else{
 	    				  return $this->sendResponse("Email or Password is wrong!", 200, false);
 	    			}
