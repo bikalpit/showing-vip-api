@@ -45,11 +45,9 @@ class UserAuthController extends Controller
 	      				
 	      				if ($user->role == 'AGENT') {
 		      					$agent_info = AgentInfo::where('agent_id', $user->uuid)->first();
-		      					$response = array('authentication'=>$authentication, 'agent_info'=>$agent_info);
-		      					return $this->sendResponse($response);
-	      				}else{
-	      						return $this->sendResponse($authentication);
+		      					$authentication['agent_info'] = $agent_info;
 	      				}
+	      				return $this->sendResponse($authentication);
 	    			}else{
 	    				  return $this->sendResponse("Email or Password is wrong!", 200, false);
 	    			}
