@@ -144,8 +144,9 @@ class AgentController extends Controller
 
                 $property_agent = new PropertyAgents;
                 $property_agent->property_id = $uuid;
-                $property_agent->user_id = $uuid;
+                //$property_agent->user_id = $uuid;
                 $property_agent->agent_id = $request->agent_id;
+                $property_agent->save();
             }else{
                 if ($new_property['hmdo_lastupdated'][1] > $property->last_update) {
                     $update_property = Properties::where('uuid', $match_property->uuid)->update(['data'=>json_encode($new_property), 'last_update'=>date('Y-m-d H:i:s')]);
