@@ -39,6 +39,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('add-agent',  ['middleware'=>'auth','uses'=>'UsersController@addAgent']);
 		$router->post('get-users',  ['middleware'=>'auth','uses'=>'UsersController@getUsers']);
 		$router->post('get-agents',  ['middleware'=>'auth','uses'=>'UsersController@getAgents']);
+		$router->post('get-messages',  ['middleware'=>'auth','uses'=>'UsersController@getMessages']);
+		$router->post('get-senders',  ['middleware'=>'auth','uses'=>'UsersController@getSenders']);
 		$router->post('update-profile',  ['uses'=>'UsersController@updateProfile']);
 		/* UsersController APIs End */
 

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\Users;
 use App\Models\UserAgents;
+use App\Models\Messages;
 use App\Models\AgentInfo;
 use App\Mail\SignupMail;
 use Carbon\Carbon;
@@ -285,6 +286,36 @@ class UsersController extends Controller
 	      		return $this->sendResponse("Sorry, Agents not found!", 200, false);
 	      }
     }
+
+	public function getSenders(Request $request){
+			$this->validate($request, [
+				'user_id' => 'required'
+		]);
+
+		$messages = Messages::with('sender.senderInfo')->where('receiver_id', $request->user_id)->orderBy('id', 'DESC')->get()->unique('receiver_id');
+
+		if (sizeof($messages) > 0) {
+			return $this->sendResponse($messages);
+		} else {
+			return $this->sendResponse("Sorry, Senders not found!", 200, false);
+		}
+	}
+
+	public function getMessages(Request $request){
+			$this->validate($request, [
+				'user_id' => 'required'
+		]);
+
+		$sort = $request->order_by ?? 'ASC';
+
+		$messages = Messages::where('sender_id', $request->user_id)->orWhere('receiver_id', $request->user_id)->orderBy('id', $sort)->get();
+
+		if (sizeof($messages) > 0) {
+					return $this->sendResponse($messages);
+		}else{
+				return $this->sendResponse("Sorry, Messages not found!", 200, false);
+		}
+	}
 
     public function updateProfile(Request $request){
     		$this->validate($request, [
