@@ -29,7 +29,7 @@ class PropertiesController extends Controller
 	      		'user_id' => 'required',
 	          'data' => 'required'
 	      ]);
-				/*dd($request->data['property'][1][1]['z_zpid'][1]);*/
+	      
 				$mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
 
 	      $time = strtotime(Carbon::now());
@@ -39,6 +39,7 @@ class PropertiesController extends Controller
 	      $property->mls_id = $mls_id;
 	      $property->data = json_encode($request->data);
 	      $property->verified = 'NO';
+	      $property->last_update = date('Y-m-d H:i:s');
 	      $add_property = $property->save();
 
 	      $valuecheck = new PropertyValuecheck;

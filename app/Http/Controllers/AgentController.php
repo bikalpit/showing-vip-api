@@ -8,6 +8,10 @@ use App\Models\Users;
 use App\Models\Properties;
 use App\Models\PropertyAgents;
 use App\Models\UserAgents;
+use App\Models\PropertyValuecheck;
+use App\Models\PropertyZillow;
+use App\Models\PropertyHomendo;
+use Carbon\Carbon;
 class AgentController extends Controller
 {
     public function getClientWithProperty(Request $request){
@@ -75,7 +79,108 @@ class AgentController extends Controller
             'properties' => 'required'
         ]);
 
-        dd($request->properties);
+        $all_properties = Properties::with('Homendo')->get();
+        
+        foreach ($request->properties as $new_property) {
+            foreach ($all_properties as $property) {
+                $check = 0;
+                if ($property->mls_id == $new_property['hmdo_mls_id'][1]) {
+                    $check = 1;
+                    $match_property = $property;
+                    break;
+                }
+            }
+
+            if ($check == 0) {
+                $time = strtotime(Carbon::now());
+                $uuid = "prty".$time.rand(10,99)*rand(10,99);
+                $property = new Properties;
+                $property->uuid = $uuid;
+                $property->mls_id = $new_property['hmdo_mls_id'][1];
+                $property->data = json_encode($new_property);
+                $property->verified = 'NO';
+                $property->last_update = date('Y-m-d H:i:s');
+                $add_property = $property->save();
+
+                $valuecheck = new PropertyValuecheck;
+                $valuecheck->uuid = "vlck".$time.rand(10,99)*rand(10,99);
+                $valuecheck->property_id = $uuid;
+                $add_valuecheck = $valuecheck->save();
+
+                $zillow = new PropertyZillow;
+                $zillow->uuid = "zilw".$time.rand(10,99)*rand(10,99);
+                $zillow->property_id = $uuid;
+                $add_zillow = $zillow->save();
+
+                $homendo = new PropertyHomendo;
+                $homendo->uuid = "hmdo".$time.rand(10,99)*rand(10,99);
+                $homendo->property_id = $uuid;
+                $homendo->hmdo_lastupdated = $new_property['hmdo_lastupdated'][1];
+                $homendo->hmdo_mls_id = $new_property['hmdo_mls_id'][1];
+                $homendo->hmdo_mls_originator = $new_property['hmdo_mls_originator'][1];
+                $homendo->hmdo_mls_proptype = $new_property['hmdo_mls_proptype'][1];
+                $homendo->hmdo_mls_propname = $new_property['hmdo_mls_propname'][1];
+                $homendo->hmdo_mls_status = $new_property['hmdo_mls_status'][1];
+                $homendo->hmdo_mls_price = $new_property['hmdo_mls_price'][1];
+                $homendo->hmdo_mls_streetnumber = $new_property['hmdo_mls_streetnumber'][1];
+                $homendo->hmdo_mls_streetdirection = $new_property['hmdo_mls_streetdirection'][1];
+                $homendo->hmdo_mls_streetname = $new_property['hmdo_mls_streetname'][1];
+                $homendo->hmdo_mls_streettype = $new_property['hmdo_mls_streettype'][1];
+                $homendo->hmdo_mls_unitnumber = $new_property['hmdo_mls_unitnumber'][1];
+                $homendo->hmdo_mls_city = $new_property['hmdo_mls_city'][1];
+                $homendo->hmdo_mls_zipcode = $new_property['hmdo_mls_zipcode'][1];
+                $homendo->hmdo_mls_state = $new_property['hmdo_mls_state'][1];
+                $homendo->hmdo_mls_latitude = $new_property['hmdo_mls_latitude'][1];
+                $homendo->hmdo_mls_longitude = $new_property['hmdo_mls_longitude'][1];
+                $homendo->hmdo_mls_yearbuilt = $new_property['hmdo_mls_yearbuilt'][1];
+                $homendo->hmdo_mls_beds = $new_property['hmdo_mls_beds'][1];
+                $homendo->hmdo_mls_baths = $new_property['hmdo_mls_baths'][1];
+                $homendo->hmdo_mls_sqft = $new_property['hmdo_mls_sqft'][1];
+                $homendo->hmdo_mls_acres = $new_property['hmdo_mls_acres'][1];
+                $homendo->hmdo_mls_carspaces = $new_property['hmdo_mls_carspaces'][1];
+                $homendo->hmdo_mls_url = $new_property['hmdo_mls_url'][1];
+                $homendo->hmdo_mls_thumbnail = $new_property['hmdo_mls_thumbnail'][1];
+                $add_homendo = $homendo->save();
+
+                $property_agent = new PropertyAgents;
+                $property_agent->property_id = $uuid;
+                $property_agent->user_id = $uuid;
+                $property_agent->agent_id = $request->agent_id;
+            }else{
+                if ($new_property['hmdo_lastupdated'][1] > $property->last_update) {
+                    $update_property = Properties::where('uuid', $match_property->uuid)->update(['data'=>json_encode($new_property), 'last_update'=>date('Y-m-d H:i:s')]);
+                    $update_homendo = PropertyHomendo::where('property_id', $match_property->uuid)->update([
+                        'hmdo_lastupdated'=>$new_property['hmdo_lastupdated'][1],
+                        'hmdo_mls_id'=>$new_property['hmdo_mls_id'][1],
+                        'hmdo_mls_originator'=>$new_property['hmdo_mls_originator'][1],
+                        'hmdo_mls_proptype'=>$new_property['hmdo_mls_proptype'][1],
+                        'hmdo_mls_propname'=>$new_property['hmdo_mls_propname'][1],
+                        'hmdo_mls_status'=>$new_property['hmdo_mls_status'][1],
+                        'hmdo_mls_price'=>$new_property['hmdo_mls_price'][1],
+                        'hmdo_mls_streetnumber'=>$new_property['hmdo_mls_streetnumber'][1],
+                        'hmdo_mls_streetdirection'=>$new_property['hmdo_mls_streetdirection'][1],
+                        'hmdo_mls_streetname'=>$new_property['hmdo_mls_streetname'][1],
+                        'hmdo_mls_streettype'=>$new_property['hmdo_mls_streettype'][1],
+                        'hmdo_mls_unitnumber'=>$new_property['hmdo_mls_unitnumber'][1],
+                        'hmdo_mls_city'=>$new_property['hmdo_mls_city'][1],
+                        'hmdo_mls_zipcode'=>$new_property['hmdo_mls_zipcode'][1],
+                        'hmdo_mls_state'=>$new_property['hmdo_mls_state'][1],
+                        'hmdo_mls_latitude'=>$new_property['hmdo_mls_latitude'][1],
+                        'hmdo_mls_longitude'=>$new_property['hmdo_mls_longitude'][1],
+                        'hmdo_mls_yearbuilt'=>$new_property['hmdo_mls_yearbuilt'][1],
+                        'hmdo_mls_beds'=>$new_property['hmdo_mls_beds'][1],
+                        'hmdo_mls_baths'=>$new_property['hmdo_mls_baths'][1],
+                        'hmdo_mls_sqft'=>$new_property['hmdo_mls_sqft'][1],
+                        'hmdo_mls_acres'=>$new_property['hmdo_mls_acres'][1],
+                        'hmdo_mls_carspaces'=>$new_property['hmdo_mls_carspaces'][1],
+                        'hmdo_mls_url'=>$new_property['hmdo_mls_url'][1],
+                        'hmdo_mls_thumbnail'=>$new_property['hmdo_mls_thumbnail'][1]
+                    ]);
+                }
+            }
+        }
+
+        return $this->sendResponse('Agent properties upodated successfully!');
     }
 
     public function addClient(Request $request){
