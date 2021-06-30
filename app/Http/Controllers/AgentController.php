@@ -84,7 +84,7 @@ class AgentController extends Controller
             'last_name' => 'required',
             'email' => 'required',
             'phone' => 'required',
-            'role' => 'required',
+            'role' => 'required|in:SELLER,BUYER',
             'agent_id' => 'required',
             'property_id' => 'required',
             'url' => 'required'
@@ -98,6 +98,21 @@ class AgentController extends Controller
             return $this->sendResponse("Sorry, Email already exist!", 200, false);
         }elseif ($phone_check !== null) {
             return $this->sendResponse("Sorry, Phone no. already exist!", 200, false);
+        }else{
+            $time = strtotime(Carbon::now());
+            $uuid = "usr".$time.rand(10,99)*rand(10,99);
+            $user = new Users;
+            $user->uuid = $uuid;
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->role = "USER";
+            $user->sub_role = "SELLER";
+            $user->phone_verified = "NO";
+            $user->email_verified = "NO";
+            $user->image = "default.png";
+            $result = $user->save();
         }
     }
 }

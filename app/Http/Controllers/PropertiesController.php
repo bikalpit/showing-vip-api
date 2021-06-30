@@ -14,6 +14,7 @@ use App\Models\PropertyShowingSetup;
 use App\Models\PropertyValuecheck;
 use App\Models\PropertyHomendo;
 use App\Models\PropertyZillow;
+use App\Models\PropertyBuyers;
 use App\Mail\AssignAgent;
 use App\Mail\SignupMail;
 use App\Mail\AssignOwner;
@@ -193,10 +194,11 @@ class PropertiesController extends Controller
 	      		'user_id' => 'required'
 	      ]);
 
-	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
+				$all_properties = [];
+				$all_buying_properties = [];
 
+	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
 	      if (sizeof($property_ids) > 0) {
-	      		$all_properties = [];
 	      		$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
 	      		foreach ($properties as $property) {
 		      			$user_ids = PropertyOwners::where('property_id', $property->uuid)->pluck('user_id')->toArray();
@@ -207,10 +209,24 @@ class PropertiesController extends Controller
 		      			}
 		      			$all_properties[] = $property;
 	      		}
-	      		return $this->sendResponse($all_properties);
-	      }else{
-	      		return $this->sendResponse("Sorry, Property not found!", 200, false);
 	      }
+
+	      $buying_property_ids = PropertyBuyers::where('buyer_id', $request->user_id)->pluck('property_id')->toArray();
+	      if (sizeof($buying_property_ids) > 0) {
+	      		$buying_properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $buying_property_ids)->get();
+	      		foreach ($buying_properties as $buying_property) {
+		      			$user_ids = PropertyOwners::where('property_id', $buying_property->uuid)->pluck('user_id')->toArray();
+		      			if (sizeof($user_ids) < 0) {
+		      					$buying_property['owners'] = null;
+		      			}else{
+		      					$buying_property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
+		      			}
+		      			$all_buying_properties[] = $buying_property;
+	      		}
+	      }
+
+	      $response = array('selling_property'=>$all_properties, 'buying_property'=>$all_buying_properties);
+	      return $this->sendResponse($response);
 		}
 
 		public function assignAgent(Request $request){

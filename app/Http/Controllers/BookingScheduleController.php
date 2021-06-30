@@ -11,6 +11,7 @@ use App\Models\PropertyShowingSetup;
 use App\Models\PropertyShowingAvailability;
 use App\Models\Properties;
 use App\Models\PropertyHomendo;
+use App\Models\PropertyBuyers;
 use App\Mail\SignupMail;
 use App\Mail\BookingMail;
 use App\Mail\BookingUpdate;
@@ -63,8 +64,6 @@ class BookingScheduleController extends Controller
             $propertyBookingSchedule->agent_id = $request->agent_id;
             $propertyBookingSchedule->cancel_at = null;
 
-            $this->configSMTP();
-
             if ($propertyBookingSchedule->save()) {
                 foreach ($availibility_data as $data) {
                     if ($data->date == date('F d l', strtotime($booking_date))) {
@@ -76,6 +75,16 @@ class BookingScheduleController extends Controller
                     }
                 }
                 PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
+
+                $check_buyer = PropertyBuyers::where(['buyer_id'=>$request->buyer_id, 'property_id'=>$property_id])->first();
+                if (empty($check_buyer)) {
+                    $property_buyer = new PropertyBuyers;
+                    $property_buyer->property_id = $property_id;
+                    //$property_buyer->seller_id = $seller_id;
+                    $property_buyer->buyer_id = $request->buyer_id;
+                    $property_buyer->agent_id = $request->agent_id;
+                    $property_buyer->save();
+                }
 
                 try {
                     $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
@@ -90,6 +99,7 @@ class BookingScheduleController extends Controller
 
                 }
 
+                $this->configSMTP();
                 $mail_data = [
 		                'name'=>$users->first_name.' '.$users->last_name,
 		                'validator_name'=>$validator->first_name.' '.$validator->last_name,
@@ -131,38 +141,6 @@ class BookingScheduleController extends Controller
             $result = $user->save();
             if ($result) {
                 try {
-                    $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
-                    $message =  $this->twilioClient->messages->create(
-                        '+919624730644',
-                        array(
-                            "from" => '+14243918787',
-                            "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$request->first_name.' '.$request->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
-                        )
-                    );
-                } catch(\Exception $e) {
-
-                }
-
-                $this->configSMTP();
-                $verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-                Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
-
-                $data = [
-                    'name'=>$request->first_name.' '.$request->last_name, 
-                    'verification_token'=>$verification_token, 
-                    'email'=>$request->email,
-                    'url'=>$request->url
-                ];
-
-                $mail_data = [
-                    'name'=>$request->first_name.' '.$request->last_name,
-                    'validator_name'=>$validator->first_name.' '.$validator->last_name,
-                    'property_name'=>$homendo->hmdo_mls_propname,
-                    'booking_date'=>$request->booking_date,
-                    'booking_time'=>$request->booking_time
-                ];
-
-                try {
                     $uuid = "sch".$time.rand(10,99)*rand(10,99);
                     $propertyBookingSchedule = new PropertyBookingSchedule;
                     $propertyBookingSchedule->uuid = $uuid;
@@ -172,8 +150,52 @@ class BookingScheduleController extends Controller
                     $propertyBookingSchedule->booking_time = $booking_time;
                     $propertyBookingSchedule->status = 'P';
                     $propertyBookingSchedule->save();
+                    
+                    $check_buyer = PropertyBuyers::where(['buyer_id'=>$uuid, 'property_id'=>$property_id])->first();
+                    if (empty($check_buyer)) {
+                        $property_buyer = new PropertyBuyers;
+                        $property_buyer->property_id = $property_id;
+                        //$property_buyer->seller_id = $seller_id;
+                        $property_buyer->buyer_id = $uuid;
+                        $property_buyer->agent_id = $request->agent_id;
+                        $property_buyer->save();
+                    }
+                    
+                    try {
+                        $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
+                        $message =  $this->twilioClient->messages->create(
+                            '+919624730644',
+                            array(
+                                "from" => '+14243918787',
+                                "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$request->first_name.' '.$request->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                            )
+                        );
+                    } catch(\Exception $e) {
+                        
+                    }
+                    
+                    $verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+                    Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+
+                    $this->configSMTP();
+                    $data = [
+                        'name'=>$request->first_name.' '.$request->last_name, 
+                        'verification_token'=>$verification_token, 
+                        'email'=>$request->email,
+                        'url'=>$request->url
+                    ];
+
+                    $mail_data = [
+                        'name'=>$request->first_name.' '.$request->last_name,
+                        'validator_name'=>$validator->first_name.' '.$validator->last_name,
+                        'property_name'=>$homendo->hmdo_mls_propname,
+                        'booking_date'=>$request->booking_date,
+                        'booking_time'=>$request->booking_time
+                    ];
+
                     Mail::to($request->email)->send(new BookingMail($mail_data));
                     Mail::to($request->email)->send(new SignupMail($data));
+
                     return $this->sendResponse("Insert Request Successfully!");
                 } catch(\Exception $e) {
                     $msg = $e->getMessage();
