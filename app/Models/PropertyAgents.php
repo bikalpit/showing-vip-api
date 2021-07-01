@@ -11,7 +11,7 @@ class PropertyAgents extends Model
      */
     protected $table = 'property_agents';
 
-    protected $fillable = ['property_id','user_id','agent_id'];
+    protected $fillable = ['property_id','seller_id','buyer_id','agent_id','agent_type'];
 
     public function property()
     {

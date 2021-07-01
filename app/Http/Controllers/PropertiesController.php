@@ -145,6 +145,7 @@ class PropertiesController extends Controller
 	      $owner = new PropertyOwners;
 	      $owner->property_id = $property->uuid;
 	      $owner->user_id = $request->user_id;
+	      $owner->type = 'main_owner';
 	      $property_owner = $owner->save();
 	      
 	      if ($property_owner) {
@@ -244,7 +245,7 @@ class PropertiesController extends Controller
 						$property_agent = new PropertyAgents;
 						$property_agent->property_id = $request->property_id;
 						$property_agent->agent_id = $request->agent_id;
-						$property_agent->user_id = $request->user_id;
+						$property_agent->seller_id = $request->seller_id;
 						$result = $property_agent->save();
 						if ($result) {
 								$this->configSMTP();
@@ -276,7 +277,7 @@ class PropertiesController extends Controller
 	      		'user_id' => 'required'
 	      ]);
 
-	      $result = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id, 'user_id'=>$request->user_id])->delete();
+	      $result = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id, 'seller_id'=>$request->user_id])->delete();
 
 	      if ($result) {
 	      		return $this->sendResponse("Agent removed successfully!");
@@ -442,7 +443,6 @@ class PropertiesController extends Controller
 				$sorting = $request->sorting;
 				
 	      $property_ids = PropertyAgents::where('agent_id', $request->agent_id)->pluck('property_id')->toArray();
-	      $all_properties = [];
 
 	      if (sizeof($property_ids) > 0) {
 	      		if ($sorting !== '') {
@@ -486,15 +486,23 @@ class PropertiesController extends Controller
 	      		}
 
 	      		if (sizeof($properties) > 0) {
+	      				$selling_properties = [];
+	      				$buying_properties = [];
 	      				foreach ($properties as $property) {
 			      				$user_ids = PropertyOwners::where('property_id', $property->uuid)->pluck('user_id')->toArray();
-			      				
 			      				if (sizeof($user_ids) < 0) {
 				      					$property['owners'] = null;
 				      			}else{
 				      					$property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
 				      			}
-				      			$all_properties[] = $property;
+
+				      			$property_info = PropertyAgents::where('property_id', $property->uuid)->first();
+				      			if ($property_info->agent_type == 'seller') {
+				      					$selling_properties[] = $property;
+				      			}else{
+				      					$buying_properties[] = $property;
+				      			}
+				      			$all_properties = array('selling_properties'=>$selling_properties, 'buying_properties'=>$buying_properties);
 			      		}
 	      				return $this->sendResponse($all_properties);
 	      		}else{
@@ -536,7 +544,7 @@ class PropertiesController extends Controller
 			      $property_agent = new PropertyAgents;
 						$property_agent->property_id = $check->property_id;
 						$property_agent->agent_id = $check->agent_id;
-						$property_agent->user_id = $check->user_id;
+						$property_agent->user_id = $check->seller_id;
 						$result = $property_agent->save();
 				}else{
 						$status = 'expired';

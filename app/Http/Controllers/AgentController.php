@@ -33,7 +33,7 @@ class AgentController extends Controller
             'agent_id'  => 'required'
         ]);
 
-        $properteyIds = PropertyAgents::where(['agent_id'=>$request->agent_id,'user_id'=>$request->client_id])
+        $properteyIds = PropertyAgents::where(['agent_id'=>$request->agent_id,'seller_id'=>$request->client_id])
                         ->pluck('property_id')->toArray();
         $result = Users::where('uuid',$request->client_id)->first();
         if ($result) {
@@ -76,7 +76,8 @@ class AgentController extends Controller
     public function addAgentProperties(Request $request){
         $this->validate($request, [
             'agent_id' => 'required',
-            'properties' => 'required'
+            'properties' => 'required',
+            'buyer_id' => 'required'
         ]);
 
         $all_properties = Properties::with('Homendo')->get();
@@ -144,8 +145,9 @@ class AgentController extends Controller
 
                 $property_agent = new PropertyAgents;
                 $property_agent->property_id = $uuid;
-                //$property_agent->user_id = $uuid;
+                $property_agent->buyer_id = $request->buyer_id;
                 $property_agent->agent_id = $request->agent_id;
+                $property_agent->agent_type = 'seller';
                 $property_agent->save();
             }else{
                 if ($new_property['hmdo_lastupdated'][1] > $property->last_update) {
