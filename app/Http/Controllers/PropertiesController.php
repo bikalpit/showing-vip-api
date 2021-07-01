@@ -253,7 +253,7 @@ class PropertiesController extends Controller
 								$data = [
 										'name'=>$agent->first_name.' '.$agent->last_name, 
 		                'property_id'=>$request->property_id,
-		                'property_name'=>$property->title
+		                'property_name'=>$homendo->hmdo_mls_propname
 	              ];
 	              
 								try{
