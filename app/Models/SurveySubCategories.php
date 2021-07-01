@@ -12,4 +12,9 @@ class SurveySubCategories extends Model
     protected $table = 'survey_sub_categories';
 
     protected $fillable = ['uuid','category_id','name'];
+
+    public function category()
+    {
+        return $this->hasOne('App\Models\SurveyCategories','uuid','category_id');
+    }
 }

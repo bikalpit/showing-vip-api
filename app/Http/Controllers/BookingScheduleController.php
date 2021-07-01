@@ -12,6 +12,8 @@ use App\Models\PropertyShowingAvailability;
 use App\Models\Properties;
 use App\Models\PropertyHomendo;
 use App\Models\PropertyBuyers;
+use App\Models\ShowingFeedback;
+use App\Models\SurveySubCategories;
 use App\Mail\SignupMail;
 use App\Mail\BookingMail;
 use App\Mail\BookingUpdate;
@@ -312,6 +314,14 @@ class BookingScheduleController extends Controller
         if (sizeof($bookings) > 0) {
             foreach ($bookings as $booking) {
                 $booking['showing_setup'] = $showing_setup;
+                $surveys = json_decode($booking['showing_setup']->showingSurvey->survey);
+                $answers = [];
+                foreach ($surveys as $survey) {
+                    $subCategory = SurveySubCategories::with('category')->where('uuid',$survey)->first();
+                    $answers[] = $subCategory;
+                }
+                $booking['answers'] = $answers;
+                $booking['feedback'] = ShowingFeedback::where('booking_id', $booking->uuid)->first();
                 $booking['office'] = '';
 
                 $booking_count = PropertyBookingSchedule::where(['property_id'=>$booking->property_id, 'buyer_id'=>$booking->buyer_id])->get();
@@ -339,6 +349,37 @@ class BookingScheduleController extends Controller
             return $this->sendResponse($bookings);
         }else{
             return $this->sendResponse("Sorry, Showings not found!", 200, false);
+        }
+    }
+
+    public function submitFeedback(Request $request){
+        $this->validate($request, [
+            'booking_id'   => 'required',
+            'feedback'   => 'required'
+        ]);
+
+        $feedback = new ShowingFeedback;
+        $feedback->booking_id = $request->booking_id;
+        $feedback->feedback = json_encode($request->feedback);
+        $result = $feedback->save();
+
+        if ($result) {
+            return $this->sendResponse("Feedback submitted successfully");
+        }else{
+            return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+        }
+    }
+
+    public function getFeedback(Request $request){
+        $this->validate($request, [
+            'booking_id'   => 'required'
+        ]);
+
+        $feedback = ShowingFeedback::where('booking_id', $request->booking_id)->first();
+        if (!empty($feedback)) {
+            return $this->sendResponse($feedback);
+        }else{
+            return $this->sendResponse("Sorry, Feedback not found!", 200, false);
         }
     }
 }

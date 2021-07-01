@@ -544,7 +544,8 @@ class PropertiesController extends Controller
 			      $property_agent = new PropertyAgents;
 						$property_agent->property_id = $check->property_id;
 						$property_agent->agent_id = $check->agent_id;
-						$property_agent->user_id = $check->seller_id;
+						$property_agent->seller_id = $check->user_id;
+						$property_agent->agent_type = 'seller';
 						$result = $property_agent->save();
 				}else{
 						$status = 'expired';
