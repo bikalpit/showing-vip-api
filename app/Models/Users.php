@@ -34,4 +34,8 @@ class Users extends Model
     {
         return $this->hasOne('App\Models\AgentInfo','agent_id','uuid');
     }
+    public function senderInfo()
+    {
+        return $this->hasOne('App\Models\Messages','sender_id','uuid');
+    }
 }
