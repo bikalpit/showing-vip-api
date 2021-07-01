@@ -240,6 +240,7 @@ class PropertiesController extends Controller
 
 				$property = Properties::where('uuid', $request->property_id)->first();
 				$agent = Users::where('uuid', $request->agent_id)->first();
+				$homendo = PropertyHomendo::where('property_id', $request->property_id)->first();
 
 				if (!empty($property)) {
 						$property_agent = new PropertyAgents;
@@ -371,6 +372,7 @@ class PropertiesController extends Controller
 	      $email_check = Users::where('email', $request->email)->first();
 	      $phone_check = Users::where('phone', $request->phone)->first();
 	      $property = Properties::where('uuid', $request->property_id)->first();
+	      $homendo = PropertyHomendo::where('property_id', $request->property_id)->first();
 
 	      if ($email_check !== null) {
 	    			return $this->sendResponse("Sorry, Email already exist!", 200, false);
@@ -406,7 +408,7 @@ class PropertiesController extends Controller
 		      			$dataAssignOwner = [
 		      					'name'=>$request->first_name.' '.$request->last_name,
   									'owner_name'=>$prop_owner->first_name.' '.$prop_owner->last_name,
-  									'property_name'=>$property->title
+  									'property_name'=>$homendo->hmdo_mls_propname
   							];
 
 					      $dataSignupMail = [

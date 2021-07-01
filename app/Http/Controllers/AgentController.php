@@ -198,29 +198,78 @@ class AgentController extends Controller
             'url' => 'required'
         ]);
 
+        $prop_agent = Users::where('uuid', $request->agent_id)->first();
         $email_check = Users::where('email', $request->email)->first();
         $phone_check = Users::where('phone', $request->phone)->first();
         $property = Properties::where('uuid', $request->property_id)->first();
+        $homendo = PropertyHomendo::where('property_id', $request->property_id)->first();
 
         if ($email_check !== null) {
             return $this->sendResponse("Sorry, Email already exist!", 200, false);
         }elseif ($phone_check !== null) {
             return $this->sendResponse("Sorry, Phone no. already exist!", 200, false);
         }else{
-            $time = strtotime(Carbon::now());
-            $uuid = "usr".$time.rand(10,99)*rand(10,99);
-            $user = new Users;
-            $user->uuid = $uuid;
-            $user->first_name = $request->first_name;
-            $user->last_name = $request->last_name;
-            $user->email = $request->email;
-            $user->phone = $request->phone;
-            $user->role = "USER";
-            $user->sub_role = "SELLER";
-            $user->phone_verified = "NO";
-            $user->email_verified = "NO";
-            $user->image = "default.png";
-            $result = $user->save();
+            \DB::beginTransaction();
+            try{
+                $time = strtotime(Carbon::now());
+                $uuid = "usr".$time.rand(10,99)*rand(10,99);
+                $user = new Users;
+                $user->uuid = $uuid;
+                $user->first_name = $request->first_name;
+                $user->last_name = $request->last_name;
+                $user->email = $request->email;
+                $user->phone = $request->phone;
+                $user->role = "USER";
+                $user->sub_role = $request->role;
+                $user->phone_verified = "NO";
+                $user->email_verified = "NO";
+                $user->image = "default.png";
+                $result = $user->save();
+
+                if ($request->role == 'SELLER') {
+                    $owner = new PropertyOwners;
+                    $owner->property_id = $property->uuid;
+                    $owner->user_id = $user->uuid;
+                    $owner->type = 'main_owner';
+                    $property_owner = $owner->save();
+                }else{
+                    $buyer = new PropertyBuyers;
+                    $buyer->property_id = $property->uuid;
+                    $buyer->buyer_id = $user->uuid;
+                    $buyer->agent_id = $request->agent_id;
+                    $property_buyer = $buyer->save();
+                }
+
+                $this->configSMTP();
+                $verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+                Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+
+                $dataAssignOwner = [
+                    'name'=>$request->first_name.' '.$request->last_name,
+                    'owner_name'=>$prop_agent->first_name.' '.$prop_agent->last_name,
+                    'property_name'=>$homendo->hmdo_mls_propname
+                ];
+
+                $dataSignupMail = [
+                    'name'=>$request->first_name.' '.$request->last_name,
+                    'verification_token'=>$verification_token,
+                    'email'=>$request->email,
+                    'url'=>$request->url
+                ];
+
+                try{
+                    Mail::to($request->email)->send(new AssignOwner($dataAssignOwner));
+                    Mail::to($request->email)->send(new SignupMail($dataSignupMail));
+                }catch(\Exception $e){
+                    $msg = $e->getMessage();
+                    return $this->sendResponse($msg, 200, false);
+                }
+
+                return $this->sendResponse("Client added successfully!");
+            } catch(\Exception $e) {
+                \DB::rollBack();
+                return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+            }
         }
     }
 }

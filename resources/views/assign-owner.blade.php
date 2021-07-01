@@ -227,7 +227,7 @@
 	            <div class="wm-section-content" id="wm-content-head">
 	                <div class="wm-content">
 		                <p>Hi {{$name}},</p><br/>
-		          		<h3>{{$owner_name}} has assign you as Owner of this {{$property_name}} property.</h3>
+		          		<h3>{{$owner_name}} has assign you in this {{$property_name}} property.</h3>
 	                </div>
 	            </div>
 	    	</div>

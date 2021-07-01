@@ -92,6 +92,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('get-random-agents', ['middleware'=>'auth','uses'=>'AgentController@GetRandomAgents']);
 		$router->post('get-user-agents', ['middleware'=>'auth','uses'=>'AgentController@getUserAgents']);
 		$router->post('add-agent-properties', ['middleware'=>'auth','uses'=>'AgentController@addAgentProperties']);
+		$router->post('add-client', ['middleware'=>'auth','uses'=>'AgentController@addClient']);
 		/*AgentController APIs End*/
 
 		/*SuperAdminController APIs Start*/
