@@ -19,8 +19,9 @@ class AgentController extends Controller
             'agent_id' => 'required'
         ]);
 
-        $result = PropertyAgents::with('owner','property')->where('agent_id',$request->agent_id)->get();
-        if ($result) {
+        $result = PropertyAgents::with('owner','property.Valuecheck','property.Zillow','property.Homendo')->where('agent_id',$request->agent_id)->get();
+
+        if (sizeof($result) > 0) {
             return $this->sendResponse($result);
         }else{
             return $this->sendResponse("No Properties found!.",200,false);
@@ -270,6 +271,38 @@ class AgentController extends Controller
                 \DB::rollBack();
                 return $this->sendResponse("Sorry, Something went wrong!", 200, false);
             }
+        }
+    }
+
+    public function getClientProperties(Request $request){
+        $this->validate($request, [
+            'agent_id' => 'required'
+        ]);
+
+        $properties = PropertyAgents::with('property.Valuecheck','property.Zillow','property.Homendo')->where('agent_id',$request->agent_id)->get();
+
+        $all_properties = [];
+        $buying_properties = [];
+        $selling_properties = [];
+
+        foreach ($properties as $property) {
+            //dd($property);
+            if ($property->agent_type == 'buyer') {
+                $buyer = Users::where('uuid', $property->buyer_id)->first();
+                $property['buyer'] = $buyer;
+                $buying_properties[] = $property;
+            }else{
+                $seller = Users::where('uuid', $property->seller_id)->first();
+                $property['seller'] = $seller;
+                $selling_properties[] = $property;
+            }
+        }
+
+        $response = array('buying_properties'=>$buying_properties, 'selling_properties'=>$selling_properties);
+        if (sizeof($response) > 0) {
+            return $this->sendResponse($response);
+        }else{
+            return $this->sendResponse("No Properties found!.",200,false);
         }
     }
 }
