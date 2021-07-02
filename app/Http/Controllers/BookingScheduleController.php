@@ -32,7 +32,7 @@ class BookingScheduleController extends Controller
             'booking_date'=> 'required|date|date_format:Y-m-d',
             'booking_time'=> 'required',
             'buyer_id'    => 'nullable',
-            'agent_id'    => 'required'
+            'agent_id'    => 'nullable'
         ]);
         
         $phone = $request->phone;
@@ -63,7 +63,9 @@ class BookingScheduleController extends Controller
             }else{
                 $propertyBookingSchedule->status = 'A';
             }
-            $propertyBookingSchedule->agent_id = $request->agent_id;
+            if ($request->agent_id !== '' || $request->agent_id !== null) {
+                $propertyBookingSchedule->agent_id = $request->agent_id;
+            }
             $propertyBookingSchedule->cancel_at = null;
 
             if ($propertyBookingSchedule->save()) {
@@ -84,7 +86,9 @@ class BookingScheduleController extends Controller
                     $property_buyer->property_id = $property_id;
                     //$property_buyer->seller_id = $seller_id;
                     $property_buyer->buyer_id = $request->buyer_id;
-                    $property_buyer->agent_id = $request->agent_id;
+                    if ($request->agent_id !== '' || $request->agent_id !== null) {
+                        $property_buyer->agent_id = $request->agent_id;
+                    }
                     $property_buyer->save();
                 }
 
@@ -150,7 +154,14 @@ class BookingScheduleController extends Controller
                     $propertyBookingSchedule->property_id = $property_id;
                     $propertyBookingSchedule->booking_date = $booking_date;
                     $propertyBookingSchedule->booking_time = $booking_time;
-                    $propertyBookingSchedule->status = 'P';
+                    if ($showing_setup->type == 'VALID') {
+                        $propertyBookingSchedule->status = 'P';
+                    }else{
+                        $propertyBookingSchedule->status = 'A';
+                    }
+                    if ($request->agent_id !== '' || $request->agent_id !== null) {
+                        $propertyBookingSchedule->agent_id = $request->agent_id;
+                    }
                     $propertyBookingSchedule->save();
                     
                     $check_buyer = PropertyBuyers::where(['buyer_id'=>$uuid, 'property_id'=>$property_id])->first();
@@ -159,7 +170,9 @@ class BookingScheduleController extends Controller
                         $property_buyer->property_id = $property_id;
                         //$property_buyer->seller_id = $seller_id;
                         $property_buyer->buyer_id = $uuid;
-                        $property_buyer->agent_id = $request->agent_id;
+                        if ($request->agent_id !== '' || $request->agent_id !== null) {
+                            $property_buyer->agent_id = $request->agent_id;
+                        }
                         $property_buyer->save();
                     }
                     
