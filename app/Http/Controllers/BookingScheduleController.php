@@ -240,7 +240,7 @@ class BookingScheduleController extends Controller
             $update['cancel_at'] = date('Y-m-d H:i:s');
             $result = PropertyBookingSchedule::where('uuid',$id)->update($update);
             if ($status == 'A') {
-                $msg = "Approved";
+                $msg = "Confirmed";
             }elseif ($status == 'R') {
                 $msg = "Cancelled";
             }else{
@@ -287,7 +287,10 @@ class BookingScheduleController extends Controller
 
                 try {
                     Mail::to($validator->email)->send(new BookingUpdate($data));
-                    return $this->sendResponse("Showing ".$msg);
+                    $booking_info = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->where('uuid',$id)->first();
+                    $response['booking_info'] = $booking_info;
+                    $response['response_message'] = "Showing ".$msg;
+                    return $this->sendResponse($response);
                 } catch(\Exception $e) {
                     $msg = $e->getMessage();
                     return $this->sendResponse($msg, 200, false);
