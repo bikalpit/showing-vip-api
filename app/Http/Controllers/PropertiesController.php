@@ -438,7 +438,7 @@ class PropertiesController extends Controller
 				$this->validate($request, [
 	      		'agent_id' => 'required',
 	      		'search' => 'nullable',
-	      		'sorting' => 'nullable|in:ASC,DESC'
+	      		'sorting' => 'nullable|in:date,listing_status,property_type,listing_originator'
 	      ]);
 
 				$search_item = $request->search;
@@ -448,45 +448,132 @@ class PropertiesController extends Controller
 
 	      if (sizeof($property_ids) > 0) {
 	      		if ($sorting !== '') {
-	      				if ($sorting == 'ASC') {
+	      				if ($sorting == 'date') {
 	      						if ($search_item !== '') {
-												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->where(function($query) use ($search_item) {
+												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
+														->join('property_valuecheck', 'property_valuecheck.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->where(function($query) use ($search_item) {
 														$query->where('property_homendo.hmdo_mls_id', 'LIKE', '%'.$search_item.'%')
-				              			->orWhere('property_homendo.hmdo_mls_propname', 'LIKE', '%'.$search_item.'%');
-												})->orderBy('properties.created_at', 'ASC')->get();
+				              			->orWhere('property_homendo.hmdo_mls_streetnumber', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_streetname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_streettype', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_city', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_zipcode', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_state', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streetnumber', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streetname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streettype', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_city', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_state', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_zipcode', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_county', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_countyname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_country', 'LIKE', '%'.$search_item.'%');
+												})->orderBy('properties.created_at', 'ASC')->get('properties.*');
 										}else{
 												$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->orderBy('created_at', 'ASC')->get();
 										}
-	      				}elseif ($sorting == 'DESC') {
+	      				}elseif ($sorting == 'listing_status') {
 	      						if ($search_item !== '') {
-	      								$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->where(function($query) use ($search_item) {
+	      								$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
+	      										->join('property_valuecheck', 'property_valuecheck.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->where(function($query) use ($search_item) {
 														$query->where('property_homendo.hmdo_mls_id', 'LIKE', '%'.$search_item.'%')
-				              			->orWhere('property_homendo.hmdo_mls_propname', 'LIKE', '%'.$search_item.'%');
-												})->orderBy('created_at', 'DESC')->get();
+														->orWhere('property_homendo.hmdo_mls_streetnumber', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_streetname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_streettype', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_city', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_zipcode', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_state', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streetnumber', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streetname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streettype', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_city', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_state', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_zipcode', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_county', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_countyname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_country', 'LIKE', '%'.$search_item.'%');
+												})->orderBy('property_homendo.hmdo_mls_status', 'DESC')->get('properties.*');
 										}else{
-												$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->orderBy('created_at', 'DESC')->get();
+												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
+	      										->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->orderBy('property_homendo.hmdo_mls_status', 'DESC')->get('properties.*');
 										}
-	      				}else{
+	      				}elseif ($sorting == 'property_type') {
 	      						if ($search_item !== '') {
-												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->where(function($query) use ($search_item) {
+	      								$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
+	      										->join('property_valuecheck', 'property_valuecheck.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->where(function($query) use ($search_item) {
 														$query->where('property_homendo.hmdo_mls_id', 'LIKE', '%'.$search_item.'%')
-				              			->orWhere('property_homendo.hmdo_mls_propname', 'LIKE', '%'.$search_item.'%');
-												})->get();
+														->orWhere('property_homendo.hmdo_mls_streetnumber', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_streetname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_streettype', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_city', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_zipcode', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_state', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streetnumber', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streetname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streettype', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_city', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_state', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_zipcode', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_county', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_countyname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_country', 'LIKE', '%'.$search_item.'%');
+												})->orderBy('property_homendo.hmdo_mls_proptype', 'DESC')->get('properties.*');
 										}else{
-												$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
+												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
+	      										->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->orderBy('property_homendo.hmdo_mls_proptype', 'DESC')->get('properties.*');
+										}
+	      				}elseif ($sorting == 'listing_originator') {
+	      						if ($search_item !== '') {
+	      								$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
+	      										->join('property_valuecheck', 'property_valuecheck.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->where(function($query) use ($search_item) {
+														$query->where('property_homendo.hmdo_mls_id', 'LIKE', '%'.$search_item.'%')
+														->orWhere('property_homendo.hmdo_mls_streetnumber', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_streetname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_streettype', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_city', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_zipcode', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_homendo.hmdo_mls_state', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streetnumber', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streetname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_streettype', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_city', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_state', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_zipcode', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_county', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_countyname', 'LIKE', '%'.$search_item.'%')
+				              			->orWhere('property_valuecheck.vs_country', 'LIKE', '%'.$search_item.'%');
+												})->orderBy('property_homendo.hmdo_mls_originator', 'DESC')->get('properties.*');
+										}else{
+												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
+	      										->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->orderBy('property_homendo.hmdo_mls_originator', 'DESC')->get('properties.*');
 										}
 	      				}
 	      		}else{
 	      				if ($search_item !== '') {
-										$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->where(function($query) use ($search_item) {
+										$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
+												->join('property_valuecheck', 'property_valuecheck.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->where(function($query) use ($search_item) {
 												$query->where('property_homendo.hmdo_mls_id', 'LIKE', '%'.$search_item.'%')
-		              			->orWhere('property_homendo.hmdo_mls_propname', 'LIKE', '%'.$search_item.'%');
-										})->get();
+												->orWhere('property_homendo.hmdo_mls_streetnumber', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_homendo.hmdo_mls_streetname', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_homendo.hmdo_mls_streettype', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_homendo.hmdo_mls_city', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_homendo.hmdo_mls_zipcode', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_homendo.hmdo_mls_state', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_valuecheck.vs_streetnumber', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_valuecheck.vs_streetname', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_valuecheck.vs_streettype', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_valuecheck.vs_city', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_valuecheck.vs_state', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_valuecheck.vs_zipcode', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_valuecheck.vs_county', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_valuecheck.vs_countyname', 'LIKE', '%'.$search_item.'%')
+		              			->orWhere('property_valuecheck.vs_country', 'LIKE', '%'.$search_item.'%');
+										})->get('properties.*');
 								}else{
 										$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
 								}
 	      		}
-
+	      		
 	      		if (sizeof($properties) > 0) {
 	      				$selling_properties = [];
 	      				$buying_properties = [];
@@ -499,11 +586,13 @@ class PropertiesController extends Controller
 				      			}
 
 				      			$property_info = PropertyAgents::where('property_id', $property->uuid)->first();
+
 				      			if ($property_info->agent_type == 'seller') {
 				      					$selling_properties[] = $property;
 				      			}else{
 				      					$buying_properties[] = $property;
 				      			}
+
 				      			$all_properties = array('selling_properties'=>$selling_properties, 'buying_properties'=>$buying_properties);
 			      		}
 	      				return $this->sendResponse($all_properties);
