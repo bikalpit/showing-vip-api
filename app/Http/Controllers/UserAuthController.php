@@ -10,6 +10,7 @@ use App\Models\Users;
 use App\Models\ApiToken;
 use App\Models\UserPasswordReset;
 use App\Models\AgentInfo;
+use App\Models\Settings;
 use App\Mail\ForgetPasswordMail;
 use App\Mail\VerifyEmail;
 use Twilio\Rest\Client as TwilioClient;
@@ -164,27 +165,33 @@ class UserAuthController extends Controller
         $otp = rand(1111,9999);
 
         $user = Users::where('phone', $phone)->first();
+        $settings = Settings::where('option_key', 'twillio')->first();
+        $twilio_setting = json_decode($settings->option_value);
 
-        if (!empty($user)) {
-        		try {
-				        $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
-				        $message =  $this->twilioClient->messages->create(
-						        $phone,
-						        array(
-						            "from" => '+14243918787',
-						            "body" => 'your phone number OTP verification is '.$otp
-						        )
-				        );
-				    } catch(\Exception $e) {
-				    		Users::where('phone', $phone)->update(['phone_verification_token'=>md5($otp)]);
-		          	return $this->sendResponse(['otp' => $otp]);
+        if ($twilio_setting->status == true) {
+        		if (!empty($user)) {
+		        		try {
+						        $this->twilioClient = new TwilioClient($twilio_setting->account_sid, $twilio_setting->auth_token);
+						        $message =  $this->twilioClient->messages->create(
+								        $phone,
+								        array(
+								            "from" => $twilio_setting->twilio_sender_number,
+								            "body" => 'your phone number OTP verification is '.$otp
+								        )
+						        );
+						    } catch(\Exception $e) {
+						    		/*Users::where('phone', $phone)->update(['phone_verification_token'=>md5($otp)]);
+				          	return $this->sendResponse(['otp' => $otp]);*/
+				          	return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+				        }
+				        Users::where('phone', $phone)->update(['phone_verification_token'=>md5($otp)]);
+				        return $this->sendResponse(['otp' => $otp]);
+		        }else{
+		        		return $this->sendResponse("Sorry, User not found!", 200, false);
 		        }
-		        Users::where('phone', $phone)->update(['phone_verification_token'=>md5($otp)]);
-		        return $this->sendResponse(['otp' => $otp]);
         }else{
-        		return $this->sendResponse("Sorry, User not found!", 200, false);
-        }
-		        
+        		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+        } 
     }
 
     public function verifyPhoneOtp(Request $request){

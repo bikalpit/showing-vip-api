@@ -79,11 +79,12 @@ class SettingsController extends Controller
         ]);
 
         $setting = Settings::where('uuid', $request->uuid)->first();
-        $setting_option_value = json_decode($setting->option_value);
-        $setting_bg_image = $setting_option_value->bg_image;
-        $image_name = substr($setting_bg_image, strrpos($setting_bg_image, '/') + 1);
+        
         //dd($image_name);
         if ($setting->option_key == 'design_element') {
+            $setting_option_value = json_decode($setting->option_value);
+            $setting_bg_image = $setting_option_value->bg_image;
+            $image_name = substr($setting_bg_image, strrpos($setting_bg_image, '/') + 1);
             if ($request->option_value['bg_image'] !== '') {
                 $path = app()->basePath('public/setting-images/');
                 $fileName = $this->singleImageUpload($path, $request->option_value['bg_image']);
