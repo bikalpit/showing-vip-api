@@ -378,7 +378,8 @@ class UsersController extends Controller
         }
 
         if ($update) {
-        		return $this->sendResponse("Profile updated successfully!");
+        		$updatedUser = Users::where('uuid', $request->user_id)->first();	
+        		return $this->sendResponse($updatedUser);
         }else{
         		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
         }
