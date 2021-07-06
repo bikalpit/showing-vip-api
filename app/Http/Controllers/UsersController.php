@@ -10,6 +10,7 @@ use App\Models\UserAgents;
 use App\Models\Messages;
 use App\Models\AgentInfo;
 use App\Mail\SignupMail;
+use App\Mail\ApiToken;
 use Carbon\Carbon;
 
 class UsersController extends Controller
