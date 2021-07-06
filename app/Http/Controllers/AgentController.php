@@ -195,7 +195,7 @@ class AgentController extends Controller
             'phone' => 'required',
             'role' => 'required|in:SELLER,BUYER',
             'agent_id' => 'required',
-            'property_id' => 'required',
+            'property_id' => 'nullable',
             'url' => 'required'
         ]);
 
