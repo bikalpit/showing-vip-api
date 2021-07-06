@@ -378,8 +378,21 @@ class UsersController extends Controller
         }
 
         if ($update) {
-        		$updatedUser = Users::where('uuid', $request->user_id)->first();	
-        		return $this->sendResponse($updatedUser);
+
+        		$updatedUser = Users::where('uuid', $request->user_id)->first();
+        		$authentication = ApiToken::where('user_id', $request->user_id)->first();
+        		$authentication['first_name'] = $updatedUser->first_name;
+        		$authentication['last_name'] = $updatedUser->last_name;
+        		$authentication['email']   = $updatedUser->email;
+        		$authentication['phone'] = $updatedUser->phone;
+    				$authentication['image'] = $updatedUser->image;
+    				$authentication['sub_role'] = $updatedUser->sub_role;
+    				
+    				if ($updatedUser->role == 'AGENT') {
+      					$agent_info = AgentInfo::where('agent_id', $updatedUser->uuid)->first();
+      					$authentication['agent_info'] = $agent_info;
+    				}
+        		return $this->sendResponse($authentication);
         }else{
         		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
         }
