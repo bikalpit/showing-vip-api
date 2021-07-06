@@ -203,7 +203,13 @@ class AgentController extends Controller
         $email_check = Users::where('email', $request->email)->first();
         $phone_check = Users::where('phone', $request->phone)->first();
         $property = Properties::where('uuid', $request->property_id)->first();
-        $homendo = PropertyHomendo::where('property_id', $request->property_id)->first();
+        if (!empty($property)) {
+            $homendo = PropertyHomendo::where('property_id', $request->property_id)->first();
+            $property_name = $homendo->hmdo_mls_propname;
+        }else{
+            $property_name = '';
+        }
+        
 
         if ($email_check !== null) {
             return $this->sendResponse("Sorry, Email already exist!", 200, false);
@@ -229,13 +235,13 @@ class AgentController extends Controller
 
                 if ($request->role == 'SELLER') {
                     $owner = new PropertyOwners;
-                    $owner->property_id = $property->uuid;
+                    $owner->property_id = $request->property_id;
                     $owner->user_id = $user->uuid;
                     $owner->type = 'main_owner';
                     $property_owner = $owner->save();
                 }else{
                     $buyer = new PropertyBuyers;
-                    $buyer->property_id = $property->uuid;
+                    $buyer->property_id = $request->property_id;
                     $buyer->buyer_id = $user->uuid;
                     $buyer->agent_id = $request->agent_id;
                     $property_buyer = $buyer->save();
@@ -248,7 +254,7 @@ class AgentController extends Controller
                 $dataAssignOwner = [
                     'name'=>$request->first_name.' '.$request->last_name,
                     'owner_name'=>$prop_agent->first_name.' '.$prop_agent->last_name,
-                    'property_name'=>$homendo->hmdo_mls_propname
+                    'property_name'=>$property_name
                 ];
 
                 $dataSignupMail = [
