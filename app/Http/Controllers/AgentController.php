@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\Users;
 use App\Models\Properties;
@@ -12,7 +13,9 @@ use App\Models\PropertyValuecheck;
 use App\Models\PropertyZillow;
 use App\Models\PropertyHomendo;
 use App\Models\PropertyOwners;
+use App\Mail\TestMail;
 use Carbon\Carbon;
+
 class AgentController extends Controller
 {
     public function getClientWithProperty(Request $request){
@@ -441,6 +444,22 @@ class AgentController extends Controller
             return $this->sendResponse("Property added successfully!");
         }else{
             return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+        }
+    }
+
+    public function testMail(Request $request){
+        $this->validate($request, [
+            'email' => 'required'
+        ]);
+
+        $configSMTP = $this->configSMTP();
+        $data = array('url'=>env('APP_URL'));
+        try{
+            Mail::to($request->email)->send(new TestMail($data));
+            return $this->sendResponse("Mail sent successfully!");
+        }catch(\Exception $e){
+            $msg = $e->getMessage();
+            return $this->sendResponse($msg, 200, false);
         }
     }
 }

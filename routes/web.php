@@ -95,6 +95,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('add-client', ['middleware'=>'auth','uses'=>'AgentController@addClient']);
 		$router->post('get-client-properties', ['middleware'=>'auth','uses'=>'AgentController@getClientProperties']);
 		$router->post('add-agent-property', ['middleware'=>'auth','uses'=>'AgentController@addAgentProperty']);
+		$router->post('test-mail', ['uses'=>'AgentController@testMail']);
 		/*AgentController APIs End*/
 
 		/*SuperAdminController APIs Start*/
