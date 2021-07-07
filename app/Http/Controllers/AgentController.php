@@ -11,6 +11,7 @@ use App\Models\UserAgents;
 use App\Models\PropertyValuecheck;
 use App\Models\PropertyZillow;
 use App\Models\PropertyHomendo;
+use App\Models\PropertyOwners;
 use Carbon\Carbon;
 class AgentController extends Controller
 {
@@ -429,12 +430,6 @@ class AgentController extends Controller
         $homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
         $homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1];
         $add_homendo = $homendo->save();
-
-        /*$owner = new PropertyOwners;
-        $owner->property_id = $property->uuid;
-        $owner->user_id = $request->user_id;
-        $owner->type = 'main_owner';
-        $property_owner = $owner->save();*/
           
         $agent = new PropertyAgents;
         $agent->property_id = $property->uuid;
