@@ -5,7 +5,8 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http, {
     cors: {
-        origin: '*'
+        origin: "https://api.showing.vip:8000",
+		methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"]
     }
 });
 
@@ -27,8 +28,8 @@ connection.connect(function (error) {
 
 var users = [];
 
-http.listen(8005, function () {
-    console.log('Listening to port 8005');
+http.listen(8000, function () {
+    console.log('Listening to port 8000');
 });
 
 io.on('connection', function (socket) {
