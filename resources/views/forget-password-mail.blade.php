@@ -232,7 +232,7 @@
 	    <div id="wm">
 	        <div class="wm-section1">
 	            <div class="wm-header-text">
-	                <h3>Reset Password</h3>
+	                <h3>Forget Password</h3>
 	            </div>
 	            <div class="wm-section-content" id="wm-content-head">
 	                <div class="wm-content">

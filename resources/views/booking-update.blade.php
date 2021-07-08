@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Showing VIP - Booking Update</title>
+    <title>Showing VIP - Showing Update</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
@@ -222,7 +222,7 @@
 	    <div id="wm">
 	        <div class="wm-section1">
 	            <div class="wm-header-text">
-	                <h3>Booking Update</h3>
+	                <h3>Showing Update</h3>
 	            </div>
 	            <div class="wm-section-content" id="wm-content-head">
 	                <div class="wm-content">
