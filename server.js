@@ -5,8 +5,7 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http, {
     cors: {
-        origin: "https://api.showing.vip:8000",
-		methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"]
+        origin: "*"
     }
 });
 
