@@ -418,4 +418,18 @@ class ShowingController extends Controller
 	      		return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
 	      }
     }
+
+    public function getSingleShowingSetupNonAuth(Request $request){
+    		$this->validate($request, [
+	      		'property_id' => 'required'
+	      ]);
+
+	      $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey', 'Property')->where('property_id', $request->property_id)->first();
+
+	      if ($showing_setup) {
+	      		return $this->sendResponse($showing_setup);
+	      }else{
+	      		return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
+	      }
+    }
 }
