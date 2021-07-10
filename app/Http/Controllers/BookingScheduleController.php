@@ -24,17 +24,18 @@ class BookingScheduleController extends Controller
 {
     public function createBooking(Request $request){
         $this->validate($request, [
-            'first_name' => 'required',
-            'last_name'  => 'required',
-            'phone'     => 'required',
-            'email'     => 'required',
+            'first_name' => 'nullable',
+            'last_name'  => 'nullable',
+            'phone'     => 'nullable',
+            'email'     => 'nullable',
             'property_id'=> 'required',
-            'booking_date'=> 'required|date|date_format:Y-m-d',
+            'booking_date'=> 'required',
             'booking_time'=> 'required',
             'buyer_id'    => 'nullable',
             'agent_id'    => 'nullable'
         ]);
-        
+
+        $formetted_date = date('Y-m-d', strtotime($request->booking_date));
         $phone = $request->phone;
         $email = $request->email;
         $property_id = $request->property_id;
@@ -56,7 +57,7 @@ class BookingScheduleController extends Controller
             $propertyBookingSchedule->uuid = $uuid;
             $propertyBookingSchedule->buyer_id = $users->uuid;
             $propertyBookingSchedule->property_id = $property_id;
-            $propertyBookingSchedule->booking_date = $booking_date;
+            $propertyBookingSchedule->booking_date = $formetted_date;
             $propertyBookingSchedule->booking_time = $booking_time;
             if ($showing_setup->type == 'VALID') {
                 $propertyBookingSchedule->status = 'P';
@@ -208,8 +209,8 @@ class BookingScheduleController extends Controller
                         'booking_time'=>$request->booking_time
                     ];
 
-                    Mail::to($request->email)->send(new BookingMail($mail_data));
                     Mail::to($request->email)->send(new SignupMail($data));
+                    Mail::to($request->email)->send(new BookingMail($mail_data));
 
                     return $this->sendResponse("Insert Request Successfully!");
                 } catch(\Exception $e) {
