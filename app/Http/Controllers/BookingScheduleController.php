@@ -44,7 +44,9 @@ class BookingScheduleController extends Controller
         $property = Properties::where('uuid', $property_id)->first();
         $homendo = PropertyHomendo::where('property_id', $property_id)->first();
         $showing_setup = PropertyShowingSetup::where('property_id', $property_id)->first();
-        $validator = $showing_setup->validator[0];
+        if ($showing_setup->validator !== null || $showing_setup->validator !== '') {
+            $validator = $showing_setup->validator[0];
+        }
         $availibility = PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->first();
         $get_availibility = json_decode($availibility);
         $availibility_data = json_decode($get_availibility->availability);
@@ -93,7 +95,7 @@ class BookingScheduleController extends Controller
                     $property_buyer->save();
                 }
 
-                if ($validator !== '' || $validator !== null) {
+                if ($showing_setup->validator !== null || $showing_setup->validator !== '') {
                     try {
                         $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
                         $message =  $this->twilioClient->messages->create(
@@ -191,7 +193,7 @@ class BookingScheduleController extends Controller
                     ];
                     Mail::to($request->email)->send(new SignupMail($data));
 
-                    if ($validator !== '' || $validator !== null) {
+                    if ($showing_setup->validator !== null || $showing_setup->validator !== '') {
                         try {
                             $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
                             $message =  $this->twilioClient->messages->create(
