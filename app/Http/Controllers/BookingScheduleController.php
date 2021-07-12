@@ -93,35 +93,37 @@ class BookingScheduleController extends Controller
                     $property_buyer->save();
                 }
 
-                try {
-                    $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
-                    $message =  $this->twilioClient->messages->create(
-                        '+919624730644',
-                        array(
-                            "from" => '+14243918787',
-                            "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$users->first_name.' '.$users->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
-                        )
-                    );
-                } catch(\Exception $e) {
+                if ($validator !== '' || $validator !== null) {
+                    try {
+                        $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
+                        $message =  $this->twilioClient->messages->create(
+                            $validator->phone,
+                            array(
+                                "from" => '+14243918787',
+                                "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$users->first_name.' '.$users->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                            )
+                        );
+                    } catch(\Exception $e) {
 
+                    }
+
+                    $this->configSMTP();
+                    $mail_data = [
+                            'name'=>$users->first_name.' '.$users->last_name,
+                            'validator_name'=>$validator->first_name.' '.$validator->last_name,
+                            'property_name'=>$homendo->hmdo_mls_propname,
+                            'booking_date'=>$request->booking_date,
+                            'booking_time'=>$request->booking_time
+                        ];
+
+                    try {
+                        Mail::to($validator->email)->send(new BookingMail($mail_data));
+                    } catch(\Exception $e) {
+                        $msg = $e->getMessage();
+                        return $this->sendResponse($msg, 200, false);
+                    }
                 }
-
-                $this->configSMTP();
-                $mail_data = [
-		                'name'=>$users->first_name.' '.$users->last_name,
-		                'validator_name'=>$validator->first_name.' '.$validator->last_name,
-		                'property_name'=>$homendo->hmdo_mls_propname,
-		                'booking_date'=>$request->booking_date,
-		                'booking_time'=>$request->booking_time
-		            ];
-
-                try {
-                    Mail::to($validator->email)->send(new BookingMail($mail_data));
-                    return $this->sendResponse("Insert Request Successfully!");
-                } catch(\Exception $e) {
-                    $msg = $e->getMessage();
-                    return $this->sendResponse($msg, 200, false);
-                }
+                return $this->sendResponse("Insert Request Successfully!");
             }else{
                 return $this->sendResponse("Sorry, Something went wrong!");
             }
@@ -176,20 +178,7 @@ class BookingScheduleController extends Controller
                         }
                         $property_buyer->save();
                     }
-                    
-                    try {
-                        $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
-                        $message =  $this->twilioClient->messages->create(
-                            '+919624730644',
-                            array(
-                                "from" => '+14243918787',
-                                "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$request->first_name.' '.$request->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
-                            )
-                        );
-                    } catch(\Exception $e) {
-                        
-                    }
-                    
+
                     $verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
                     Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
 
@@ -200,17 +189,36 @@ class BookingScheduleController extends Controller
                         'email'=>$request->email,
                         'url'=>$request->url
                     ];
-
-                    $mail_data = [
-                        'name'=>$request->first_name.' '.$request->last_name,
-                        'validator_name'=>$validator->first_name.' '.$validator->last_name,
-                        'property_name'=>$homendo->hmdo_mls_propname,
-                        'booking_date'=>$request->booking_date,
-                        'booking_time'=>$request->booking_time
-                    ];
-
                     Mail::to($request->email)->send(new SignupMail($data));
-                    Mail::to($request->email)->send(new BookingMail($mail_data));
+
+                    if ($validator !== '' || $validator !== null) {
+                        try {
+                            $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
+                            $message =  $this->twilioClient->messages->create(
+                                $validator->phone,
+                                array(
+                                    "from" => '+14243918787',
+                                    "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$request->first_name.' '.$request->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                                )
+                            );
+                        } catch(\Exception $e) {
+                            
+                        }
+
+                        $mail_data = [
+                            'name'=>$request->first_name.' '.$request->last_name,
+                            'validator_name'=>$validator->first_name.' '.$validator->last_name,
+                            'property_name'=>$homendo->hmdo_mls_propname,
+                            'booking_date'=>$request->booking_date,
+                            'booking_time'=>$request->booking_time
+                        ];
+                        try {
+                            Mail::to($validator->email)->send(new BookingMail($mail_data));
+                        } catch(\Exception $e) {
+                            $msg = $e->getMessage();
+                            return $this->sendResponse($msg, 200, false);
+                        }
+                    }
 
                     return $this->sendResponse("Insert Request Successfully!");
                 } catch(\Exception $e) {
