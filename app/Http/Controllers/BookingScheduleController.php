@@ -158,7 +158,7 @@ class BookingScheduleController extends Controller
                     $propertyBookingSchedule->uuid = $uuid;
                     $propertyBookingSchedule->buyer_id = $user->uuid;
                     $propertyBookingSchedule->property_id = $property_id;
-                    $propertyBookingSchedule->booking_date = $booking_date;
+                    $propertyBookingSchedule->booking_date = $formetted_date;
                     $propertyBookingSchedule->booking_time = $booking_time;
                     if ($showing_setup->type == 'VALID') {
                         $propertyBookingSchedule->status = 'P';
@@ -168,8 +168,20 @@ class BookingScheduleController extends Controller
                     if ($request->agent_id !== '' || $request->agent_id !== null) {
                         $propertyBookingSchedule->agent_id = $request->agent_id;
                     }
-                    $propertyBookingSchedule->save();
                     
+                    if ($propertyBookingSchedule->save()) {
+                        foreach ($availibility_data as $data) {
+                            if ($data->date == date('F d l', strtotime($booking_date))) {
+                                foreach ($data->slots as $slot) {
+                                    if ($slot->slot == date('H:i A', strtotime($booking_time))) {
+                                        $slot->status = 'booked';
+                                    }
+                                }
+                            }
+                        }
+                        PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
+                    }
+
                     $check_buyer = PropertyBuyers::where(['buyer_id'=>$uuid, 'property_id'=>$property_id])->first();
                     if (empty($check_buyer)) {
                         $property_buyer = new PropertyBuyers;
