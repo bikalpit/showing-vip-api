@@ -13,11 +13,13 @@ class VerifyEmail extends Mailable {
     public $data;
     public $name;
     public $otp;
+    public $url;
     public function __construct($data)
     {
         $this->data = $data;
         $this->name = $data['name'];
         $this->otp = $data['otp'];
+        $this->url = $data['url'];
     }
     public function build()
     {

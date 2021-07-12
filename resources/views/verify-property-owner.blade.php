@@ -159,7 +159,7 @@
                                                    style="color: #e5eaf5; line-height: 140%; text-align: center; word-wrap: break-word;">
                                                    <p style="font-size: 14px; line-height: 140%;"><span
                                                       style="font-size: 28px; line-height: 39.2px;"><strong><span
-                                                      style="line-height: 39.2px; font-size: 28px;">Verify property
+                                                      style="line-height: 39.2px; font-size: 28px;">Verify property Owner
                                                       </span></strong></span>
                                                    </p>
                                                 </div>
@@ -191,9 +191,9 @@
                                                 align="left">
                                                 <div style="line-height: 160%; text-align: center; word-wrap: break-word;">
                                                    <p style="font-size: 14px; line-height: 160%;"><span
-                                                      style="font-size: 22px; line-height: 35.2px;">Hi {{$name}}, </span></p>
+                                                      style="font-size: 22px; line-height: 35.2px;">Hi {{$owner_name}}, </span></p>
                                                    <p style="font-size: 14px; line-height: 160%;"><span
-                                                      style="font-size: 18px; line-height: 28.8px;">Please click on below button to verify property</span></p>
+                                                      style="font-size: 18px; line-height: 28.8px;">Please click on below button to verify your property</span></p>
                                                 </div>
                                              </td>
                                           </tr>
@@ -207,7 +207,7 @@
                                                 style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:'Cabin',sans-serif;"
                                                 align="left">
                                                 <div align="center">
-                                                   <a href="{{$site_url}}/api/verified-property?token={{$token}}&property={{$property_id}}" target="_blank"
+                                                   <a href="{{$verify_url}}" target="_blank"
                                                       style="box-sizing: border-box;display: inline-block;font-family:'Cabin',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #e84c22; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;">
                                                    <span style="display:block;padding:14px 44px 13px;line-height:120%;"><span
                                                       style="font-size: 16px; line-height: 19.2px;"><strong><span
