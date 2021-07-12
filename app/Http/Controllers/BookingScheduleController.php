@@ -106,7 +106,7 @@ class BookingScheduleController extends Controller
                             )
                         );
                     } catch(\Exception $e) {
-                        
+
                     }
 
                     $this->configSMTP();
@@ -137,6 +137,7 @@ class BookingScheduleController extends Controller
 	        if (Users::where('phone', $request->phone)->exists()) {
                 return $this->sendResponse("Phone no. already exists!", 200, false);
             }
+            $time = strtotime(Carbon::now());
             $uuid = "usr".$time.rand(10,99)*rand(10,99);
             $user = new Users;
             $user->uuid = $uuid;
