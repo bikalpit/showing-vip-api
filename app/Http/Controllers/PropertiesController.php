@@ -18,6 +18,7 @@ use App\Models\PropertyBuyers;
 use App\Mail\AssignAgent;
 use App\Mail\SignupMail;
 use App\Mail\AssignOwner;
+use App\Mail\PropertyOwnerVerificationMail;
 use App\Mail\PropertyVerificationMail;
 use Carbon\Carbon;
 use DB;
@@ -643,5 +644,56 @@ class PropertiesController extends Controller
 				}
 
 				return view('verified-property', ["status"=>$status]);
+		}
+
+		public function verifyPropertyOwner(Request $request){
+			$this->validate($request, [
+				'email' => 'required',
+				'property_id' => 'required'
+			]);
+			$user_ids = PropertyOwners::where('property_id', $request->property_id)->pluck('user_id')->toArray();
+			if (sizeof($user_ids) !== 0) {
+				$owner = Users::whereIn('uuid', array_unique($user_ids))->where('email', $request->email)->first();
+				if (!empty($owner)) {
+					$this->configSMTP();
+					$data = [
+						'owner_name' => $owner->first_name . ' ' . $owner->last_name,
+						'owner_id' => $owner->uuid,
+						'email_verification_token' => $owner->email_verification_token,
+					];
+
+					try{
+						Mail::to($request->email)->send(new PropertyOwnerVerificationMail($data));
+						return $this->sendResponse("Verification mail sent successfully to Property Owner!");
+					}catch(\Exception $e){
+						$msg = $e->getMessage();
+						return $this->sendResponse($msg, 200, false);
+					}
+				} else {
+					return $this->sendResponse("Sorry, Property Owner not found!", 200, false);
+				}
+			} else {
+				return $this->sendResponse("Sorry, Property Owner not found!", 200, false);
+			}
+		}
+
+		public function verifiedPropertyOwner(Request $request){
+			$this->validate($request, [
+				'token' => 'required',
+				'owner' => 'required',
+			]);
+
+			$owner = Users::where(['uuid' => $request->owner, 'email_verification_token' => $request->token])->first();
+
+			if (!empty($owner)) {
+				$updateStatus = Users::where(['uuid' => $request->owner, 'email_verification_token' => $request->token])->update(['email_verified' => "YES"]);
+				if ($updateStatus) {
+					return $this->sendResponse("Email verified successfully!");
+				}else{
+					return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+				}
+			}else{
+				return $this->sendResponse("Sorry, Property Owner not found!", 200, false);
+			}
 		}
 }
