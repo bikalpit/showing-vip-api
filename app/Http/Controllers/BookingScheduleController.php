@@ -44,14 +44,14 @@ class BookingScheduleController extends Controller
         $property = Properties::where('uuid', $property_id)->first();
         $homendo = PropertyHomendo::where('property_id', $property_id)->first();
         $showing_setup = PropertyShowingSetup::where('property_id', $property_id)->first();
-        if ($showing_setup->validator !== null || $showing_setup->validator !== '') {
+        if ($showing_setup->validator != null || $showing_setup->validator != '') {
             $validator = $showing_setup->validator[0];
         }
         $availibility = PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->first();
         $get_availibility = json_decode($availibility);
         $availibility_data = json_decode($get_availibility->availability);
 
-        if ($request->has('buyer_id')) {
+        if ($request->buyer_id !== null && $request->buyer_id !== '') {
             $users = Users::where('uuid',$request->buyer_id)->first();
             $time = strtotime(Carbon::now());
             $uuid = "sch".$time.rand(10,99)*rand(10,99);
@@ -106,17 +106,17 @@ class BookingScheduleController extends Controller
                             )
                         );
                     } catch(\Exception $e) {
-
+                        
                     }
 
                     $this->configSMTP();
                     $mail_data = [
-                            'name'=>$users->first_name.' '.$users->last_name,
-                            'validator_name'=>$validator->first_name.' '.$validator->last_name,
-                            'property_name'=>$homendo->hmdo_mls_propname,
-                            'booking_date'=>$request->booking_date,
-                            'booking_time'=>$request->booking_time
-                        ];
+                        'name'=>$users->first_name.' '.$users->last_name,
+                        'validator_name'=>$validator->first_name.' '.$validator->last_name,
+                        'property_name'=>$homendo->hmdo_mls_propname,
+                        'booking_date'=>$request->booking_date,
+                        'booking_time'=>$request->booking_time
+                    ];
 
                     try {
                         Mail::to($validator->email)->send(new BookingMail($mail_data));
