@@ -215,7 +215,7 @@
                                                 align="left">
                                                 <div style="line-height: 160%; word-wrap: break-word;">
                                                    <p style="font-size: 14px; line-height: 160%;"><span
-                                                      style="font-size: 16px; line-height: 35.2px; float: left;width: 50%;">Buyer Name: </span></p>
+                                                      style="font-size: 16px; line-height: 35.2px; float: left;width: 50%;">Name: </span></p>
                                                    <p style="font-size: 14px; line-height: 160%;"><span
                                                       style="font-size: 16px; line-height: 35.2px;float: left;width: 50%;">{{$name}} </span></p>
                                                 </div>
@@ -230,6 +230,19 @@
                                                       style="font-size: 16px; line-height: 35.2px; float: left;width: 50%;">Booked By: </span></p>
                                                    <p style="font-size: 14px; line-height: 160%;"><span
                                                       style="font-size: 16px; line-height: 35.2px;float: left;width: 50%;"> {{$name}} </span></p>
+                                                </div>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td style="overflow-wrap:break-word;word-break:break-word;padding: 0px 100px;font-family:'Cabin',sans-serif;padding-top: 20px;" align="left;">
+                                                <div style="line-height: 160%; word-wrap: break-word;">
+                                                   <a href="" target="_blank" style="margin-right: 40px;float: left;width: 40%;box-sizing: border-box;display: inline-block;font-family:'Cabin',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #47a32b; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;">
+                                                    <span style="display:block;padding:14px 44px 13px;line-height:120%;"><span style="font-size: 16px; line-height: 19.2px;"><strong><span style="line-height: 19.2px; font-size: 16px;">APPROVE</span></strong></span></span>
+                                                   </a>
+                                          
+                                                   <a href="" target="_blank" style="margin-left: 40px;float: left;width: 40%;box-sizing: border-box;display: inline-block;font-family:'Cabin',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #f50606; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;">
+                                                    <span style="display:block;padding:14px 44px 13px;line-height:120%;"><span style="font-size: 16px; line-height: 19.2px;"><strong><span style="line-height: 19.2px; font-size: 16px;">NOT APPROVE</span></strong></span></span>
+                                                   </a>
                                                 </div>
                                              </td>
                                           </tr>

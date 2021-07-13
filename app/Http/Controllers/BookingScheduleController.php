@@ -24,15 +24,16 @@ class BookingScheduleController extends Controller
 {
     public function createBooking(Request $request){
         $this->validate($request, [
-            'first_name' => 'nullable',
-            'last_name'  => 'nullable',
-            'phone'     => 'nullable',
-            'email'     => 'nullable',
-            'property_id'=> 'required',
-            'booking_date'=> 'required',
-            'booking_time'=> 'required',
-            'buyer_id'    => 'nullable',
-            'agent_id'    => 'nullable'
+            'first_name'    => 'nullable',
+            'last_name'     => 'nullable',
+            'phone'         => 'nullable',
+            'email'         => 'nullable',
+            'property_id'   => 'required',
+            'booking_date'  => 'required',
+            'booking_time'  => 'required',
+            'buyer_id'      => 'nullable',
+            'agent_id'      => 'nullable',
+            'url'           => 'nullable',
         ]);
 
         $formetted_date = date('Y-m-d', strtotime($request->booking_date));
@@ -66,6 +67,7 @@ class BookingScheduleController extends Controller
             }else{
                 $propertyBookingSchedule->status = 'A';
             }
+            $propertyBookingSchedule->cv_status = 'verify';
             if ($request->agent_id !== '' || $request->agent_id !== null) {
                 $propertyBookingSchedule->agent_id = $request->agent_id;
             }
@@ -130,13 +132,16 @@ class BookingScheduleController extends Controller
                 return $this->sendResponse("Sorry, Something went wrong!");
             }
         }else{
-            if (Users::where('email', $request->email)->exists()) {
+            $email_check = Users::where('email', $request->email)->first();
+            if (!empty($email_check)) {
                 return $this->sendResponse("Email already exists!", 200, false);
             }
 
-	        if (Users::where('phone', $request->phone)->exists()) {
+            $phone_check = Users::where('phone', $request->phone)->first();
+	        if (!empty($phone_check)) {
                 return $this->sendResponse("Phone no. already exists!", 200, false);
             }
+
             $time = strtotime(Carbon::now());
             $uuid = "usr".$time.rand(10,99)*rand(10,99);
             $user = new Users;
@@ -160,11 +165,13 @@ class BookingScheduleController extends Controller
                     $propertyBookingSchedule->property_id = $property_id;
                     $propertyBookingSchedule->booking_date = $formetted_date;
                     $propertyBookingSchedule->booking_time = $booking_time;
-                    if ($showing_setup->type == 'VALID') {
+                    /*if ($showing_setup->type == 'VALID') {
                         $propertyBookingSchedule->status = 'P';
                     }else{
                         $propertyBookingSchedule->status = 'A';
-                    }
+                    }*/
+                    $propertyBookingSchedule->status = 'P';
+                    $propertyBookingSchedule->cv_status = 'on-hold';
                     if ($request->agent_id !== '' || $request->agent_id !== null) {
                         $propertyBookingSchedule->agent_id = $request->agent_id;
                     }
@@ -349,7 +356,7 @@ class BookingScheduleController extends Controller
         $future_bookings = [];
         $past_bookings = [];
         $today_bookings = [];
-        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->where('property_id',$request->property_id)->get();
+        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->where('property_id',$request->property_id)->where('cv_status','verify')->get();
         $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey')->where('property_id',$request->property_id)->first();
         if (sizeof($bookings) > 0) {
             foreach ($bookings as $booking) {
@@ -364,7 +371,7 @@ class BookingScheduleController extends Controller
                 $booking['feedback'] = ShowingFeedback::where('booking_id', $booking->uuid)->first();
                 $booking['office'] = '';
 
-                $booking_count = PropertyBookingSchedule::where(['property_id'=>$booking->property_id, 'buyer_id'=>$booking->buyer_id])->get();
+                $booking_count = PropertyBookingSchedule::where(['property_id'=>$booking->property_id, 'buyer_id'=>$booking->buyer_id, 'cv_status'=>'verify'])->get();
                 $booking['booking_count'] = sizeof($booking_count);
                 if (strtotime(date('Y-m-d')) < strtotime($booking->booking_date)) {
                     $future_bookings[] = $booking;
@@ -384,7 +391,7 @@ class BookingScheduleController extends Controller
 
     public function allShowingBookings(Request $request){
 
-        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->get();
+        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->where('cv_status','verify')->get();
         if (sizeof($bookings) > 0) {
             return $this->sendResponse($bookings);
         }else{
