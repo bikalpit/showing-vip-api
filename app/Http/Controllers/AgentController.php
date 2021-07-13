@@ -462,4 +462,24 @@ class AgentController extends Controller
             return $this->sendResponse($msg, 200, false);
         }
     }
+
+    public function allAgentUsers(Request $request){
+        $this->validate($request, [
+            'agent_id' => 'required'
+        ]);
+
+        $user_ids = [];
+        $user_ids[] = PropertyAgents::where('agent_id', $request->agent_id)->whereNotNull('seller_id')->pluck('seller_id')->toArray();
+        $user_ids[] = PropertyAgents::where('agent_id', $request->agent_id)->whereNotNull('buyer_id')->pluck('buyer_id')->toArray();
+        
+        $all_user_ids = call_user_func_array('array_merge', $user_ids);
+
+        if (sizeof($all_user_ids) > 0) {
+            $all_users = Users::whereIn('uuid', array_unique($all_user_ids))->get();
+        }else{
+            return $this->sendResponse("Sorry, Users not found!", 200, false);
+        }
+
+        return $this->sendResponse($all_users);
+    }
 }
