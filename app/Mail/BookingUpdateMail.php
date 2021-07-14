@@ -6,7 +6,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class BookingUpdate extends Mailable {
+class BookingUpdateMail extends Mailable {
     use Queueable,
         SerializesModels;
     //build the message.

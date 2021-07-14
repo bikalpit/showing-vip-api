@@ -65,7 +65,6 @@ class UsersController extends Controller
 			          $msg = $e->getMessage();
 			          return $this->sendResponse($msg, 200, false);
 			      }
-
 					  return $this->sendResponse("Signup successfull!");
 				}else{
 						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
@@ -122,7 +121,6 @@ class UsersController extends Controller
 			          $msg = $e->getMessage();
 			          return $this->sendResponse($msg, 200, false);
 			      }
-
 					  return $this->sendResponse("Signup successfull!");
 				}else{
 						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
@@ -145,9 +143,9 @@ class UsersController extends Controller
 	        	return $this->sendResponse("Email already exists!", 200, false);
 	      }
 
-	      /*if (Users::where('phone', $request->phone)->exists()) {
+	      if (Users::where('phone', $request->phone)->exists()) {
 	        	return $this->sendResponse("Phone no. already exists!", 200, false);
-	      }*/
+	      }
 
 	      $time = strtotime(Carbon::now());
         $uuid = "usr".$time.rand(10,99)*rand(10,99);
@@ -288,35 +286,35 @@ class UsersController extends Controller
 	      }
     }
 
-	public function getSenders(Request $request){
-			$this->validate($request, [
-				'user_id' => 'required'
-		]);
+		public function getSenders(Request $request){
+				$this->validate($request, [
+						'user_id' => 'required'
+				]);
 
-		$messages = Messages::with('sender.senderInfo')->where('receiver_id', $request->user_id)->orderBy('id', 'DESC')->get()->unique('receiver_id');
+				$messages = Messages::with('sender.senderInfo')->where('receiver_id', $request->user_id)->orderBy('id', 'DESC')->get()->unique('receiver_id');
 
-		if (sizeof($messages) > 0) {
-			return $this->sendResponse($messages);
-		} else {
-			return $this->sendResponse("Sorry, Senders not found!", 200, false);
+				if (sizeof($messages) > 0) {
+						return $this->sendResponse($messages);
+				} else {
+						return $this->sendResponse("Sorry, Senders not found!", 200, false);
+				}
 		}
-	}
 
-	public function getMessages(Request $request){
-			$this->validate($request, [
-				'user_id' => 'required'
-		]);
+		public function getMessages(Request $request){
+				$this->validate($request, [
+						'user_id' => 'required'
+				]);
 
-		$sort = $request->order_by ?? 'ASC';
+				$sort = $request->order_by ?? 'ASC';
 
-		$messages = Messages::where('sender_id', $request->user_id)->orWhere('receiver_id', $request->user_id)->orderBy('id', $sort)->get();
+				$messages = Messages::where('sender_id', $request->user_id)->orWhere('receiver_id', $request->user_id)->orderBy('id', $sort)->get();
 
-		if (sizeof($messages) > 0) {
-					return $this->sendResponse($messages);
-		}else{
-				return $this->sendResponse("Sorry, Messages not found!", 200, false);
+				if (sizeof($messages) > 0) {
+						return $this->sendResponse($messages);
+				}else{
+						return $this->sendResponse("Sorry, Messages not found!", 200, false);
+				}
 		}
-	}
 
     public function updateProfile(Request $request){
     		$this->validate($request, [
@@ -369,9 +367,8 @@ class UsersController extends Controller
 	      		'website_url'=>$request->website_url
 	      ]);
 
-	      if($request->has('image')){
-            if($request->image != '')
-            {
+	      if ($request->has('image')) {
+            if ($request->image != '') {
                 $path = app()->basePath('public/user-images/');
                 $fileName = $this->singleImageUpload($path, $request->image);
                 Users::where('uuid', $request->user_id)->update(['image'=>$fileName]);
@@ -379,7 +376,6 @@ class UsersController extends Controller
         }
 
         if ($update) {
-
         		$updatedUser = Users::where('uuid', $request->user_id)->first();
         		$authentication = ApiToken::where('user_id', $request->user_id)->first();
         		$authentication['first_name'] = $updatedUser->first_name;

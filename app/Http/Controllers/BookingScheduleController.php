@@ -16,7 +16,8 @@ use App\Models\ShowingFeedback;
 use App\Models\SurveySubCategories;
 use App\Mail\SignupMail;
 use App\Mail\BookingMail;
-use App\Mail\BookingUpdate;
+use App\Mail\BookingUpdateMail;
+use App\Mail\UpdateShowingMail;
 use Carbon\Carbon;
 use Twilio\Rest\Client as TwilioClient;
 
@@ -47,7 +48,10 @@ class BookingScheduleController extends Controller
         $showing_setup = PropertyShowingSetup::where('property_id', $property_id)->first();
         if ($showing_setup->validator != null || $showing_setup->validator != '') {
             $validator = $showing_setup->validator[0];
+        }else{
+            $validator = '';
         }
+        
         $availibility = PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->first();
         $get_availibility = json_decode($availibility);
         $availibility_data = json_decode($get_availibility->availability);
@@ -67,7 +71,7 @@ class BookingScheduleController extends Controller
             }else{
                 $propertyBookingSchedule->status = 'A';
             }
-            $propertyBookingSchedule->cv_status = 'verify';
+            $propertyBookingSchedule->cv_status = 'verified';
             if ($request->agent_id !== '' || $request->agent_id !== null) {
                 $propertyBookingSchedule->agent_id = $request->agent_id;
             }
@@ -97,7 +101,7 @@ class BookingScheduleController extends Controller
                     $property_buyer->save();
                 }
 
-                if ($showing_setup->validator !== null || $showing_setup->validator !== '') {
+                if ($showing_setup->validator != null || $showing_setup->validator != '') {
                     try {
                         $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
                         $message =  $this->twilioClient->messages->create(
@@ -117,7 +121,10 @@ class BookingScheduleController extends Controller
                         'validator_name'=>$validator->first_name.' '.$validator->last_name,
                         'property_name'=>$homendo->hmdo_mls_propname,
                         'booking_date'=>$request->booking_date,
-                        'booking_time'=>$request->booking_time
+                        'booking_time'=>$request->booking_time,
+                        'booking_id'=>base64_encode($uuid),
+                        'validator_id'=>base64_encode($validator->uuid),
+                        'booker_id'=>base64_encode($request->buyer_id)
                     ];
 
                     try {
@@ -143,9 +150,9 @@ class BookingScheduleController extends Controller
             }
 
             $time = strtotime(Carbon::now());
-            $uuid = "usr".$time.rand(10,99)*rand(10,99);
+            $buyer_uuid = "usr".$time.rand(10,99)*rand(10,99);
             $user = new Users;
-            $user->uuid = $uuid;
+            $user->uuid = $buyer_uuid;
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->phone = $request->phone;
@@ -189,12 +196,12 @@ class BookingScheduleController extends Controller
                         PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
                     }
 
-                    $check_buyer = PropertyBuyers::where(['buyer_id'=>$uuid, 'property_id'=>$property_id])->first();
+                    $check_buyer = PropertyBuyers::where(['buyer_id'=>$buyer_uuid, 'property_id'=>$property_id])->first();
                     if (empty($check_buyer)) {
                         $property_buyer = new PropertyBuyers;
                         $property_buyer->property_id = $property_id;
                         //$property_buyer->seller_id = $seller_id;
-                        $property_buyer->buyer_id = $uuid;
+                        $property_buyer->buyer_id = $buyer_uuid;
                         if ($request->agent_id !== '' || $request->agent_id !== null) {
                             $property_buyer->agent_id = $request->agent_id;
                         }
@@ -213,7 +220,7 @@ class BookingScheduleController extends Controller
                     ];
                     Mail::to($request->email)->send(new SignupMail($data));
 
-                    if ($showing_setup->validator !== null || $showing_setup->validator !== '') {
+                    if ($showing_setup->validator != null || $showing_setup->validator != '') {
                         try {
                             $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
                             $message =  $this->twilioClient->messages->create(
@@ -232,7 +239,10 @@ class BookingScheduleController extends Controller
                             'validator_name'=>$validator->first_name.' '.$validator->last_name,
                             'property_name'=>$homendo->hmdo_mls_propname,
                             'booking_date'=>$request->booking_date,
-                            'booking_time'=>$request->booking_time
+                            'booking_time'=>$request->booking_time,
+                            'booking_id'=>base64_encode($uuid),
+                            'validator_id'=>base64_encode($validator->uuid),
+                            'booker_id'=>base64_encode($buyer_uuid)
                         ];
                         try {
                             Mail::to($validator->email)->send(new BookingMail($mail_data));
@@ -330,7 +340,7 @@ class BookingScheduleController extends Controller
                 ];
 
                 try {
-                    Mail::to($validator->email)->send(new BookingUpdate($data));
+                    Mail::to($validator->email)->send(new BookingUpdateMail($data));
                     $booking_info = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->where('uuid',$id)->first();
                     $response['booking_info'] = $booking_info;
                     $response['response_message'] = "Showing ".$msg;
@@ -428,5 +438,28 @@ class BookingScheduleController extends Controller
         }else{
             return $this->sendResponse("Sorry, Feedback not found!", 200, false);
         }
+    }
+
+    public function updateShowingStatus(Request $request){
+        $booker = Users::where('uuid', base64_decode($request->b))->first();
+        $validator = Users::where('uuid', base64_decode($request->v))->first();
+        $booking = PropertyBookingSchedule::where('uuid', base64_decode($request->s))->first();
+
+        if ($request->d == 'accept') {
+            $status = 'approved';
+        }elseif ($request->d == 'reject') {
+            $status = 'rejected';
+        }
+
+        $this->configSMTP();
+        $data = [
+            'name'=>$booker->first_name.' '.$booker->last_name,
+            'status'=>$status,
+            'date'=>$booking->booking_date,
+            'time'=>$booking->booking_time
+        ];
+        Mail::to($booker->email)->send(new UpdateShowingMail($data));
+        
+        return view('update-showing', ["status"=>$request->d]);
     }
 }

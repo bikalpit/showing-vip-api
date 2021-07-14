@@ -87,6 +87,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('all-showing-bookings',  ['middleware'=>'auth','uses'=>'BookingScheduleController@allShowingBookings']);
 		$router->post('submit-feedback',  ['middleware'=>'auth','uses'=>'BookingScheduleController@submitFeedback']);
 		$router->post('get-feedback',  ['middleware'=>'auth','uses'=>'BookingScheduleController@getFeedback']);
+		$router->get('update-showing-status',  ['uses'=>'BookingScheduleController@updateShowingStatus']);
 		/* BookingScheduleController API End*/
 
 		/*AgentController APIs Start*/

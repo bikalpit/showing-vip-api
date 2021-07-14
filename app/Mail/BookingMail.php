@@ -16,6 +16,9 @@ class BookingMail extends Mailable {
     public $property_name;
     public $booking_date;
     public $booking_time;
+    public $booking_id;
+    public $validator_id;
+    public $booker_id;
     public $url;
     public function __construct($data)
     {
@@ -25,6 +28,9 @@ class BookingMail extends Mailable {
         $this->property_name = $data['property_name'];
         $this->booking_date = $data['booking_date'];
         $this->booking_time = $data['booking_time'];
+        $this->booking_id = $data['booking_id'];
+        $this->validator_id = $data['validator_id'];
+        $this->booker_id = $data['booker_id'];
         $this->url = env('APP_URL');
     }
     public function build()

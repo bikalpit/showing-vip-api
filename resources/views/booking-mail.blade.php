@@ -103,7 +103,7 @@
                                                 <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                                    <tr>
                                                       <td style="padding-right: 0px;padding-left: 0px;" align="center">
-                                                         <img align="center" border="0" src="{{$url}}public/mail-images/image-1.png" alt="Image" title="Image"
+                                                         <img align="center" border="0" src="https://api.showing.vip/public/mail-images/image-1.png" alt="Image" title="Image"
                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 12%;max-width: 67.2px;"
                                                             width="67.2" />
                                                       </td>
@@ -138,7 +138,7 @@
                                                 <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                                    <tr>
                                                       <td style="padding-right: 0px;padding-left: 0px;" align="center">
-                                                         <img align="center" border="0" src="{{$url}}public/mail-images/image-2.png" alt="Image" title="Image"
+                                                         <img align="center" border="0" src="https://api.showing.vip/public/mail-images/image-2.png" alt="Image" title="Image"
                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 20%;max-width: 116px;"
                                                             width="116" />
                                                       </td>
@@ -159,7 +159,7 @@
                                                    style="color: #e5eaf5; line-height: 140%; text-align: center; word-wrap: break-word;">
                                                    <p style="font-size: 14px; line-height: 140%;"><span
                                                       style="font-size: 28px; line-height: 39.2px;"><strong><span
-                                                      style="line-height: 39.2px; font-size: 28px;">New showing created
+                                                      style="line-height: 39.2px; font-size: 28px;">New Showing
                                                       </span></strong></span>
                                                    </p>
                                                 </div>
@@ -234,13 +234,13 @@
                                              </td>
                                           </tr>
                                           <tr>
-                                             <td style="overflow-wrap:break-word;word-break:break-word;padding: 0px 100px;font-family:'Cabin',sans-serif;padding-top: 20px;" align="left;">
+                                             <td style="overflow-wrap:break-word;word-break:break-word;padding: 0px 40px;font-family:'Cabin',sans-serif;padding-top: 20px;" align="left;">
                                                 <div style="line-height: 160%; word-wrap: break-word;">
-                                                   <a href="" target="_blank" style="margin-right: 40px;float: left;width: 40%;box-sizing: border-box;display: inline-block;font-family:'Cabin',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #47a32b; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;">
+                                                   <a href="{{$url}}api/update-showing-status?b={{$booker_id}}&v={{$validator_id}}&s={{$booking_id}}&d=accept" target="_blank" style="margin-right: 20px;float: left;width: 46%;box-sizing: border-box;display: inline-block;font-family:'Cabin',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #47a32b; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;">
                                                     <span style="display:block;padding:14px 44px 13px;line-height:120%;"><span style="font-size: 16px; line-height: 19.2px;"><strong><span style="line-height: 19.2px; font-size: 16px;">APPROVE</span></strong></span></span>
                                                    </a>
                                           
-                                                   <a href="" target="_blank" style="margin-left: 40px;float: left;width: 40%;box-sizing: border-box;display: inline-block;font-family:'Cabin',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #f50606; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;">
+                                                   <a href="{{$url}}api/update-showing-status?b={{$booker_id}}&v={{$validator_id}}&s={{$booking_id}}&d=reject" target="_blank" style="margin-left: 20px;float: left;width: 46%;box-sizing: border-box;display: inline-block;font-family:'Cabin',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #f50606; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;">
                                                     <span style="display:block;padding:14px 44px 13px;line-height:120%;"><span style="font-size: 16px; line-height: 19.2px;"><strong><span style="line-height: 19.2px; font-size: 16px;">NOT APPROVE</span></strong></span></span>
                                                    </a>
                                                 </div>
