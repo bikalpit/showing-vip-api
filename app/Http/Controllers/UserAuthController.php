@@ -243,7 +243,7 @@ class UserAuthController extends Controller
     public function sendVerifyEmail(Request $request){
     		$this->validate($request, [
     				'email' => 'required',
-    				'url' => 'required'
+    				'url' => 'nullable'
 	      ]);
 
     		$user = Users::where('email', $request->email)->first();
