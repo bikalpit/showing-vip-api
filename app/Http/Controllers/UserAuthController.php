@@ -106,7 +106,8 @@ class UserAuthController extends Controller
 
     public function forgetPassword(Request $request){
     		$this->validate($request, [
-    				'email' => 'required'
+    				'email' => 'required',
+    				'url' => 'required'
 	      ]);
 
     		$user = Users::where(['email' => $request->email])->first();
@@ -119,9 +120,9 @@ class UserAuthController extends Controller
 								            ]);
 			      $data = [
 			      		'name'=>$user->first_name.' '.$user->last_name,
-    						'verification_token'=>$verification_token,
+    						'verification_token'=>$request->url.''.$verification_token,
     						'email'=>$request->email,
-    						'app_url'=>env('APP_URL')
+    						'app_url'=>env('APP_URL'),
     				];
 
 			      try{

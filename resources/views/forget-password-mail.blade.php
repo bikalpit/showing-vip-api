@@ -207,7 +207,7 @@
                                                 style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:'Cabin',sans-serif;"
                                                 align="left">
                                                 <div align="center">
-                                                   <a href="{{$app_url}}api/reset-password?token={{$verification_token}}" target="_blank"
+                                                   <a href="{{$verification_token}}" target="_blank"
                                                       style="box-sizing: border-box;display: inline-block;font-family:'Cabin',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #e84c22; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;">
                                                    <span style="display:block;padding:14px 44px 13px;line-height:120%;"><span
                                                       style="font-size: 16px; line-height: 19.2px;"><strong><span
