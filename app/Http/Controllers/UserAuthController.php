@@ -129,9 +129,11 @@ class UserAuthController extends Controller
 			          Mail::to($request->email)->send(new ForgetPasswordMail($data));  
 			      }catch(\Exception $e){
 			          $msg = $e->getMessage();
-			          return $this->sendResponse($msg,200,false);
+			          return $this->sendResponse($msg, 200, false);
 			      }
 					  return $this->sendResponse("Email send successfully for reset password!");
+				}else{
+						return $this->sendResponse("Email not exist", 200, false);
 				}
     }
 
