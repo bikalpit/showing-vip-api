@@ -28,7 +28,11 @@ class Users extends Model
     }
     public function getImageAttribute($value)
     {
-        return env('APP_URL').'public/user-images/'.$value;
+        if ($this->role == 'AGENT') {
+            return $value;
+        }else{
+            return env('APP_URL').'public/user-images/'.$value;
+        }
     }
     public function agentInfo()
     {
