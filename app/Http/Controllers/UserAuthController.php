@@ -242,7 +242,8 @@ class UserAuthController extends Controller
 
     public function sendVerifyEmail(Request $request){
     		$this->validate($request, [
-    				'email' => 'required'
+    				'email' => 'required',
+    				'url' => 'required'
 	      ]);
 
     		$user = Users::where('email', $request->email)->first();
@@ -252,7 +253,8 @@ class UserAuthController extends Controller
         		$otp = rand(1111,9999);
 			      $data = [
 			      		'name'=>$user->first_name.' '.$user->last_name, 
-		            'otp'=>$otp
+		            'otp'=>$otp,
+		            'url'=>$request->url
 		        ];
 
 		        try{
