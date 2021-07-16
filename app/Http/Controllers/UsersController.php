@@ -333,8 +333,7 @@ class UsersController extends Controller
 	      		'image' => 'nullable'
 	      ]);
 
-    		$user = Users::where('uuid', $request->user_id)->first();
-
+			$user = Users::where('uuid', $request->user_id)->first();
     		if ($request->email !== $user->email) {
     				$emailCheck = Users::where('email', $request->email)->first();
     				if (!empty($emailCheck)) {
@@ -370,7 +369,10 @@ class UsersController extends Controller
 	      if ($request->has('image')) {
             if ($request->image != '') {
                 $path = app()->basePath('public/user-images/');
-                $fileName = $this->singleImageUpload($path, $request->image);
+				$fileName = $this->singleImageUpload($path, $request->image);
+				if($user->role == 'AGENT'){
+					$fileName = env('APP_URL').'public/user-images/'.$fileName;
+				}
                 Users::where('uuid', $request->user_id)->update(['image'=>$fileName]);
             }
         }
