@@ -408,6 +408,10 @@ class ShowingController extends Controller
     public function getSingleShowingSetup(Request $request){
     		$this->validate($request, [
 	      		'property_id' => 'required'
+	      		/*'mls_id' => 'required',
+	      		'originator' => 'required',
+	      		'agent_id' => 'required',
+	      		'office_id' => 'required'*/
 	      ]);
 
 	      $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey', 'Property')->where('property_id', $request->property_id)->first();

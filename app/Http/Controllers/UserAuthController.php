@@ -13,6 +13,7 @@ use App\Models\AgentInfo;
 use App\Models\Settings;
 use App\Mail\ForgetPasswordMail;
 use App\Mail\VerifyEmail;
+use App\Mail\CreatePasswordMail;
 use Twilio\Rest\Client as TwilioClient;
 use Auth;
 
@@ -64,15 +65,32 @@ class UserAuthController extends Controller
 	      ]);
 
     		$user = Users::where(['email_verification_token' => $request->token])->first();
-
+    		//dd($user->password);
     		if (!empty($user)) {
-    				$password = Hash::make($request->password);
-    				$updatePassword = Users::where(['email_verification_token' => $request->token])->update(['password'=>$password, 'email_verified'=>'YES']);
-    				if ($updatePassword) {
-    						return $this->sendResponse("Password created successfully!");
-    				}else{
-    						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
-    				}
+	    			if ($user->password == '' || $user->password == null) {
+	    					$password = Hash::make($request->password);
+		    				$updatePassword = Users::where(['email_verification_token' => $request->token])->update(['password'=>$password, 'email_verified'=>'YES']);
+
+		    				$data = [
+		    						'name' => $user->first_name.' '.$user->last_name,
+		    				];
+
+		    				$this->configSMTP();
+		    				try{
+					          Mail::to($user->email)->send(new CreatePasswordMail($data));
+					      }catch(\Exception $e){
+					          /*$msg = $e->getMessage();
+					          return $this->sendResponse($msg, 200, false);*/
+					      }
+
+		    				if ($updatePassword) {
+		    						return $this->sendResponse("Password created successfully!");
+		    				}else{
+		    						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+		    				}
+	    			}else{
+		    				return $this->sendResponse("Password already created!", 200, false);
+		    		}
     		}else{
     				return $this->sendResponse("Sorry, Invalid token!", 200, false);
     		}
