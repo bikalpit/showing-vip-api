@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -233,7 +233,7 @@
 	    	</div>
 	  	</div>
 	</body>
-</html>
+</html> -->
 <!-- ============== -->
 <!DOCTYPE HTML
    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -430,7 +430,7 @@
                                                    <p style="font-size: 14px; line-height: 160%;"><span
                                                       style="font-size: 22px; line-height: 35.2px;">Hi, {{$name}}</span></p>
                                                    <p style="font-size: 14px; line-height: 160%;"><span
-                                                      style="font-size: 18px; line-height: 28.8px;">Your email verification OTP is {{$otp}} </span></p>
+                                                      style="font-size: 18px; line-height: 28.8px;">Your email verification OTP is </span></p>
                                                 </div>
                                              </td>
                                           </tr>
@@ -448,7 +448,7 @@
                                                       letter-spacing: 10px;
                                                       text-decoration: none;
                                                       color: #e84c22;
-                                                      font-weight: 700;"> 1 4 2 9
+                                                      font-weight: 700;"> {{$otp}}
                                                    </a>
                                                 </div>
                                              </td>
