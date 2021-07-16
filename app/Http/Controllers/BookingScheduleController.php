@@ -14,6 +14,7 @@ use App\Models\PropertyHomendo;
 use App\Models\PropertyBuyers;
 use App\Models\ShowingFeedback;
 use App\Models\SurveySubCategories;
+use App\Models\Settings;
 use App\Mail\SignupMail;
 use App\Mail\BookingMail;
 use App\Mail\BookingUpdateMail;
@@ -52,6 +53,9 @@ class BookingScheduleController extends Controller
             $validator = '';
         }
         
+        $settings = Settings::where('option_key', 'twillio')->first();
+        $twilio_setting = json_decode($settings->option_value);
+
         $availibility = PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->first();
         $get_availibility = json_decode($availibility);
         $availibility_data = json_decode($get_availibility->availability);
@@ -102,17 +106,19 @@ class BookingScheduleController extends Controller
                 }
 
                 if ($showing_setup->validator != null || $showing_setup->validator != '') {
-                    try {
-                        $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
-                        $message =  $this->twilioClient->messages->create(
-                            $validator->phone,
-                            array(
-                                "from" => '+14243918787',
-                                "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$users->first_name.' '.$users->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
-                            )
-                        );
-                    } catch(\Exception $e) {
+                    if ($twilio_setting->status == true) {
+                        try {
+                            $this->twilioClient = new TwilioClient($twilio_setting->account_sid, $twilio_setting->auth_token);
+                            $message =  $this->twilioClient->messages->create(
+                                $validator->phone,
+                                array(
+                                    "from" => $twilio_setting->twilio_sender_number,
+                                    "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$users->first_name.' '.$users->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                                )
+                            );
+                        } catch(\Exception $e) {
 
+                        }
                     }
 
                     $this->configSMTP();
@@ -221,17 +227,19 @@ class BookingScheduleController extends Controller
                     Mail::to($request->email)->send(new SignupMail($data));
 
                     if ($showing_setup->validator != null || $showing_setup->validator != '') {
-                        try {
-                            $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
-                            $message =  $this->twilioClient->messages->create(
-                                $validator->phone,
-                                array(
-                                    "from" => '+14243918787',
-                                    "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$request->first_name.' '.$request->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
-                                )
-                            );
-                        } catch(\Exception $e) {
-                            
+                        if ($twilio_setting->status == true) {
+                            try {
+                                $this->twilioClient = new TwilioClient($twilio_setting->account_sid, $twilio_setting->auth_token);
+                                $message =  $this->twilioClient->messages->create(
+                                    $validator->phone,
+                                    array(
+                                        "from" => $twilio_setting->twilio_sender_number,
+                                        "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$request->first_name.' '.$request->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                                    )
+                                );
+                            } catch(\Exception $e) {
+                                
+                            }
                         }
 
                         $mail_data = [
@@ -288,6 +296,9 @@ class BookingScheduleController extends Controller
         $get_availibility = json_decode($availibility);
         $availibility_data = json_decode($get_availibility->availability);
 
+        $settings = Settings::where('option_key', 'twillio')->first();
+        $twilio_setting = json_decode($settings->option_value);
+
         if (!empty($users)) {
             $update['status'] = $status;
             $update['cancel_reason'] = $reason;
@@ -317,17 +328,19 @@ class BookingScheduleController extends Controller
                     PropertyShowingAvailability::where('showing_setup_id', $setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
                 }
 
-                try {
-                    $this->twilioClient = new TwilioClient('AC77bf6fe8f1ff8ee95bad95276ffaa586', '94666fdb4b4f3090f7b26be77e67a819');
-                    $message =  $this->twilioClient->messages->create(
-                        '+919624730644',
-                        array(
-                            "from" => '+14243918787',
-                            "body" => 'Your booking request has been '.$msg.' for this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
-                        )
-                    );
-                } catch(\Exception $e) {
+                if ($twilio_setting->status == true) {
+                    try {
+                        $this->twilioClient = new TwilioClient($twilio_setting->account_sid, $twilio_setting->auth_token);
+                        $message =  $this->twilioClient->messages->create(
+                            '+919624730644',
+                            array(
+                                "from" => $twilio_setting->twilio_sender_number,
+                                "body" => 'Your booking request has been '.$msg.' for this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                            )
+                        );
+                    } catch(\Exception $e) {
 
+                    }
                 }
 
                 $this->configSMTP();
