@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\PropertyShowingSetup;
 use App\Models\PropertyShowingAvailability;
@@ -10,6 +11,8 @@ use App\Models\PropertyShowingSurvey;
 use App\Models\SurveyCategories;
 use App\Models\SurveySubCategories;
 use App\Models\PropertyHomendo;
+use App\Models\Users;
+use App\Mail\AgentShowingMail;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use DB;
@@ -394,7 +397,6 @@ class ShowingController extends Controller
 			    					['uuid'=>$survey_uuid, 'survey'=>json_encode($request->survey)]
 			    			);
     				}
-			      
 
 			      if ($update_survey) {
 				  			return $this->sendResponse("Showing survey updated successfully!");
@@ -434,7 +436,7 @@ class ShowingController extends Controller
 	      }
     }
 
-    public function getSingleSetup(){
+    public function getSingleSetup(Request $request){
     		$this->validate($request, [
 	      		'mls_id'						=> 'nullable',
 						'origintor'					=> 'nullable',
@@ -446,6 +448,7 @@ class ShowingController extends Controller
 
 	      $property = PropertyHomendo::where(['hmdo_mls_id'=>$request->mls_id, 'hmdo_mls_originator'=>$request->origintor])->first();
 	      $agent = Users::where(['mls_id'=>$request->agent_id, 'mls_name'=>$request->agent_originator, 'email'=>$request->email])->first();
+
 	      if ($property != null) {
 	      		$showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey', 'Property')->where('property_id', $property->property_id)->first();
 
@@ -455,7 +458,18 @@ class ShowingController extends Controller
 			      		return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
 			      }
 	      }elseif ($agent != null) {
-	      		
+	      		$this->configSMTP();
+	      		$data = [
+	      				'name' => $agent->first_name.' '.$agent->last_name;
+	      		];
+
+    				try{
+			          Mail::to($agent->email)->send(new AgentShowingMail($data));
+			      }catch(\Exception $e){
+			          $msg = $e->getMessage();
+			          return $this->sendResponse($msg, 200, false);
+			      }
+	      		return $this->sendResponse($showing_setup);
 	      }
     }
 }

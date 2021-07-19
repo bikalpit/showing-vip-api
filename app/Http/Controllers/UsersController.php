@@ -21,6 +21,7 @@ class UsersController extends Controller
 	          'last_name' => 'required',
 	          'phone' => 'required',
 	      		'email' => 'required|email',
+	      		'ip_address' => 'required',
 	      		'url' => 'nullable'
 	      ]);
 
@@ -44,6 +45,7 @@ class UsersController extends Controller
         $user->sub_role = "SELLER";
         $user->phone_verified = "NO";
         $user->email_verified = "NO";
+        $user->ip_address = $request->ip_address;
         $user->image = "default.png";
         $result = $user->save();
 
@@ -77,6 +79,7 @@ class UsersController extends Controller
 	          'last_name' => 'required',
 	          'phone' => 'required',
 	      		'email' => 'required|email',
+	      		'ip_address' => 'required',
 	      		'url' => 'nullable'
 	      ]);
 
@@ -100,6 +103,7 @@ class UsersController extends Controller
         $user->sub_role = "BUYER";
         $user->phone_verified = "NO";
         $user->email_verified = "NO";
+        $user->ip_address = $request->ip_address;
         $user->image = "default.png";
         $result = $user->save();
 
@@ -133,6 +137,7 @@ class UsersController extends Controller
 	          'last_name' => 'required',
 	          'phone' => 'required',
 	      		'email' => 'required|email',
+	      		'ip_address' => 'required',
 	      		'url' => 'nullable',
 	          'mls_id' => 'required',
 	          'mls_name' => 'required',
@@ -160,6 +165,7 @@ class UsersController extends Controller
         $user->mls_name = $request->mls_name;
         $user->phone_verified = "NO";
         $user->email_verified = "NO";
+        $user->ip_address = $request->ip_address;
         if ($request->agent_info['hmdo_agent_photo_url'][1] == null || $request->agent_info['hmdo_agent_photo_url'][1] == '') {
         	$user->image = env('APP_URL').'public/user-images/default.png';
         }else{
