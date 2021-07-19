@@ -161,7 +161,7 @@ class UsersController extends Controller
         $user->phone_verified = "NO";
         $user->email_verified = "NO";
         if ($request->agent_info['hmdo_agent_photo_url'][1] == null || $request->agent_info['hmdo_agent_photo_url'][1] == '') {
-        	$user->image = "default.png";
+        	$user->image = env('APP_URL').'public/user-images/default.png';
         }else{
         	$user->image = $request->agent_info['hmdo_agent_photo_url'][1];
         }
@@ -170,7 +170,6 @@ class UsersController extends Controller
         $result = $user->save();
 
         if ($result) {
-
         		$agent_info = new AgentInfo;
         		$agent_info->agent_id = $uuid;
         		$agent_info->hmdo_lastupdated = $request->agent_info['hmdo_lastupdated'][1];

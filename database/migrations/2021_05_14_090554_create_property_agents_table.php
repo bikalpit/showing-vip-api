@@ -19,7 +19,7 @@ class CreatePropertyAgentsTable extends Migration
             $table->string('seller_id', 200)->nullable();
             $table->string('buyer_id', 200)->nullable();
             $table->string('agent_id', 200)->nullable();
-            $table->enum('agent_type', ['seller', 'buyer']);
+            $table->enum('agent_type', ['seller', 'buyer'])->default('buyer');
             $table->timestamps();
         });
     }

@@ -20,7 +20,7 @@ class CreatePropertyBookingScheduleTable extends Migration
             $table->string('property_id', 200);
             $table->string('agent_id', 200)->nullable();
             $table->date('booking_date');
-            $table->time('booking_time');
+            $table->string('booking_time', 100);
             $table->enum('status', ['P', 'A', 'R', 'NA'])->comment('P - Pending | A - Approved | R - Reject | NA - Not Approved');
             $table->enum('cv_status', ['on-hold', 'verify'])->comment('on-hold - User not verified | verify - User verified');
             $table->string('cancel_by', 200)->nullable();

@@ -15,19 +15,20 @@ class CreatePropertyZillowTable extends Migration
     {
         Schema::create('property_zillow', function (Blueprint $table) {
             $table->id();
-            $table->string('uuid', 200);
-            $table->string('property_id', 200);
-            $table->string('z_zpid', 200);
-            $table->string('z_sale_amount', 200);
-            $table->string('z_sale_lowrange', 200);
-            $table->string('z_sale_highrange', 200);
-            $table->string('z_sale_lastupdated', 200);
-            $table->string('z_rental_amount', 200);
-            $table->string('z_rental_lowrange', 200);
-            $table->string('z_rental_highrange', 200);
-            $table->string('z_rental_lastupdated', 200);
-            $table->string('z_prop_url', 1000);
+            $table->string('uuid', 200)->nullable();
+            $table->string('property_id', 200)->nullable();
+            $table->string('z_zpid', 200)->nullable();
+            $table->string('z_sale_amount', 200)->nullable();
+            $table->string('z_sale_lowrange', 200)->nullable();
+            $table->string('z_sale_highrange', 200)->nullable();
+            $table->string('z_sale_lastupdated', 200)->nullable();
+            $table->string('z_rental_amount', 200)->nullable();
+            $table->string('z_rental_lowrange', 200)->nullable();
+            $table->string('z_rental_highrange', 200)->nullable();
+            $table->string('z_rental_lastupdated', 200)->nullable();
+            $table->string('z_prop_url', 1000)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

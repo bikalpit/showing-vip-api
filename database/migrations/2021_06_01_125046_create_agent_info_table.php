@@ -36,6 +36,7 @@ class CreateAgentInfoTable extends Migration
             $table->string('hmdo_office_phone', 200);
             $table->string('hmdo_office_website', 200);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

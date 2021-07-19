@@ -28,7 +28,7 @@ class CreatePropertyShowingSetupTable extends Migration
             $table->string('lockbox_code', 200)->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->time('timeframe')->nullable();
+            $table->string('timeframe', 10)->nullable();
             $table->enum('overlap', ['YES', 'NO'])->default('NO');
             $table->dateTime('cancel_at')->nullable();
             $table->timestamps();

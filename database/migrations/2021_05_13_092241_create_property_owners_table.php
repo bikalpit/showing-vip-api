@@ -17,7 +17,7 @@ class CreatePropertyOwnersTable extends Migration
             $table->id();
             $table->string('property_id', 200);
             $table->string('user_id', 200);
-            $table->enum('type', ['main_owner', 'sub_owner']);    
+            $table->enum('type', ['main_owner', 'sub_owner'])->default('sub_owner');    
             $table->timestamps();
         });
     }
