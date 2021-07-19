@@ -65,7 +65,7 @@ class UserAuthController extends Controller
 	      ]);
 
     		$user = Users::where(['email_verification_token' => $request->token])->first();
-    		//dd($user->password);
+
     		if (!empty($user)) {
 	    			if ($user->password == '' || $user->password == null) {
 	    					$password = Hash::make($request->password);
@@ -97,7 +97,7 @@ class UserAuthController extends Controller
     }
 
     public function resetPassword(Request $request){
-    		$this->validate($request, [
+    		/*$this->validate($request, [
     				'user_id' => 'required',
 	          'old_password' => 'required',
 	          'new_password' => 'required'
@@ -119,7 +119,43 @@ class UserAuthController extends Controller
 			      }
 			  }else{
 			  		return $this->sendResponse("Sorry, User not found!", 200, false);
-			  }
+			  }*/
+
+			  $this->validate($request, [
+	          'password' => 'required',
+	          'token' => 'required'
+	      ]);
+
+    		$user = Users::where(['email_verification_token' => $request->token])->first();
+    		
+    		if (!empty($user)) {
+	    			if ($user->password == '' || $user->password == null) {
+	    					$password = Hash::make($request->password);
+		    				$updatePassword = Users::where(['email_verification_token' => $request->token])->update(['password'=>$password, 'email_verified'=>'YES']);
+
+		    				$data = [
+		    						'name' => $user->first_name.' '.$user->last_name,
+		    				];
+
+		    				$this->configSMTP();
+		    				try{
+					          Mail::to($user->email)->send(new CreatePasswordMail($data));
+					      }catch(\Exception $e){
+					          /*$msg = $e->getMessage();
+					          return $this->sendResponse($msg, 200, false);*/
+					      }
+
+		    				if ($updatePassword) {
+		    						return $this->sendResponse("Password created successfully!");
+		    				}else{
+		    						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+		    				}
+	    			}else{
+		    				return $this->sendResponse("Password already created!", 200, false);
+		    		}
+    		}else{
+    				return $this->sendResponse("Sorry, Invalid token!", 200, false);
+    		}
     }
 
     public function forgetPassword(Request $request){
