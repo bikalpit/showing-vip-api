@@ -126,36 +126,20 @@ class UserAuthController extends Controller
 	          'token' => 'required'
 	      ]);
 
-    		$user = Users::where(['email_verification_token' => $request->token])->first();
-    		
-    		if (!empty($user)) {
-	    			if ($user->password == '' || $user->password == null) {
-	    					$password = Hash::make($request->password);
-		    				$updatePassword = Users::where(['email_verification_token' => $request->token])->update(['password'=>$password, 'email_verified'=>'YES']);
+    		$token = UserPasswordReset::where('token', $request->token)->first();
 
-		    				$data = [
-		    						'name' => $user->first_name.' '.$user->last_name,
-		    				];
-
-		    				$this->configSMTP();
-		    				try{
-					          Mail::to($user->email)->send(new CreatePasswordMail($data));
-					      }catch(\Exception $e){
-					          /*$msg = $e->getMessage();
-					          return $this->sendResponse($msg, 200, false);*/
-					      }
-
-		    				if ($updatePassword) {
-		    						return $this->sendResponse("Password created successfully!");
-		    				}else{
-		    						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
-		    				}
-	    			}else{
-		    				return $this->sendResponse("Password already created!", 200, false);
-		    		}
-    		}else{
-    				return $this->sendResponse("Sorry, Invalid token!", 200, false);
-    		}
+	      if (!empty($token)) {
+	      		$password = Hash::make($request->password);
+			   		$resetPassword = Users::where(['email' => $token->email])->update(['password'=>$password]);
+			   		if ($resetPassword) {
+			   				UserPasswordReset::where('token', $request->token)->delete();
+			   				return $this->sendResponse("Password reset successfully!");
+			   		}else{
+			   				return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+			   		}
+	      }else{
+	      		return $this->sendResponse("Sorry, Invalid token!", 200, false);
+	      }
     }
 
     public function forgetPassword(Request $request){

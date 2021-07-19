@@ -9,6 +9,7 @@ use App\Models\PropertyShowingAvailability;
 use App\Models\PropertyShowingSurvey;
 use App\Models\SurveyCategories;
 use App\Models\SurveySubCategories;
+use App\Models\PropertyHomendo;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use DB;
@@ -408,10 +409,6 @@ class ShowingController extends Controller
     public function getSingleShowingSetup(Request $request){
     		$this->validate($request, [
 	      		'property_id' => 'required'
-	      		/*'mls_id' => 'required',
-	      		'originator' => 'required',
-	      		'agent_id' => 'required',
-	      		'office_id' => 'required'*/
 	      ]);
 
 	      $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey', 'Property')->where('property_id', $request->property_id)->first();
@@ -434,6 +431,31 @@ class ShowingController extends Controller
 	      		return $this->sendResponse($showing_setup);
 	      }else{
 	      		return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
+	      }
+    }
+
+    public function getSingleSetup(){
+    		$this->validate($request, [
+	      		'mls_id'						=> 'nullable',
+						'origintor'					=> 'nullable',
+						'agent_id'					=> 'nullable',
+						'agent_originator'	=> 'nullable',
+						'email'							=> 'nullable',
+						'property_status'		=> 'nullable',
+	      ]);
+
+	      $property = PropertyHomendo::where(['hmdo_mls_id'=>$request->mls_id, 'hmdo_mls_originator'=>$request->origintor])->first();
+	      $agent = Users::where(['mls_id'=>$request->agent_id, 'mls_name'=>$request->agent_originator, 'email'=>$request->email])->first();
+	      if ($property != null) {
+	      		$showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey', 'Property')->where('property_id', $property->property_id)->first();
+
+			      if ($showing_setup) {
+			      		return $this->sendResponse($showing_setup);
+			      }else{
+			      		return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
+			      }
+	      }elseif ($agent != null) {
+	      		
 	      }
     }
 }

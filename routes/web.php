@@ -78,6 +78,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('update-showing-availability',  ['middleware'=>'auth','uses'=>'ShowingController@updateShowingAvailability']);
 		$router->post('update-showing-survey',  ['middleware'=>'auth','uses'=>'ShowingController@updateShowingSurvey']);
 		$router->post('get-single-showing-setup-non-auth',  ['uses'=>'ShowingController@getSingleShowingSetupNonAuth']);
+		$router->post('get-single-setup',  ['uses'=>'ShowingController@getSingleSetup']);
 		/* ShowingController APIs End */
 
 		/* BookingScheduleController API Start*/
