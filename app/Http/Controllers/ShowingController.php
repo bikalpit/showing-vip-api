@@ -12,7 +12,9 @@ use App\Models\SurveyCategories;
 use App\Models\SurveySubCategories;
 use App\Models\PropertyHomendo;
 use App\Models\Users;
+use App\Models\AgentInfo;
 use App\Mail\AgentShowingMail;
+use App\Mail\SignupMail;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use DB;
@@ -439,14 +441,15 @@ class ShowingController extends Controller
     public function getSingleSetup(Request $request){
     		$this->validate($request, [
 	      		'mls_id'						=> 'nullable',
-						'origintor'					=> 'nullable',
+						'originator'				=> 'nullable',
 						'agent_id'					=> 'nullable',
 						'agent_originator'	=> 'nullable',
 						'email'							=> 'nullable',
 						'property_status'		=> 'nullable',
+						'url'								=> 'nullable',
 	      ]);
 
-	      $property = PropertyHomendo::where(['hmdo_mls_id'=>$request->mls_id, 'hmdo_mls_originator'=>$request->origintor])->first();
+	      $property = PropertyHomendo::where(['hmdo_mls_id'=>$request->mls_id, 'hmdo_mls_originator'=>$request->originator])->first();
 	      $agent = Users::where(['mls_id'=>$request->agent_id, 'mls_name'=>$request->agent_originator, 'email'=>$request->email])->first();
 
 	      if ($property != null) {
@@ -460,7 +463,9 @@ class ShowingController extends Controller
 	      }elseif ($agent != null) {
 	      		$this->configSMTP();
 	      		$data = [
-	      				'name' => $agent->first_name.' '.$agent->last_name;
+	      				'name' => $agent->first_name.' '.$agent->last_name,
+	      				'mls_id' => $request->mls_id,
+	      				'originator' => $request->originator
 	      		];
 
     				try{
@@ -469,7 +474,64 @@ class ShowingController extends Controller
 			          $msg = $e->getMessage();
 			          return $this->sendResponse($msg, 200, false);
 			      }
-	      		return $this->sendResponse($showing_setup);
+	      		return $this->sendResponse('Mail sent successfully to agent!');
+	      }else{
+	      		$time = strtotime(Carbon::now());
+            $uuid = "usr".$time.rand(10,99)*rand(10,99);
+            $user = new Users;
+            $user->uuid = $uuid;
+            $user->email = $request->email;
+            $user->role = "AGENT";
+            $user->phone_verified = "NO";
+            $user->email_verified = "NO";
+            $user->image = "default.png";
+            $result = $user->save();
+            if ($result) {
+            		$agent_info = new AgentInfo;
+		        		$agent_info->agent_id = $uuid;
+		        		$agent_info->hmdo_lastupdated = '';
+		        		$agent_info->hmdo_mls_originator = '';
+		        		$agent_info->hmdo_agent_name = '';
+		        		$agent_info->hmdo_agent_title = '';
+		        		$agent_info->hmdo_agent_photo_url = '';
+		        		$agent_info->hmdo_agent_email = '';
+		        		$agent_info->hmdo_office_main_phone = '';
+		        		$agent_info->hmdo_office_direct_phone = '';
+		        		$agent_info->hmdo_office_mobile_phone = '';
+		        		$agent_info->hmdo_agent_skills = '';
+		        		$agent_info->hmdo_office_id = '';
+		        		$agent_info->hmdo_office_name = '';
+		        		$agent_info->hmdo_office_photo = '';
+		        		$agent_info->hmdo_office_street = '';
+		        		$agent_info->hmdo_office_city = '';
+		        		$agent_info->hmdo_office_zipcode = '';
+		        		$agent_info->hmdo_office_state = '';
+		        		$agent_info->hmdo_office_phone = '';
+		        		$agent_info->hmdo_office_website = '';
+		        		$agent_info->save();
+
+            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+		            Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+
+		            $this->configSMTP();
+		            $data = [
+		                'name'=>'',
+		                'verification_token'=>$verification_token,
+		                'email'=>$request->email,
+		                'url'=>$request->url
+		            ];
+		            Mail::to($request->email)->send(new SignupMail($data));
+
+		            $showingData = [
+			      				'name' => '',
+			      				'mls_id' => $request->mls_id,
+			      				'originator' => $request->originator
+			      		];
+		            Mail::to($request->email)->send(new AgentShowingMail($showingData));
+		            return $this->sendResponse('Mail sent successfully to agent for create password!');
+            }else{
+            		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+            }
 	      }
     }
 }
