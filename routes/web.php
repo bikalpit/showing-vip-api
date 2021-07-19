@@ -42,6 +42,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('get-messages',  ['middleware'=>'auth','uses'=>'UsersController@getMessages']);
 		$router->post('get-senders',  ['middleware'=>'auth','uses'=>'UsersController@getSenders']);
 		$router->post('update-profile',  ['uses'=>'UsersController@updateProfile']);
+		$router->post('get-states',  ['uses'=>'UsersController@getStates']);
+		$router->post('get-cities',  ['uses'=>'UsersController@getCities']);
 		/* UsersController APIs End */
 
 		/* PropertiesController APIs Start */

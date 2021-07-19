@@ -12,6 +12,7 @@ use App\Models\AgentInfo;
 use App\Mail\SignupMail;
 use App\Models\ApiToken;
 use Carbon\Carbon;
+use DB;
 
 class UsersController extends Controller
 {
@@ -400,5 +401,25 @@ class UsersController extends Controller
         }else{
         		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
         }
+    }
+
+    public function getStates(Request $request){
+    		$this->validate($request, [
+						'country_id' => 'required'
+				]);
+
+    		$states = DB::table('states')->where('country_id', $request->country_id)->get();
+
+    		return $this->sendResponse($states);
+    }
+
+    public function getCities(Request $request){
+    		$this->validate($request, [
+						'state_id' => 'required'
+				]);
+
+    		$states = DB::table('cities')->where('state_id', $request->state_id)->get();
+
+    		return $this->sendResponse($states);
     }
 }
