@@ -44,6 +44,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('update-profile',  ['uses'=>'UsersController@updateProfile']);
 		$router->post('get-states',  ['uses'=>'UsersController@getStates']);
 		$router->post('get-cities',  ['uses'=>'UsersController@getCities']);
+		$router->post('verify-owner',  ['uses'=>'UsersController@verifyOwner']);
+		$router->get('verified-owner',  ['uses'=>'UsersController@verifiedOwner']);
 		/* UsersController APIs End */
 
 		/* PropertiesController APIs Start */

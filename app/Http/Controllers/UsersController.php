@@ -9,8 +9,9 @@ use App\Models\Users;
 use App\Models\UserAgents;
 use App\Models\Messages;
 use App\Models\AgentInfo;
-use App\Mail\SignupMail;
 use App\Models\ApiToken;
+use App\Mail\SignupMail;
+use App\Mail\OwnerVerificationMail;
 use Carbon\Carbon;
 use DB;
 
@@ -422,4 +423,51 @@ class UsersController extends Controller
 
     		return $this->sendResponse($states);
     }
+
+    public function verifyOwner(Request $request){
+				$this->validate($request, [
+	      		'email' => 'required',
+	      ]);
+				
+	      $owner = Users::where('email', $request->email)->first();
+
+	      if (!empty($owner)) {
+	      		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+
+	      		$update_token = Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+
+	      		if ($update_token) {
+	      				$this->configSMTP();
+								$data = [
+										'name'=>$owner->first_name.' '.$owner->last_name,
+		                'user_id'=>base64_encode($owner->uuid),
+		                'token'=>base64_encode($verification_token)
+		            ];
+
+		            try{
+					          Mail::to($owner->email)->send(new OwnerVerificationMail($data));
+					      }catch(\Exception $e){
+					          $msg = $e->getMessage();
+					          return $this->sendResponse($msg, 200, false);
+					      }
+
+					      return $this->sendResponse("Email sent for verification!");
+	      		}
+	      }else{
+						return $this->sendResponse("Sorry, User not found!", 200, false);
+				}
+		}
+
+		public function verifiedOwner(Request $request){
+				$check = Users::where('email_verification_token', base64_decode($request->auth))->where('uuid', base64_decode($request->user))->first();
+				if (!empty($check)) {
+						$status = 'verified';
+
+						Users::where('email_verification_token', base64_decode($request->auth))->where('uuid', base64_decode($request->user))->update(['email_verified'=>'YES']);
+				}else{
+						$status = 'expired';
+				}
+
+				return view('verified-owner', ["status"=>$status]);
+		}
 }

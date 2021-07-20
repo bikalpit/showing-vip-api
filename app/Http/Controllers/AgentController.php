@@ -13,6 +13,7 @@ use App\Models\PropertyValuecheck;
 use App\Models\PropertyZillow;
 use App\Models\PropertyHomendo;
 use App\Models\PropertyOwners;
+use App\Models\PropertyBookingSchedule;
 use App\Mail\TestMail;
 use Carbon\Carbon;
 
@@ -84,7 +85,7 @@ class AgentController extends Controller
             'properties' => 'required',
             'buyer_id' => 'required'
         ]);
-
+        
         $all_properties = Properties::with('Homendo')->get();
         
         foreach ($request->properties as $new_property) {
@@ -154,6 +155,13 @@ class AgentController extends Controller
                 $property_agent->agent_id = $request->agent_id;
                 $property_agent->agent_type = 'seller';
                 $property_agent->save();
+
+                $showings = PropertyBookingSchedule::where('property_id', '')->orWhereNull('property_id')->get();
+                foreach ($showings as $showing) {
+                    if ($showing->property_mls_id == $property->mls_id) {
+                        PropertyBookingSchedule::where('property_mls_id', $property->mls_id)->update(['property_id'=>$property->uuid]);
+                    }
+                }
             }else{
                 if ($new_property['hmdo_lastupdated'][1] > $property->last_update) {
                     $update_property = Properties::where('uuid', $match_property->uuid)->update(['data'=>json_encode($new_property), 'last_update'=>date('Y-m-d H:i:s')]);
@@ -296,7 +304,7 @@ class AgentController extends Controller
         $selling_properties = [];
 
         foreach ($properties as $property) {
-            //dd($property);
+            
             if ($property->agent_type == 'buyer') {
                 $buyer = Users::where('uuid', $property->buyer_id)->first();
                 $property['buyer'] = $buyer;
@@ -323,7 +331,7 @@ class AgentController extends Controller
         ]);
 
         $mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
-        //dd($mls_id);
+
         $time = strtotime(Carbon::now());
         $uuid = "prty".$time.rand(10,99)*rand(10,99);
         $property = new Properties;
@@ -439,6 +447,13 @@ class AgentController extends Controller
         $agent->agent_id = $request->agent_id;
         $agent->agent_type = 'seller';
         $property_agent = $agent->save();
+
+        $showings = PropertyBookingSchedule::where('property_id', '')->orWhereNull('property_id')->get();
+        foreach ($showings as $showing) {
+            if ($showing->property_mls_id == $property->mls_id) {
+                PropertyBookingSchedule::where('property_mls_id', $property->mls_id)->update(['property_id'=>$property->uuid]);
+            }
+        }
 
         if ($property_agent) {
             return $this->sendResponse("Property added successfully!");
