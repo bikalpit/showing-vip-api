@@ -470,4 +470,27 @@ class UsersController extends Controller
 
 				return view('verified-owner', ["status"=>$status]);
 		}
+
+		public function checkAgent(){
+				//dd(md5(strtotime('now')));
+				//dd($_SERVER['HTTP_USER_AGENT']);
+				$curl = curl_init();
+
+				curl_setopt_array($curl, array(
+					  CURLOPT_URL => 'https://api.homendo.com/v9/hmdo-agent-check-post.php',
+					  CURLOPT_RETURNTRANSFER => true,
+					  CURLOPT_ENCODING => '',
+					  CURLOPT_MAXREDIRS => 10,
+					  CURLOPT_TIMEOUT => 0,
+					  CURLOPT_FOLLOWLOCATION => true,
+					  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+					  CURLOPT_CUSTOMREQUEST => 'POST',
+					  CURLOPT_POSTFIELDS => array('login' => '@*8Dom0sH0Ag3#DI','token' => '"'.md5(strtotime('now')).'"','agentid' => 'rxm_99990131341','email' => 'jim@jimwanzeck.com','originator' => 'RECOLORADO','deviceid' => '"'.$_SERVER['HTTP_USER_AGENT'].'"','hmdoapp' => 'Showing.VIP-1.0'),
+				));
+
+				$response = curl_exec($curl);
+
+				curl_close($curl);
+				dd($response);
+		}
 }

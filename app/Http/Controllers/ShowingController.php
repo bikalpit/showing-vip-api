@@ -476,6 +476,8 @@ class ShowingController extends Controller
 			      }
 	      		return $this->sendResponse('Mail sent successfully to agent!');
 	      }else{
+	      		$checkAgent = $this->checkAgent($request->agent_id, $request->email, $request->agent_originator);
+	      		$agent = json_decode($checkAgent);
 	      		$time = strtotime(Carbon::now());
             $uuid = "usr".$time.rand(10,99)*rand(10,99);
             $user = new Users;
@@ -489,25 +491,25 @@ class ShowingController extends Controller
             if ($result) {
             		$agent_info = new AgentInfo;
 		        		$agent_info->agent_id = $uuid;
-		        		$agent_info->hmdo_lastupdated = '';
-		        		$agent_info->hmdo_mls_originator = '';
-		        		$agent_info->hmdo_agent_name = '';
-		        		$agent_info->hmdo_agent_title = '';
-		        		$agent_info->hmdo_agent_photo_url = '';
-		        		$agent_info->hmdo_agent_email = '';
-		        		$agent_info->hmdo_office_main_phone = '';
-		        		$agent_info->hmdo_office_direct_phone = '';
-		        		$agent_info->hmdo_office_mobile_phone = '';
-		        		$agent_info->hmdo_agent_skills = '';
-		        		$agent_info->hmdo_office_id = '';
-		        		$agent_info->hmdo_office_name = '';
-		        		$agent_info->hmdo_office_photo = '';
-		        		$agent_info->hmdo_office_street = '';
-		        		$agent_info->hmdo_office_city = '';
-		        		$agent_info->hmdo_office_zipcode = '';
-		        		$agent_info->hmdo_office_state = '';
-		        		$agent_info->hmdo_office_phone = '';
-		        		$agent_info->hmdo_office_website = '';
+		        		$agent_info->hmdo_lastupdated = $agent->agent->hmdo_lastupdated[1];
+		        		$agent_info->hmdo_mls_originator = $agent->agent->hmdo_mls_originator[1];
+		        		$agent_info->hmdo_agent_name = $agent->agent->hmdo_agent_name[1];
+		        		$agent_info->hmdo_agent_title = $agent->agent->hmdo_agent_title[1];
+		        		$agent_info->hmdo_agent_photo_url = $agent->agent->hmdo_agent_photo_url[1];
+		        		$agent_info->hmdo_agent_email = $agent->agent->hmdo_agent_email[1];
+		        		$agent_info->hmdo_office_main_phone = $agent->agent->hmdo_office_main_phone[1];
+		        		$agent_info->hmdo_office_direct_phone = $agent->agent->hmdo_office_direct_phone[1];
+		        		$agent_info->hmdo_office_mobile_phone = $agent->agent->hmdo_office_mobile_phone[1];
+		        		$agent_info->hmdo_agent_skills = $agent->agent->hmdo_agent_skills[1];
+		        		$agent_info->hmdo_office_id = $agent->agent->hmdo_office_id[1];
+		        		$agent_info->hmdo_office_name = $agent->agent->hmdo_office_name[1];
+		        		$agent_info->hmdo_office_photo = $agent->agent->hmdo_office_photo[1];
+		        		$agent_info->hmdo_office_street = $agent->agent->hmdo_office_street[1];
+		        		$agent_info->hmdo_office_city = $agent->agent->hmdo_office_city[1];
+		        		$agent_info->hmdo_office_zipcode = $agent->agent->hmdo_office_zipcode[1];
+		        		$agent_info->hmdo_office_state = $agent->agent->hmdo_office_state[1];
+		        		$agent_info->hmdo_office_phone = $agent->agent->hmdo_office_phone[1];
+		        		$agent_info->hmdo_office_website = $agent->agent->hmdo_office_website[1];
 		        		$agent_info->save();
 
             		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
@@ -534,4 +536,26 @@ class ShowingController extends Controller
             }
 	      }
     }
+
+    public function checkAgent($mls_id, $email, $originator){
+				$curl = curl_init();
+
+				curl_setopt_array($curl, array(
+					  CURLOPT_URL => 'https://api.homendo.com/v9/hmdo-agent-check-post.php',
+					  CURLOPT_RETURNTRANSFER => true,
+					  CURLOPT_ENCODING => '',
+					  CURLOPT_MAXREDIRS => 10,
+					  CURLOPT_TIMEOUT => 0,
+					  CURLOPT_FOLLOWLOCATION => true,
+					  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+					  CURLOPT_CUSTOMREQUEST => 'POST',
+					  CURLOPT_POSTFIELDS => array('login' => '@*8Dom0sH0Ag3#DI','token' => '"'.md5(strtotime('now')).'"','agentid' => '"'.$mls_id.'"','email' => '"'.$email.'"','originator' => '"'.$originator.'"','deviceid' => '"'.$_SERVER['HTTP_USER_AGENT'].'"','hmdoapp' => 'Showing.VIP-1.0'),
+				));
+
+				$response = curl_exec($curl);
+
+				curl_close($curl);
+
+				return $response;
+		}
 }
