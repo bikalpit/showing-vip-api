@@ -117,8 +117,8 @@ class BookingScheduleController extends Controller
                     $property_buyer->save();
                 }
 
-                if ($request->agent_id !== '' || $request->agent_id !== null) {
-                    if ($property_id !== '' || $property_id !== null) {
+                if ($request->agent_id !== null) {
+                    if ($property_id !== null) {
                         $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
                         $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
                         if (!empty($check_seller)) {
@@ -275,8 +275,8 @@ class BookingScheduleController extends Controller
                             $property_buyer->save();
                         }
 
-                        if ($request->agent_id !== '' || $request->agent_id !== null) {
-                            if ($property_id !== '' || $property_id !== null) {
+                        if ($request->agent_id !== null) {
+                            if ($property_id !== null) {
                                 $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
                                 $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
                                 if (!empty($check_seller)) {
