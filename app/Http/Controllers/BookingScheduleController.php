@@ -58,7 +58,7 @@ class BookingScheduleController extends Controller
         $showing_setup = PropertyShowingSetup::where('property_id', $property_id)->first();
         if ($showing_setup != null || $showing_setup != '') {
             if ($showing_setup->validator != null || $showing_setup->validator != '') {
-            $validator = $showing_setup->validator[0];
+                $validator = $showing_setup->validator[0];
             }else{
                 $validator = '';
             }
@@ -162,16 +162,18 @@ class BookingScheduleController extends Controller
                 }
 
                 if ($showing_setup != null || $showing_setup != '') {
-                    foreach ($availibility_data as $data) {
-                        if ($data->date == date('F d l', strtotime($booking_date))) {
-                            foreach ($data->slots as $slot) {
-                                if ($slot->slot == date('H:i A', strtotime($booking_time))) {
-                                    $slot->status = 'booked';
+                    if ($availibility !== null) {
+                        foreach ($availibility_data as $data) {
+                            if ($data->date == date('F d l', strtotime($booking_date))) {
+                                foreach ($data->slots as $slot) {
+                                    if ($slot->slot == date('H:i A', strtotime($booking_time))) {
+                                        $slot->status = 'booked';
+                                    }
                                 }
                             }
                         }
+                        PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
                     }
-                    PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
 
                     if ($showing_setup->validator != null || $showing_setup->validator != '') {
                         if ($twilio_setting->status == true) {
@@ -320,7 +322,7 @@ class BookingScheduleController extends Controller
                                 }
                             }
                         }
-                        
+
                         $verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
                         Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
 
@@ -334,16 +336,18 @@ class BookingScheduleController extends Controller
                         Mail::to($request->email)->send(new SignupMail($data));
 
                         if ($showing_setup != null || $showing_setup != '') {
-                            foreach ($availibility_data as $data) {
-                                if ($data->date == date('F d l', strtotime($booking_date))) {
-                                    foreach ($data->slots as $slot) {
-                                        if ($slot->slot == date('H:i A', strtotime($booking_time))) {
-                                            $slot->status = 'booked';
+                            if ($availibility !== null) {
+                                foreach ($availibility_data as $data) {
+                                    if ($data->date == date('F d l', strtotime($booking_date))) {
+                                        foreach ($data->slots as $slot) {
+                                            if ($slot->slot == date('H:i A', strtotime($booking_time))) {
+                                                $slot->status = 'booked';
+                                            }
                                         }
                                     }
                                 }
+                                PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
                             }
-                            PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
 
                             if ($showing_setup->validator != null || $showing_setup->validator != '') {
                                 if ($twilio_setting->status == true) {
