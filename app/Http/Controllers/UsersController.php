@@ -335,7 +335,7 @@ class UsersController extends Controller
 	      		'zipcode' => 'nullable',
 	      		'state' => 'nullable',
 	      		'country' => 'nullable',
-	      		'about' => 'required',
+	      		'about' => 'nullable',
 	      		'website_url' => 'nullable',
 	      		'image' => 'nullable'
 	      ]);
