@@ -15,6 +15,7 @@ use App\Models\PropertyBuyers;
 use App\Models\ShowingFeedback;
 use App\Models\SurveySubCategories;
 use App\Models\Settings;
+use App\Models\PropertyAgents;
 use App\Mail\SignupMail;
 use App\Mail\BookingMail;
 use App\Mail\BookingUpdateMail;
@@ -26,18 +27,19 @@ class BookingScheduleController extends Controller
 {
     public function createBooking(Request $request){
         $this->validate($request, [
-            'first_name'        => 'nullable',
-            'last_name'         => 'nullable',
-            'phone'             => 'nullable',
-            'email'             => 'nullable',
-            'property_id'       => 'nullable',
-            'property_mls_id'   => 'nullable',
-            'booking_date'      => 'required',
-            'booking_time'      => 'required',
-            'showing_note'      => 'nullable',
-            'buyer_id'          => 'nullable',
-            'agent_id'          => 'nullable',
-            'url'               => 'nullable',
+            'first_name'            => 'nullable',
+            'last_name'             => 'nullable',
+            'phone'                 => 'nullable',
+            'email'                 => 'nullable',
+            'property_id'           => 'nullable',
+            'property_mls_id'       => 'nullable',
+            'property_originator'   => 'nullable',
+            'booking_date'          => 'nullable',
+            'booking_time'          => 'nullable',
+            'showing_note'          => 'nullable',
+            'buyer_id'              => 'nullable',
+            'agent_id'              => 'nullable',
+            'url'                   => 'nullable',
         ]);
 
         $formetted_date = date('Y-m-d', strtotime($request->booking_date));
@@ -80,6 +82,7 @@ class BookingScheduleController extends Controller
             $propertyBookingSchedule->buyer_id = $users->uuid;
             $propertyBookingSchedule->property_id = $property_id;
             $propertyBookingSchedule->property_mls_id = $request->property_mls_id;
+            $propertyBookingSchedule->property_originator = $request->property_originator;
             $propertyBookingSchedule->booking_date = $formetted_date;
             $propertyBookingSchedule->booking_time = $booking_time;
             if ($showing_setup != null || $showing_setup != '') {
@@ -109,6 +112,53 @@ class BookingScheduleController extends Controller
                         $property_buyer->agent_id = $request->agent_id;
                     }
                     $property_buyer->save();
+                }
+
+                if ($request->agent_id !== '' || $request->agent_id !== null) {
+                    if ($property_id !== '' || $property_id !== null) {
+                        $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
+                        $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
+                        if (!empty($check_seller)) {
+                            $seller_id = $check_seller->user_id;
+                        }else{
+                            $seller_id = null;
+                        }
+                        if (empty($check_agent)) {
+                            $property_agent = new PropertyAgents;
+                            $property_agent->property_id = $property_id;
+                            $property_agent->property_mls_id = $request->property_mls_id;
+                            $property_agent->property_originator = $request->property_originator;
+                            $property_agent->seller_id = $seller_id;
+                            $property_agent->buyer_id = $request->buyer_id;
+                            $property_agent->agent_id = $request->agent_id;
+                            $property_agent->agent_type = 'buyer';
+                            $property_agent->save();
+                        }
+                    }else{
+                        $check_agent = PropertyAgents::where(['property_mls_id'=>$request->property_mls_id, 'property_originator'=>$request->property_originator, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
+                        $check_property = PropertyHomendo::where(['hmdo_mls_id'=>$request->property_mls_id, 'hmdo_mls_originator'=>$request->property_originator])->first();
+                        if (!empty($check_property)) {
+                            $check_seller = PropertyOwners::where(['property_id'=>$check_property->property_id, 'type'=>'main_owner'])->orWhere('property_id', $check_property->property_id)->first();
+                            if (!empty($check_seller)) {
+                                $seller_id = $check_seller->user_id;
+                            }else{
+                                $seller_id = null;
+                            }
+                        }else{
+                            $seller_id = null;
+                        }
+                        if (empty($check_agent)) {
+                            $property_agent = new PropertyAgents;
+                            $property_agent->property_id = $property_id;
+                            $property_agent->property_mls_id = $request->property_mls_id;
+                            $property_agent->property_originator = $request->property_originator;
+                            $property_agent->seller_id = $seller_id;
+                            $property_agent->buyer_id = $request->buyer_id;
+                            $property_agent->agent_id = $request->agent_id;
+                            $property_agent->agent_type = 'buyer';
+                            $property_agent->save();
+                        }
+                    }
                 }
 
                 if ($showing_setup != null || $showing_setup != '') {
@@ -200,6 +250,7 @@ class BookingScheduleController extends Controller
                     $propertyBookingSchedule->buyer_id = $user->uuid;
                     $propertyBookingSchedule->property_id = $property_id;
                     $propertyBookingSchedule->property_mls_id = $request->property_mls_id;
+                    $propertyBookingSchedule->property_originator = $request->property_originator;
                     $propertyBookingSchedule->booking_date = $formetted_date;
                     $propertyBookingSchedule->booking_time = $booking_time;
                     $propertyBookingSchedule->status = 'P';
@@ -223,6 +274,53 @@ class BookingScheduleController extends Controller
                             $property_buyer->save();
                         }
 
+                        if ($request->agent_id !== '' || $request->agent_id !== null) {
+                            if ($property_id !== '' || $property_id !== null) {
+                                $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
+                                $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
+                                if (!empty($check_seller)) {
+                                    $seller_id = $check_seller->user_id;
+                                }else{
+                                    $seller_id = null;
+                                }
+                                if (empty($check_agent)) {
+                                    $property_agent = new PropertyAgents;
+                                    $property_agent->property_id = $property_id;
+                                    $property_agent->property_mls_id = $request->property_mls_id;
+                                    $property_agent->property_originator = $request->property_originator;
+                                    $property_agent->seller_id = $seller_id;
+                                    $property_agent->buyer_id = $request->buyer_id;
+                                    $property_agent->agent_id = $request->agent_id;
+                                    $property_agent->agent_type = 'buyer';
+                                    $property_agent->save();
+                                }
+                            }else{
+                                $check_agent = PropertyAgents::where(['property_mls_id'=>$request->property_mls_id, 'property_originator'=>$request->property_originator, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
+                                $check_property = PropertyHomendo::where(['hmdo_mls_id'=>$request->property_mls_id, 'hmdo_mls_originator'=>$request->property_originator])->first();
+                                if (!empty($check_property)) {
+                                    $check_seller = PropertyOwners::where(['property_id'=>$check_property->property_id, 'type'=>'main_owner'])->orWhere('property_id', $check_property->property_id)->first();
+                                    if (!empty($check_seller)) {
+                                        $seller_id = $check_seller->user_id;
+                                    }else{
+                                        $seller_id = null;
+                                    }
+                                }else{
+                                    $seller_id = null;
+                                }
+                                if (empty($check_agent)) {
+                                    $property_agent = new PropertyAgents;
+                                    $property_agent->property_id = $property_id;
+                                    $property_agent->property_mls_id = $request->property_mls_id;
+                                    $property_agent->property_originator = $request->property_originator;
+                                    $property_agent->seller_id = $seller_id;
+                                    $property_agent->buyer_id = $request->buyer_id;
+                                    $property_agent->agent_id = $request->agent_id;
+                                    $property_agent->agent_type = 'buyer';
+                                    $property_agent->save();
+                                }
+                            }
+                        }
+                        
                         $verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
                         Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
 
