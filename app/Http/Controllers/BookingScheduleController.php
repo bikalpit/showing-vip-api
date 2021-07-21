@@ -16,6 +16,7 @@ use App\Models\ShowingFeedback;
 use App\Models\SurveySubCategories;
 use App\Models\Settings;
 use App\Models\PropertyAgents;
+use App\Models\PropertyOwners;
 use App\Mail\SignupMail;
 use App\Mail\BookingMail;
 use App\Mail\BookingUpdateMail;
@@ -64,8 +65,10 @@ class BookingScheduleController extends Controller
             }
 
             $availibility = PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->first();
-            $get_availibility = json_decode($availibility);
-            $availibility_data = json_decode($get_availibility->availability);
+            if($availibility !== null){
+                $get_availibility = json_decode($availibility);
+                $availibility_data = json_decode($get_availibility->availability);
+            }
         }else{
             $validator = '';
         }
@@ -211,11 +214,7 @@ class BookingScheduleController extends Controller
                         }
                     }
                 }
-                if ($property_id != null) {
-                    return $this->sendResponse("Showing booked successfully!");
-                }else{
-                    return $this->sendResponse("Showing booked but property is null!");
-                }
+                return $this->sendResponse("Showing booked successfully!");
             }else{
                 return $this->sendResponse("Sorry, Something went wrong!", 200, false);
             }
@@ -226,7 +225,7 @@ class BookingScheduleController extends Controller
             }
 
             $phone_check = Users::where('phone', $request->phone)->first();
-	        if (!empty($phone_check)) {
+            if (!empty($phone_check)) {
                 return $this->sendResponse("Phone no. already exists!", 200, false);
             }
 
@@ -383,11 +382,7 @@ class BookingScheduleController extends Controller
                                 }
                             }
                         }
-                        if ($property_id != null) {
-                            return $this->sendResponse("Showing booked successfully!");
-                        }else{
-                            return $this->sendResponse("Showing booked but property is null!");
-                        }
+                        return $this->sendResponse("Showing booked successfully!");
                     }else{
                         return $this->sendResponse("Sorry, Something went wrong!", 200, false);
                     }
