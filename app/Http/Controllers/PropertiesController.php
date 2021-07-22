@@ -32,13 +32,13 @@ class PropertiesController extends Controller
 	      ]);
 	      
 				$mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
-
+				dd($request->data['property'][2][1]['hmdo_mls_id'][1][0]);
 	      $time = strtotime(Carbon::now());
         $uuid = "prty".$time.rand(10,99)*rand(10,99);
 	      $property = new Properties;
 	      $property->uuid = $uuid;
 	      $property->mls_id = $mls_id;
-	      $property->data = json_encode($request->data);
+	      $property->data = '';
 	      $property->verified = 'NO';
 	      $property->last_update = date('Y-m-d H:i:s');
 	      $add_property = $property->save();
@@ -133,14 +133,38 @@ class PropertiesController extends Controller
 	      $homendo->property_id = $uuid;
 	      $homendo->hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
 	      $homendo->hmdo_lastupdated = $request->data['property'][2][1]['hmdo_lastupdated'][1];
-	      $homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
-	      $homendo->hmdo_mls_originator = $request->data['property'][2][1]['hmdo_mls_originator'][1];
-	      $homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1];
+	      if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
+	      	$homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
+	      }else{
+	      	$homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0]
+	      }
+	      if (is_array($request->data['property'][2][1]['hmdo_mls_originator'][1]) == true) {
+	      	$homendo->hmdo_mls_originator = $request->data['property'][2][1]['hmdo_mls_originator'][1];
+	      }else{
+	      	$homendo->hmdo_mls_originator = $request->data['property'][2][1]['hmdo_mls_originator'][1][0]
+	      }
+	      if (is_array($request->data['property'][2][1]['hmdo_mls_proptype'][1]) == true) {
+	      	$homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1];
+	      }else{
+	      	$homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1][0]
+	      }
 	      $homendo->hmdo_mls_propname = $request->data['property'][2][1]['hmdo_mls_propname'][1];
-	      $homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1];
+	      if (is_array($request->data['property'][2][1]['hmdo_mls_status'][1]) == true) {
+	      	$homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1];
+	      }else{
+	      	$homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1][0]
+	      }
 	      $homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
-	      $homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
-	      $homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1];
+	      if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
+	      	$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
+	      }else{
+	      	$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0]
+	      }
+	      if (is_array($request->data['property'][2][1]['hmdo_mls_thumbnail'][1]) == true) {
+	      	$homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1];
+	      }else{
+	      	$homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1][0]
+	      }
 	      $add_homendo = $homendo->save();
 
 	      $owner = new PropertyOwners;
