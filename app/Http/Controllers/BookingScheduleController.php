@@ -21,6 +21,7 @@ use App\Mail\SignupMail;
 use App\Mail\BookingMail;
 use App\Mail\BookingUpdateMail;
 use App\Mail\UpdateShowingMail;
+use App\Mail\AgentShowingMail;
 use Carbon\Carbon;
 use Twilio\Rest\Client as TwilioClient;
 
@@ -209,9 +210,26 @@ class BookingScheduleController extends Controller
                         try {
                             Mail::to($validator->email)->send(new BookingMail($mail_data));
                         } catch(\Exception $e) {
-                            $msg = $e->getMessage();
-                            return $this->sendResponse($msg, 200, false);
+                            /*$msg = $e->getMessage();
+                            return $this->sendResponse($msg, 200, false);*/
                         }
+                    }
+                }
+
+                if ($request->agent_mls_id != '') {
+                    $agent = Users::where(['mls_id'=>$request->agent_mls_id, 'mls_name'=>$request->agent_originator, 'email'=>$request->agent_email])->first();
+                    $this->configSMTP();
+                    $data = [
+                        'name' => $agent->first_name.' '.$agent->last_name,
+                        'mls_id' => $request->property_mls_id,
+                        'originator' => $request->property_originator
+                    ];
+
+                    try{
+                        Mail::to($agent->email)->send(new AgentShowingMail($data));
+                    }catch(\Exception $e){
+                        /*$msg = $e->getMessage();
+                        return $this->sendResponse($msg, 200, false);*/
                     }
                 }
                 return $this->sendResponse("Showing booked successfully!");
@@ -244,151 +262,170 @@ class BookingScheduleController extends Controller
             $user->image = "default.png";
             $result = $user->save();
             if ($result) {
-                try {
-                    $uuid = "sch".$time.rand(10,99)*rand(10,99);
-                    $propertyBookingSchedule = new PropertyBookingSchedule;
-                    $propertyBookingSchedule->uuid = $uuid;
-                    $propertyBookingSchedule->buyer_id = $user->uuid;
-                    $propertyBookingSchedule->property_id = $property_id;
-                    $propertyBookingSchedule->property_mls_id = $request->property_mls_id;
-                    $propertyBookingSchedule->property_originator = $request->property_originator;
-                    $propertyBookingSchedule->booking_date = $formetted_date;
-                    $propertyBookingSchedule->booking_time = $booking_time;
-                    $propertyBookingSchedule->status = 'P';
-                    $propertyBookingSchedule->cv_status = 'on-hold';
-                    if ($request->agent_id !== '' || $request->agent_id !== null) {
-                        $propertyBookingSchedule->agent_id = $request->agent_id;
-                    }
-                    $propertyBookingSchedule->showing_note = $request->showing_note;
-                    $propertyBookingSchedule->cancel_at = null;
+                $uuid = "sch".$time.rand(10,99)*rand(10,99);
+                $propertyBookingSchedule = new PropertyBookingSchedule;
+                $propertyBookingSchedule->uuid = $uuid;
+                $propertyBookingSchedule->buyer_id = $user->uuid;
+                $propertyBookingSchedule->property_id = $property_id;
+                $propertyBookingSchedule->property_mls_id = $request->property_mls_id;
+                $propertyBookingSchedule->property_originator = $request->property_originator;
+                $propertyBookingSchedule->booking_date = $formetted_date;
+                $propertyBookingSchedule->booking_time = $booking_time;
+                $propertyBookingSchedule->status = 'P';
+                $propertyBookingSchedule->cv_status = 'on-hold';
+                if ($request->agent_id !== '' || $request->agent_id !== null) {
+                    $propertyBookingSchedule->agent_id = $request->agent_id;
+                }
+                $propertyBookingSchedule->showing_note = $request->showing_note;
+                $propertyBookingSchedule->cancel_at = null;
 
-                    if ($propertyBookingSchedule->save()) {
-                        $check_buyer = PropertyBuyers::where(['buyer_id'=>$buyer_uuid, 'property_id'=>$property_id])->first();
-                        if (empty($check_buyer)) {
-                            $property_buyer = new PropertyBuyers;
-                            $property_buyer->property_id = $property_id;
-                            //$property_buyer->seller_id = $seller_id;
-                            $property_buyer->buyer_id = $buyer_uuid;
-                            if ($request->agent_id !== '' || $request->agent_id !== null) {
-                                $property_buyer->agent_id = $request->agent_id;
-                            }
-                            $property_buyer->save();
+                if ($propertyBookingSchedule->save()) {
+                    $check_buyer = PropertyBuyers::where(['buyer_id'=>$buyer_uuid, 'property_id'=>$property_id])->first();
+                    if (empty($check_buyer)) {
+                        $property_buyer = new PropertyBuyers;
+                        $property_buyer->property_id = $property_id;
+                        //$property_buyer->seller_id = $seller_id;
+                        $property_buyer->buyer_id = $buyer_uuid;
+                        if ($request->agent_id !== '' || $request->agent_id !== null) {
+                            $property_buyer->agent_id = $request->agent_id;
                         }
+                        $property_buyer->save();
+                    }
 
-                        if ($request->agent_id !== null) {
-                            if ($property_id !== null) {
-                                $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
-                                $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
+                    if ($request->agent_id !== null) {
+                        if ($property_id !== null) {
+                            $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
+                            $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
+                            if (!empty($check_seller)) {
+                                $seller_id = $check_seller->user_id;
+                            }else{
+                                $seller_id = null;
+                            }
+                            if (empty($check_agent)) {
+                                $property_agent = new PropertyAgents;
+                                $property_agent->property_id = $property_id;
+                                $property_agent->property_mls_id = $request->property_mls_id;
+                                $property_agent->property_originator = $request->property_originator;
+                                $property_agent->seller_id = $seller_id;
+                                $property_agent->buyer_id = $request->buyer_id;
+                                $property_agent->agent_id = $request->agent_id;
+                                $property_agent->agent_type = 'buyer';
+                                $property_agent->save();
+                            }
+                        }else{
+                            $check_agent = PropertyAgents::where(['property_mls_id'=>$request->property_mls_id, 'property_originator'=>$request->property_originator, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
+                            $check_property = PropertyHomendo::where(['hmdo_mls_id'=>$request->property_mls_id, 'hmdo_mls_originator'=>$request->property_originator])->first();
+                            if (!empty($check_property)) {
+                                $check_seller = PropertyOwners::where(['property_id'=>$check_property->property_id, 'type'=>'main_owner'])->orWhere('property_id', $check_property->property_id)->first();
                                 if (!empty($check_seller)) {
                                     $seller_id = $check_seller->user_id;
                                 }else{
                                     $seller_id = null;
                                 }
-                                if (empty($check_agent)) {
-                                    $property_agent = new PropertyAgents;
-                                    $property_agent->property_id = $property_id;
-                                    $property_agent->property_mls_id = $request->property_mls_id;
-                                    $property_agent->property_originator = $request->property_originator;
-                                    $property_agent->seller_id = $seller_id;
-                                    $property_agent->buyer_id = $request->buyer_id;
-                                    $property_agent->agent_id = $request->agent_id;
-                                    $property_agent->agent_type = 'buyer';
-                                    $property_agent->save();
-                                }
                             }else{
-                                $check_agent = PropertyAgents::where(['property_mls_id'=>$request->property_mls_id, 'property_originator'=>$request->property_originator, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
-                                $check_property = PropertyHomendo::where(['hmdo_mls_id'=>$request->property_mls_id, 'hmdo_mls_originator'=>$request->property_originator])->first();
-                                if (!empty($check_property)) {
-                                    $check_seller = PropertyOwners::where(['property_id'=>$check_property->property_id, 'type'=>'main_owner'])->orWhere('property_id', $check_property->property_id)->first();
-                                    if (!empty($check_seller)) {
-                                        $seller_id = $check_seller->user_id;
-                                    }else{
-                                        $seller_id = null;
-                                    }
-                                }else{
-                                    $seller_id = null;
-                                }
-                                if (empty($check_agent)) {
-                                    $property_agent = new PropertyAgents;
-                                    $property_agent->property_id = $property_id;
-                                    $property_agent->property_mls_id = $request->property_mls_id;
-                                    $property_agent->property_originator = $request->property_originator;
-                                    $property_agent->seller_id = $seller_id;
-                                    $property_agent->buyer_id = $request->buyer_id;
-                                    $property_agent->agent_id = $request->agent_id;
-                                    $property_agent->agent_type = 'buyer';
-                                    $property_agent->save();
-                                }
+                                $seller_id = null;
+                            }
+                            if (empty($check_agent)) {
+                                $property_agent = new PropertyAgents;
+                                $property_agent->property_id = $property_id;
+                                $property_agent->property_mls_id = $request->property_mls_id;
+                                $property_agent->property_originator = $request->property_originator;
+                                $property_agent->seller_id = $seller_id;
+                                $property_agent->buyer_id = $request->buyer_id;
+                                $property_agent->agent_id = $request->agent_id;
+                                $property_agent->agent_type = 'buyer';
+                                $property_agent->save();
                             }
                         }
+                    }
 
-                        $verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-                        Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+                    $verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+                    Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
 
-                        $this->configSMTP();
-                        $data = [
-                            'name'=>$request->first_name.' '.$request->last_name, 
-                            'verification_token'=>$verification_token, 
-                            'email'=>$request->email,
-                            'url'=>$request->url
-                        ];
+                    $this->configSMTP();
+                    $data = [
+                        'name'=>$request->first_name.' '.$request->last_name, 
+                        'verification_token'=>$verification_token, 
+                        'email'=>$request->email,
+                        'url'=>$request->url
+                    ];
+                    
+                    try {
                         Mail::to($request->email)->send(new SignupMail($data));
+                    } catch(\Exception $e) {
+                        /*$msg = $e->getMessage();
+                        return $this->sendResponse($msg, 200, false);*/
+                    }
 
-                        if ($showing_setup != null || $showing_setup != '') {
-                            if ($availibility !== null) {
-                                foreach ($availibility_data as $data) {
-                                    if ($data->date == date('F d l', strtotime($booking_date))) {
-                                        foreach ($data->slots as $slot) {
-                                            if ($slot->slot == date('H:i A', strtotime($booking_time))) {
-                                                $slot->status = 'booked';
-                                            }
+                    if ($showing_setup != null || $showing_setup != '') {
+                        if ($availibility !== null) {
+                            foreach ($availibility_data as $data) {
+                                if ($data->date == date('F d l', strtotime($booking_date))) {
+                                    foreach ($data->slots as $slot) {
+                                        if ($slot->slot == date('H:i A', strtotime($booking_time))) {
+                                            $slot->status = 'booked';
                                         }
                                     }
                                 }
-                                PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
+                            }
+                            PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
+                        }
+
+                        if ($showing_setup->validator != null || $showing_setup->validator != '') {
+                            if ($twilio_setting->status == true) {
+                                try {
+                                    $this->twilioClient = new TwilioClient($twilio_setting->account_sid, $twilio_setting->auth_token);
+                                    $message =  $this->twilioClient->messages->create(
+                                        $validator->phone,
+                                        array(
+                                            "from" => $twilio_setting->twilio_sender_number,
+                                            "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$request->first_name.' '.$request->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                                        )
+                                    );
+                                } catch(\Exception $e) {
+                                    
+                                }
                             }
 
-                            if ($showing_setup->validator != null || $showing_setup->validator != '') {
-                                if ($twilio_setting->status == true) {
-                                    try {
-                                        $this->twilioClient = new TwilioClient($twilio_setting->account_sid, $twilio_setting->auth_token);
-                                        $message =  $this->twilioClient->messages->create(
-                                            $validator->phone,
-                                            array(
-                                                "from" => $twilio_setting->twilio_sender_number,
-                                                "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$request->first_name.' '.$request->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
-                                            )
-                                        );
-                                    } catch(\Exception $e) {
-                                        
-                                    }
-                                }
+                            $mail_data = [
+                                'name'=>$request->first_name.' '.$request->last_name,
+                                'validator_name'=>$validator->first_name.' '.$validator->last_name,
+                                'property_name'=>$hmdo_mls_propname,
+                                'booking_date'=>$request->booking_date,
+                                'booking_time'=>$request->booking_time,
+                                'booking_id'=>base64_encode($uuid),
+                                'validator_id'=>base64_encode($validator->uuid),
+                                'booker_id'=>base64_encode($buyer_uuid)
+                            ];
 
-                                $mail_data = [
-                                    'name'=>$request->first_name.' '.$request->last_name,
-                                    'validator_name'=>$validator->first_name.' '.$validator->last_name,
-                                    'property_name'=>$hmdo_mls_propname,
-                                    'booking_date'=>$request->booking_date,
-                                    'booking_time'=>$request->booking_time,
-                                    'booking_id'=>base64_encode($uuid),
-                                    'validator_id'=>base64_encode($validator->uuid),
-                                    'booker_id'=>base64_encode($buyer_uuid)
-                                ];
-                                try {
-                                    Mail::to($validator->email)->send(new BookingMail($mail_data));
-                                } catch(\Exception $e) {
-                                    $msg = $e->getMessage();
-                                    return $this->sendResponse($msg, 200, false);
-                                }
+                            try {
+                                Mail::to($validator->email)->send(new BookingMail($mail_data));
+                            } catch(\Exception $e) {
+                                /*$msg = $e->getMessage();
+                                return $this->sendResponse($msg, 200, false);*/
                             }
                         }
-                        return $this->sendResponse("Showing booked successfully!");
-                    }else{
-                        return $this->sendResponse("Sorry, Something went wrong!", 200, false);
                     }
-                } catch(\Exception $e) {
-                    $msg = $e->getMessage();
-                    return $this->sendResponse($msg, 200, false);
+
+                    if ($request->agent_mls_id != '') {
+                        $agent = Users::where(['mls_id'=>$request->agent_mls_id, 'mls_name'=>$request->agent_originator, 'email'=>$request->agent_email])->first();
+                        
+                        $data = [
+                            'name' => $agent->first_name.' '.$agent->last_name,
+                            'mls_id' => $request->property_mls_id,
+                            'originator' => $request->property_originator
+                        ];
+
+                        try{
+                            Mail::to($agent->email)->send(new AgentShowingMail($data));
+                        }catch(\Exception $e){
+                            /*$msg = $e->getMessage();
+                            return $this->sendResponse($msg, 200, false);*/
+                        }
+                    }
+                    return $this->sendResponse("Showing booked successfully!");
+                }else{
+                    return $this->sendResponse("Sorry, Something went wrong!", 200, false);
                 }
             }else{
                 return $this->sendResponse("Sorry, Something went wrong!");

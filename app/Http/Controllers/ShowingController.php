@@ -461,20 +461,8 @@ class ShowingController extends Controller
 			      		return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
 			      }
 	      }elseif ($agent != null) {
-	      		$this->configSMTP();
-	      		$data = [
-	      				'name' => $agent->first_name.' '.$agent->last_name,
-	      				'mls_id' => $request->mls_id,
-	      				'originator' => $request->originator
-	      		];
-
-    				try{
-			          Mail::to($agent->email)->send(new AgentShowingMail($data));
-			      }catch(\Exception $e){
-			          $msg = $e->getMessage();
-			          return $this->sendResponse($msg, 200, false);
-			      }
-	      		return $this->sendResponse('Mail sent successfully to agent!');
+	      		
+	      		return $this->sendResponse('Agent found!');
 	      }else{
 	      		$checkAgent = $this->checkAgent($request->agent_id, $request->email, $request->agent_originator);
 	      		$agent = json_decode($checkAgent);
