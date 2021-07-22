@@ -216,7 +216,7 @@ class BookingScheduleController extends Controller
                     }
                 }
 
-                if ($request->agent_mls_id != '') {
+                if ($request->agent_mls_id != '' || $request->agent_originator != '') {
                     $agent = Users::where(['mls_id'=>$request->agent_mls_id, 'mls_name'=>$request->agent_originator, 'email'=>$request->agent_email])->first();
                     $this->configSMTP();
                     $data = [
@@ -407,9 +407,9 @@ class BookingScheduleController extends Controller
                         }
                     }
 
-                    if ($request->agent_mls_id != '') {
+                    if ($request->agent_mls_id != '' || $request->agent_originator != '') {
                         $agent = Users::where(['mls_id'=>$request->agent_mls_id, 'mls_name'=>$request->agent_originator, 'email'=>$request->agent_email])->first();
-                        
+
                         $data = [
                             'name' => $agent->first_name.' '.$agent->last_name,
                             'mls_id' => $request->property_mls_id,
