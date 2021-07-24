@@ -57,7 +57,7 @@ class AgentController extends Controller
         ]);
 
         $skip = $request->number;
-        $result = Users::with('agentInfo')->where('role','AGENT')->skip($skip)->take(4)->get();
+        $result = Users::with('agentInfo')->whereNotNull('password')->where('role','AGENT')->skip($skip)->take(4)->get();
         if ($result) {
             return $this->sendResponse($result);
         }else{

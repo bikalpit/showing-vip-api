@@ -474,7 +474,7 @@ class ShowingController extends Controller
             $user->role = "AGENT";
             $user->phone_verified = "NO";
             $user->email_verified = "NO";
-            $user->image = "default.png";
+            $user->image = env("APP_URL")."public/user-images/default.png";
             $result = $user->save();
             if ($result) {
             		$agent_info = new AgentInfo;
