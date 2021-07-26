@@ -326,8 +326,8 @@ class UsersController extends Controller
     public function updateProfile(Request $request){
     		$this->validate($request, [
 	      		'user_id' => 'required',
-	      		'first_name' => 'required',
-	      		'last_name' => 'required',
+	      		'first_name' => 'nullable',
+	      		'last_name' => 'nullable',
 	      		'phone' => 'required',
 	      		'email' => 'required',
 	      		'address' => 'nullable',
