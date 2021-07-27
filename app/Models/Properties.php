@@ -29,4 +29,8 @@ class Properties extends Model
     public function Homendo(){
         return $this->hasOne('App\Models\PropertyHomendo', 'property_id', 'uuid');
     }
+
+    public function propertySellers(){
+        return $this->hasMany('App\Models\PropertyOwners', 'property_id', 'uuid');
+    }
 }

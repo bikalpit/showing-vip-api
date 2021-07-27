@@ -12,4 +12,8 @@ class PropertyOwners extends Model
     protected $table = 'property_owners';
 
     protected $fillable = ['property_id','user_id','type'];
+
+    public function User(){
+        return $this->hasOne('App\Models\Users', 'uuid', 'user_id');
+    }
 }
