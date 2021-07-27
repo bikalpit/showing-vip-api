@@ -230,7 +230,7 @@ class PropertiesController extends Controller
 
 	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
 	      if (sizeof($property_ids) > 0) {
-	      		$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
+	      		$properties = Properties::with('Verification', 'Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
 	      		foreach ($properties as $property) {
 		      			$user_ids = PropertyOwners::where('property_id', $property->uuid)->pluck('user_id')->toArray();
 		      			if (sizeof($user_ids) < 0) {
@@ -244,7 +244,7 @@ class PropertiesController extends Controller
 
 	      $buying_property_ids = PropertyBuyers::where('buyer_id', $request->user_id)->pluck('property_id')->toArray();
 	      if (sizeof($buying_property_ids) > 0) {
-	      		$buying_properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $buying_property_ids)->get();
+	      		$buying_properties = Properties::with('Verification', 'Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $buying_property_ids)->get();
 	      		foreach ($buying_properties as $buying_property) {
 		      			$user_ids = PropertyOwners::where('property_id', $buying_property->uuid)->pluck('user_id')->toArray();
 		      			if (sizeof($user_ids) < 0) {
@@ -323,7 +323,7 @@ class PropertiesController extends Controller
 	      		'user_id' => 'required',
 	      		'property_link' => 'required'	
 	      ]);
-
+	      
 	      $property = Properties::where('uuid', $request->property_id)->first();
 	      $agent = Users::where('uuid', $request->agent_id)->first();
 	      $owner = Users::where('uuid', $request->user_id)->first();
@@ -351,6 +351,7 @@ class PropertiesController extends Controller
 			          $property_varification->agent_id = $request->agent_id;
 			          $property_varification->user_id = $request->user_id;
 			          $property_varification->token = $verification_token;
+			          $property_varification->send_time = date('Y-m-d h:i:s');
 			          $result = $property_varification->save();
 
 			          if ($result) {

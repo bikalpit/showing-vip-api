@@ -33,4 +33,8 @@ class Properties extends Model
     public function propertySellers(){
         return $this->hasMany('App\Models\PropertyOwners', 'property_id', 'uuid');
     }
+
+    public function Verification(){
+        return $this->hasMany('App\Models\PropertyVerification', 'property_id', 'uuid');
+    }
 }

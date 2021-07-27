@@ -12,6 +12,6 @@ class PropertyVerification extends Model
      */
     protected $table = 'property_verification';
 
-    protected $fillable = ['property_id','agent_id','user_id','token'];
+    protected $fillable = ['property_id','agent_id','user_id','token','send_time'];
 
 }
