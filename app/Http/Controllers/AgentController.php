@@ -531,8 +531,13 @@ class AgentController extends Controller
 
         $property = Properties::where('uuid', $request->property_id)->first();
         if (!empty($property)) {
-            Properties::where('uuid', $request->property_id)->update(['verified'=>'YES']);
-            return $this->sendResponse("Property verified successfully!");
+            if ($request->status == 'YES') {
+                Properties::where('uuid', $request->property_id)->update(['verified'=>'YES']);
+                return $this->sendResponse("Property verified successfully!");
+            }else{
+                Properties::where('uuid', $request->property_id)->update(['verified'=>'VC']);
+                return $this->sendResponse("Verification cancelled!", 200, false);
+            } 
         }else{
             return $this->sendResponse("Sorry, Property not found!", 200, false);
         }
@@ -547,8 +552,14 @@ class AgentController extends Controller
         $user = Users::where('uuid', $request->user_id)->first();
 
         if (!empty($user)) {
-            Users::where('uuid', $request->user_id)->update(['verify_status'=>'YES']);
-            return $this->sendResponse("User verified successfully!");
+            if ($request->status == 'YES') {
+                Users::where('uuid', $request->user_id)->update(['verify_status'=>'YES']);
+                PropertyOwners::where('user_id', $request->user_id)->update(['verify_status'=>'YES']);
+                return $this->sendResponse("User verified successfully!");
+            }else{
+                Users::where('uuid', $request->user_id)->update(['verify_status'=>'VC']);
+                return $this->sendResponse("Verification cancelled!", 200, false);
+            }
         }else{
             return $this->sendResponse("Sorry, User not found!", 200, false);
         }

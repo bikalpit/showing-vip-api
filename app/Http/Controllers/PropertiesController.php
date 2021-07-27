@@ -660,7 +660,7 @@ class PropertiesController extends Controller
 			      $save_setup = $setup->save();
 
 			      Properties::where('uuid', $request->property)->update(['verified' => 'YES']);
-			      
+
 			      PropertyVerification::where('property_id', $request->token)->delete();
 
 			      $property_agent = new PropertyAgents;
