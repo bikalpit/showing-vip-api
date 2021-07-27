@@ -304,40 +304,40 @@ class AgentController extends Controller
         $selling_properties = [];
 
         foreach ($properties as $property) {
-            
-            if ($property->agent_type == 'buyer') {
-                $buyer = Users::where('uuid', $property->buyer_id)->first();
-                $property['buyer'] = $buyer;
-                $buying_properties[] = $property;
-            }else{
-                $propertyInfo = Properties::with('propertySellers.User')->where('uuid', $property->property_id)->first();
-                $seller = Users::where('uuid', $property->seller_id)->first();
-                $property['seller'] = $seller;
-                $property['all_sellers'] = $propertyInfo->propertySellers;
-               
-                $property_verification = 'YES';
-                if ($propertyInfo->verified == 'NO') {
-                    $property_verification = 'NO';
-                }
+            $propertyInfo = Properties::with('propertySellers.User')->where('uuid', $property->property_id)->first();
+            if (!empty($propertyInfo)) {
+                if ($property->agent_type == 'buyer') {
+                    $buyer = Users::where('uuid', $property->buyer_id)->first();
+                    $property['buyer'] = $buyer;
+                    $buying_properties[] = $property;
+                }else{
+                    $seller = Users::where('uuid', $property->seller_id)->first();
+                    $property['seller'] = $seller;
+                    $property['all_sellers'] = $propertyInfo->propertySellers;
+                   
+                    $property_verification = 'YES';
+                    if ($propertyInfo->verified == 'NO') {
+                        $property_verification = 'NO';
+                    }
 
-                $owner_verification = 'YES';
-                if (sizeof($property['all_sellers']) > 0) {
-                    foreach ($property['all_sellers'] as $property_seller) {
-                        if ($property_seller->User->email_verified == 'NO') {
-                            $owner_verification = 'NO';
-                            break;
+                    $owner_verification = 'YES';
+                    if (sizeof($property['all_sellers']) > 0) {
+                        foreach ($property['all_sellers'] as $property_seller) {
+                            if ($property_seller->User->verify_status == 'NO') {
+                                $owner_verification = 'NO';
+                                break;
+                            }
                         }
                     }
-                }
-                
-                if ($property_verification == 'NO' || $owner_verification == 'NO') {
-                    $property['verify_ownership'] = 'NO';
-                }else{
-                    $property['verify_ownership'] = 'YES';
-                }
-                
-                $selling_properties[] = $property;
+                    
+                    if ($property_verification == 'NO' || $owner_verification == 'NO') {
+                        $property['verify_ownership'] = 'NO';
+                    }else{
+                        $property['verify_ownership'] = 'YES';
+                    }
 
+                    $selling_properties[] = $property;
+                }
             }
         }
 

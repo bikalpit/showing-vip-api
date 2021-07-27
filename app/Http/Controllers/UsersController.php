@@ -10,6 +10,7 @@ use App\Models\UserAgents;
 use App\Models\Messages;
 use App\Models\AgentInfo;
 use App\Models\ApiToken;
+use App\Models\PropertyAgents;
 use App\Mail\SignupMail;
 use App\Mail\OwnerVerificationMail;
 use Carbon\Carbon;
@@ -426,32 +427,36 @@ class UsersController extends Controller
 
     public function verifyOwner(Request $request){
 				$this->validate($request, [
-	      		'email' => 'required',
+	      		'user_id' => 'required',
+	      		'property_id' => 'required',
 	      ]);
 				
-	      $owner = Users::where('email', $request->email)->first();
-
-	      if (!empty($owner)) {
+	      $owner = Users::where('uuid', $request->user_id)->first();
+	      $property = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_type'=>'seller'])->first();
+	      $agent = Users::where('uuid', $property->agent_id)->first();
+	      
+	      if (!empty($agent)) {
 	      		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 
-	      		$update_token = Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+	      		$update_token = Users::where('uuid', $request->user_id)->update(['verification_token'=>$verification_token]);
 
 	      		if ($update_token) {
-	      				$this->configSMTP();
+	      				$this->configSMTP();	
 								$data = [
-										'name'=>$owner->first_name.' '.$owner->last_name,
+										'owner_name'=>$owner->first_name.' '.$owner->last_name,
+										'agent_name'=>$agent->first_name.' '.$agent->last_name,
 		                'user_id'=>base64_encode($owner->uuid),
 		                'token'=>base64_encode($verification_token)
 		            ];
 
 		            try{
-					          Mail::to($owner->email)->send(new OwnerVerificationMail($data));
+					          Mail::to($agent->email)->send(new OwnerVerificationMail($data));
 					      }catch(\Exception $e){
 					          $msg = $e->getMessage();
 					          return $this->sendResponse($msg, 200, false);
 					      }
 
-					      return $this->sendResponse("Email sent for verification!");
+					      return $this->sendResponse("Email sent for verification to agent!");
 	      		}
 	      }else{
 						return $this->sendResponse("Sorry, User not found!", 200, false);
@@ -459,11 +464,11 @@ class UsersController extends Controller
 		}
 
 		public function verifiedOwner(Request $request){
-				$check = Users::where('email_verification_token', base64_decode($request->auth))->where('uuid', base64_decode($request->user))->first();
+				$check = Users::where('verification_token', base64_decode($request->auth))->where('uuid', base64_decode($request->user))->first();
 				if (!empty($check)) {
 						$status = 'verified';
 
-						Users::where('email_verification_token', base64_decode($request->auth))->where('uuid', base64_decode($request->user))->update(['email_verified'=>'YES']);
+						Users::where('verification_token', base64_decode($request->auth))->where('uuid', base64_decode($request->user))->update(['verify_status'=>'YES']);
 				}else{
 						$status = 'expired';
 				}
@@ -472,8 +477,8 @@ class UsersController extends Controller
 		}
 
 		public function checkAgent(){
-				//dd(md5(strtotime('now')));
-				//dd($_SERVER['HTTP_USER_AGENT']);
+				/*dd(md5(strtotime('now')));
+				dd($_SERVER['HTTP_USER_AGENT']);*/
 				$curl = curl_init();
 
 				curl_setopt_array($curl, array(

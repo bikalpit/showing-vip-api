@@ -11,14 +11,16 @@ class OwnerVerificationMail extends Mailable {
         SerializesModels;
     //build the message.
     public $data;
-    public $name;
+    public $owner_name;
+    public $agent_name;
     public $user_id;
     public $token;
     public $site_url;
     public function __construct($data)
     {
-        $this->data = $data;
-        $this->name = $data['name'];
+        $this->data = $data;    
+        $this->owner_name = $data['owner_name'];
+        $this->agent_name = $data['agent_name'];
         $this->user_id = $data['user_id'];
         $this->token = $data['token'];
         $this->site_url = env('APP_URL');

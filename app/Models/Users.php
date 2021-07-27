@@ -13,7 +13,7 @@ class Users extends Model
     protected $table = 'users';
 
     protected $fillable = [
-        'uuid', 'first_name', 'last_name', 'phone', 'email', 'password', 'role', 'agent_role', 'mls_id', 'mls_name', 'phone_verified', 'phone_verification_token', 'email_verified', 'email_verification_token', 'ip_address', 'image', 'address', 'city', 'zipcode', 'state', 'country', 'about'
+        'uuid', 'first_name', 'last_name', 'phone', 'email', 'password', 'role', 'agent_role', 'mls_id', 'mls_name', 'phone_verified', 'phone_verification_token', 'email_verified', 'email_verification_token', 'verify_status', 'ip_address', 'image', 'address', 'city', 'zipcode', 'state', 'country', 'about'
     ];
 
     use SoftDeletes;
