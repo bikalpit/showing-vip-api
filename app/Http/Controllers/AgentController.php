@@ -522,4 +522,35 @@ class AgentController extends Controller
 
         return $this->sendResponse($all_users);
     }
+
+    public function agentPropertyVerification(Request $request){
+        $this->validate($request, [
+            'property_id' => 'required',
+            'status' => 'required|in:YES,NO'
+        ]);
+
+        $property = Properties::where('uuid', $request->property_id)->first();
+        if (!empty($property)) {
+            Properties::where('uuid', $request->property_id)->update(['verified'=>'YES']);
+            return $this->sendResponse("Property verified successfully!");
+        }else{
+            return $this->sendResponse("Sorry, Property not found!", 200, false);
+        }
+    }
+
+    public function agentOwnerVerification(Request $request){
+        $this->validate($request, [
+            'user_id' => 'required',
+            'status' => 'required|in:YES,NO'
+        ]);
+
+        $user = Users::where('uuid', $request->user_id)->first();
+
+        if (!empty($user)) {
+            Users::where('uuid', $request->user_id)->update(['verify_status'=>'YES']);
+            return $this->sendResponse("User verified successfully!");
+        }else{
+            return $this->sendResponse("Sorry, User not found!", 200, false);
+        }
+    }
 }

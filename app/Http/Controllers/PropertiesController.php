@@ -344,7 +344,7 @@ class PropertiesController extends Controller
 						try{
 			          Mail::to($agent->email)->send(new PropertyVerificationMail($data));
 
-			          PropertyVerification::where('property_id', $request->property_id)->delete();
+			          //PropertyVerification::where('property_id', $request->property_id)->delete();
 
 			          $property_varification = new PropertyVerification;
 			          $property_varification->property_id = $request->property_id;
@@ -661,6 +661,8 @@ class PropertiesController extends Controller
 
 			      Properties::where('uuid', $request->property)->update(['verified' => 'YES']);
 			      
+			      PropertyVerification::where('property_id', $request->token)->delete();
+
 			      $property_agent = new PropertyAgents;
 						$property_agent->property_id = $check->property_id;
 						$property_agent->agent_id = $check->agent_id;
