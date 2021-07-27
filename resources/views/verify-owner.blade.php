@@ -103,7 +103,7 @@
                                                 <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                                    <tr>
                                                       <td style="padding-right: 0px;padding-left: 0px;" align="center">
-                                                         <img align="center" border="0" src="{{$site_url}}public/mail-images/image-1.png" alt="Image" title="Image"
+                                                         <img align="center" border="0" src="https://api.showing.vip/public/mail-images/image-1.png" alt="Image" title="Image"
                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 12%;max-width: 67.2px;"
                                                             width="67.2" />
                                                       </td>
@@ -138,7 +138,7 @@
                                                 <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                                    <tr>
                                                       <td style="padding-right: 0px;padding-left: 0px;" align="center">
-                                                         <img align="center" border="0" src="{{$site_url}}public/mail-images/image-2.png" alt="Image" title="Image"
+                                                         <img align="center" border="0" src="https://api.showing.vip/public/mail-images/image-2.png" alt="Image" title="Image"
                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 20%;max-width: 116px;"
                                                             width="116" />
                                                       </td>
