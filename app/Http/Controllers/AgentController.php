@@ -526,7 +526,7 @@ class AgentController extends Controller
     public function agentPropertyVerification(Request $request){
         $this->validate($request, [
             'property_id' => 'required',
-            'status' => 'required|in:YES,NO'
+            'status' => 'required|in:YES,NO,VC'
         ]);
 
         $property = Properties::where('uuid', $request->property_id)->first();
@@ -546,7 +546,7 @@ class AgentController extends Controller
     public function agentOwnerVerification(Request $request){
         $this->validate($request, [
             'user_id' => 'required',
-            'status' => 'required|in:YES,NO'
+            'status' => 'required|in:YES,NO,VC'
         ]);
 
         $user = Users::where('uuid', $request->user_id)->first();

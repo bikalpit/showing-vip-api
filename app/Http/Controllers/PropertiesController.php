@@ -31,6 +31,13 @@ class PropertiesController extends Controller
 	          'data' => 'required'
 	      ]);
 
+				/*$properties = Properties::get();
+				foreach ($properties as $property) {
+						if ($property->mls_id) {
+							
+						}
+				}*/
+
 				if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
 					$mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0];
 	      }else{
