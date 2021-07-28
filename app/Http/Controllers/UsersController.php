@@ -438,7 +438,7 @@ class UsersController extends Controller
 	      if (!empty($agent)) {
 	      		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 
-	      		$update_token = Users::where('uuid', $request->user_id)->update(['verification_token'=>$verification_token]);
+	      		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$request->property_id])->update(['verification_token'=>$verification_token]);
 
 	      		if ($update_token) {
 	      				$this->configSMTP();	
@@ -464,11 +464,11 @@ class UsersController extends Controller
 		}
 
 		public function verifiedOwner(Request $request){
-				$check = Users::where('verification_token', base64_decode($request->auth))->where('uuid', base64_decode($request->user))->first();
+				$check = PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->first();
 				if (!empty($check)) {
 						$status = 'verified';
 
-						Users::where('verification_token', base64_decode($request->auth))->where('uuid', base64_decode($request->user))->update(['verify_status'=>'YES']);
+						PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id', base64_decode($request->user)])->update(['verify_status'=>'YES']);
 				}else{
 						$status = 'expired';
 				}

@@ -325,7 +325,7 @@ class AgentController extends Controller
                     $owner_verification = 'YES';
                     if (sizeof($property['all_sellers']) > 0) {
                         foreach ($property['all_sellers'] as $property_seller) {
-                            if ($property_seller->User->verify_status == 'NO') {
+                            if ($property_seller->verify_status == 'NO') {
                                 $owner_verification = 'NO';
                                 break;
                             }
@@ -548,18 +548,18 @@ class AgentController extends Controller
     public function agentOwnerVerification(Request $request){
         $this->validate($request, [
             'user_id' => 'required',
+            'property_id' => 'required',
             'status' => 'required|in:YES,NO,VC'
         ]);
 
-        $user = Users::where('uuid', $request->user_id)->first();
+        $user = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$request->property_id])->first();
 
         if (!empty($user)) {
             if ($request->status == 'YES') {
-                Users::where('uuid', $request->user_id)->update(['verify_status'=>'YES']);
-                PropertyOwners::where('user_id', $request->user_id)->update(['verify_status'=>'YES']);
+                PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$request->property_id])->update(['verify_status'=>'YES']);
                 return $this->sendResponse("User verified successfully!");
             }else{
-                Users::where('uuid', $request->user_id)->update(['verify_status'=>'VC']);
+                PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$request->property_id])->update(['verify_status'=>'VC']);
                 return $this->sendResponse("Verification cancelled!", 200, false);
             }
         }else{
