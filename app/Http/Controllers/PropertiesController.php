@@ -239,6 +239,13 @@ class PropertiesController extends Controller
 	      if (sizeof($property_ids) > 0) {
 	      		$properties = Properties::with('Verification', 'Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
 	      		foreach ($properties as $property) {
+		      			/*$user_ids = PropertyOwners::where('property_id', $property->uuid)->pluck('user_id')->toArray();
+		      			if (sizeof($user_ids) < 0) {
+		      					$property['owners'] = null;
+		      			}else{
+		      					$property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
+		      			}
+		      			$all_selling_properties[] = $property;*/
 		      			$selling_properties = PropertyOwners::with('User')->where('property_id', $property->uuid)->get();
 		      			$property['owners'] = $selling_properties;
 		      			$all_selling_properties[] = $property;
@@ -249,12 +256,15 @@ class PropertiesController extends Controller
 	      if (sizeof($buying_property_ids) > 0) {
 	      		$buying_properties = Properties::with('Verification', 'Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $buying_property_ids)->get();
 	      		foreach ($buying_properties as $buying_property) {
-		      			$user_ids = PropertyOwners::where('property_id', $buying_property->uuid)->pluck('user_id')->toArray();
+		      			/*$user_ids = PropertyOwners::where('property_id', $buying_property->uuid)->pluck('user_id')->toArray();
 		      			if (sizeof($user_ids) < 0) {
 		      					$buying_property['owners'] = null;
 		      			}else{
 		      					$buying_property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
 		      			}
+		      			$all_buying_properties[] = $buying_property;*/
+		      			$all_properties = PropertyOwners::with('User')->where('property_id', $buying_property->uuid)->get();
+		      			$buying_property['owners'] = $all_properties;
 		      			$all_buying_properties[] = $buying_property;
 	      		}
 	      }
