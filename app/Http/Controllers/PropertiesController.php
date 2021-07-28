@@ -232,20 +232,16 @@ class PropertiesController extends Controller
 	      		'user_id' => 'required'
 	      ]);
 
-				$all_properties = [];
+				$all_selling_properties = [];
 				$all_buying_properties = [];
 
 	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
 	      if (sizeof($property_ids) > 0) {
 	      		$properties = Properties::with('Verification', 'Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
 	      		foreach ($properties as $property) {
-		      			$user_ids = PropertyOwners::where('property_id', $property->uuid)->pluck('user_id')->toArray();
-		      			if (sizeof($user_ids) < 0) {
-		      					$property['owners'] = null;
-		      			}else{
-		      					$property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
-		      			}
-		      			$all_properties[] = $property;
+		      			$selling_properties = PropertyOwners::with('User')->where('property_id', $property->uuid)->get();
+		      			$property['owners'] = $selling_properties;
+		      			$all_selling_properties[] = $property;
 	      		}
 	      }
 
@@ -263,7 +259,7 @@ class PropertiesController extends Controller
 	      		}
 	      }
 
-	      $response = array('selling_property'=>$all_properties, 'buying_property'=>$all_buying_properties);
+	      $response = array('selling_property'=>$all_selling_properties, 'buying_property'=>$all_buying_properties);
 	      return $this->sendResponse($response);
 		}
 
