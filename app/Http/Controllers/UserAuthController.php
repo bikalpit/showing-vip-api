@@ -47,6 +47,7 @@ class UserAuthController extends Controller
 	      				
 	      				if ($user->role == 'AGENT') {
 		      					$agent_info = AgentInfo::where('agent_id', $user->uuid)->first();
+		      					$authentication['mls_id'] = $user->mls_id;
 		      					$authentication['agent_info'] = $agent_info;
 	      				}
 	      				return $this->sendResponse($authentication);
