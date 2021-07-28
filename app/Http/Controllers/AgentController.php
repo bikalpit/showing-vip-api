@@ -84,8 +84,7 @@ class AgentController extends Controller
     public function addAgentProperties(Request $request){
         $this->validate($request, [
             'agent_id' => 'required',
-            'properties' => 'required',
-            'buyer_id' => 'required'
+            'properties' => 'required'
         ]);
         
         $all_properties = Properties::with('Homendo')->get();
@@ -93,7 +92,7 @@ class AgentController extends Controller
         foreach ($request->properties as $new_property) {
             foreach ($all_properties as $property) {
                 $check = 0;
-                if ($property->mls_id == $new_property['hmdo_mls_id'][1]) {
+                if ($property->mls_id == $new_property['hmdo_mls_id'][1] && $property->mls_name == $new_property['hmdo_mls_originator'][1]) {
                     $check = 1;
                     $match_property = $property;
                     break;
@@ -106,6 +105,7 @@ class AgentController extends Controller
                 $property = new Properties;
                 $property->uuid = $uuid;
                 $property->mls_id = $new_property['hmdo_mls_id'][1];
+                $property->mls_name = $new_property['hmdo_mls_originator'][1];
                 $property->data = json_encode($new_property);
                 $property->verified = 'NO';
                 $property->last_update = date('Y-m-d H:i:s');
@@ -153,7 +153,6 @@ class AgentController extends Controller
 
                 $property_agent = new PropertyAgents;
                 $property_agent->property_id = $uuid;
-                $property_agent->buyer_id = $request->buyer_id;
                 $property_agent->agent_id = $request->agent_id;
                 $property_agent->agent_type = 'seller';
                 $property_agent->save();
@@ -358,8 +357,9 @@ class AgentController extends Controller
         ]);
 
         $mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
+        $mls_name = $request->data['property'][2][1]['hmdo_mls_originator'][1];
 
-        $propertyCheck = Properties::where('mls_id', $mls_id)->first();
+        $propertyCheck = Properties::where(['mls_id'=>$mls_id, 'mls_name'=>$mls_name])->first();
 
         if (!empty($propertyCheck)) {
             $time = strtotime(Carbon::now());
@@ -367,6 +367,7 @@ class AgentController extends Controller
             $property = new Properties;
             $property->uuid = $uuid;
             $property->mls_id = $mls_id;
+            $property->mls_name = $mls_name;
             $property->data = json_encode($request->data);
             $property->verified = 'NO';
             $property->last_update = date('Y-m-d H:i:s');

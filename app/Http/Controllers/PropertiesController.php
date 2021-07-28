@@ -37,7 +37,13 @@ class PropertiesController extends Controller
 	      		$mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
 	      }
 
-	      $propertyCheck = Properties::where('mls_id', $mls_id)->first();
+	      if (is_array($request->data['property'][2][1]['hmdo_mls_originator'][1]) == true) {
+						$mls_name = $request->data['property'][2][1]['hmdo_mls_originator'][1][0];
+	      }else{
+	      		$mls_name = $request->data['property'][2][1]['hmdo_mls_originator'][1];
+	      }
+
+	      $propertyCheck = Properties::where(['mls_id'=>$mls_id, 'mls_name'=>$mls_name])->first();
 
 	      if (!empty($propertyCheck)) {
 	      		$time = strtotime(Carbon::now());
@@ -45,6 +51,7 @@ class PropertiesController extends Controller
 			      $property = new Properties;
 			      $property->uuid = $uuid;
 			      $property->mls_id = $mls_id;
+			      $property->mls_name = $mls_name;
 			      $property->data = json_encode($request->data);
 			      $property->verified = 'NO';
 			      $property->last_update = date('Y-m-d H:i:s');
