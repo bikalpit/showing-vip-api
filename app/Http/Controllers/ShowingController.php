@@ -464,68 +464,75 @@ class ShowingController extends Controller
 	      		
 	      		return $this->sendResponse('Agent found!');
 	      }else{
-	      		$checkAgent = $this->checkAgent($request->agent_id, $request->email, $request->agent_originator);
-	      		$agent = json_decode($checkAgent);
-	      		$time = strtotime(Carbon::now());
-            $uuid = "usr".$time.rand(10,99)*rand(10,99);
-            $user = new Users;
-            $user->uuid = $uuid;
-            $user->email = $request->email;
-            $user->role = "AGENT";
-            $user->phone_verified = "NO";
-            $user->email_verified = "NO";
-            $user->image = env("APP_URL")."public/user-images/default.png";
-            $result = $user->save();
-            if ($result) {
-            		$agent_info = new AgentInfo;
-		        		$agent_info->agent_id = $uuid;
-		        		$agent_info->hmdo_lastupdated = $agent->agent->hmdo_lastupdated[1];
-		        		$agent_info->hmdo_mls_originator = $agent->agent->hmdo_mls_originator[1];
-		        		$agent_info->hmdo_agent_name = $agent->agent->hmdo_agent_name[1];
-		        		$agent_info->hmdo_agent_title = $agent->agent->hmdo_agent_title[1];
-		        		$agent_info->hmdo_agent_photo_url = $agent->agent->hmdo_agent_photo_url[1];
-		        		$agent_info->hmdo_agent_email = $agent->agent->hmdo_agent_email[1];
-		        		$agent_info->hmdo_office_main_phone = $agent->agent->hmdo_office_main_phone[1];
-		        		$agent_info->hmdo_office_direct_phone = $agent->agent->hmdo_office_direct_phone[1];
-		        		$agent_info->hmdo_office_mobile_phone = $agent->agent->hmdo_office_mobile_phone[1];
-		        		$agent_info->hmdo_agent_skills = $agent->agent->hmdo_agent_skills[1];
-		        		$agent_info->hmdo_office_id = $agent->agent->hmdo_office_id[1];
-		        		$agent_info->hmdo_office_name = $agent->agent->hmdo_office_name[1];
-		        		$agent_info->hmdo_office_photo = $agent->agent->hmdo_office_photo[1];
-		        		$agent_info->hmdo_office_street = $agent->agent->hmdo_office_street[1];
-		        		$agent_info->hmdo_office_city = $agent->agent->hmdo_office_city[1];
-		        		$agent_info->hmdo_office_zipcode = $agent->agent->hmdo_office_zipcode[1];
-		        		$agent_info->hmdo_office_state = $agent->agent->hmdo_office_state[1];
-		        		$agent_info->hmdo_office_phone = $agent->agent->hmdo_office_phone[1];
-		        		$agent_info->hmdo_office_website = $agent->agent->hmdo_office_website[1];
-		        		$agent_info->save();
+	      		$checkAgent = Users::where(['email'=>$request->email, 'mls_id'=>$request->agent_id, 'mls_name'=>$request->agent_originator])->first();
+	      		if (!empty($checkAgent)) {
+	      				$agentInfo = $this->getAgentInfo($request->agent_id, $request->email, $request->agent_originator);
+			      		$agent = json_decode($agentInfo);
+			      		$time = strtotime(Carbon::now());
+		            $uuid = "usr".$time.rand(10,99)*rand(10,99);
+		            $user = new Users;
+		            $user->uuid = $uuid;
+		            $user->email = $request->email;
+		            $user->role = "AGENT";
+		            $user->mls_id = $request->agent_id;
+		            $user->mls_name = $request->agent_originator;
+		            $user->phone_verified = "NO";
+		            $user->email_verified = "NO";
+		            $user->image = env("APP_URL")."public/user-images/default.png";
+		            $result = $user->save();
+		            if ($result) {
+		            		$agent_info = new AgentInfo;
+				        		$agent_info->agent_id = $uuid;
+				        		$agent_info->hmdo_lastupdated = $agent->agent->hmdo_lastupdated[1];
+				        		$agent_info->hmdo_mls_originator = $agent->agent->hmdo_mls_originator[1];
+				        		$agent_info->hmdo_agent_name = $agent->agent->hmdo_agent_name[1];
+				        		$agent_info->hmdo_agent_title = $agent->agent->hmdo_agent_title[1];
+				        		$agent_info->hmdo_agent_photo_url = $agent->agent->hmdo_agent_photo_url[1];
+				        		$agent_info->hmdo_agent_email = $agent->agent->hmdo_agent_email[1];
+				        		$agent_info->hmdo_office_main_phone = $agent->agent->hmdo_office_main_phone[1];
+				        		$agent_info->hmdo_office_direct_phone = $agent->agent->hmdo_office_direct_phone[1];
+				        		$agent_info->hmdo_office_mobile_phone = $agent->agent->hmdo_office_mobile_phone[1];
+				        		$agent_info->hmdo_agent_skills = $agent->agent->hmdo_agent_skills[1];
+				        		$agent_info->hmdo_office_id = $agent->agent->hmdo_office_id[1];
+				        		$agent_info->hmdo_office_name = $agent->agent->hmdo_office_name[1];
+				        		$agent_info->hmdo_office_photo = $agent->agent->hmdo_office_photo[1];
+				        		$agent_info->hmdo_office_street = $agent->agent->hmdo_office_street[1];
+				        		$agent_info->hmdo_office_city = $agent->agent->hmdo_office_city[1];
+				        		$agent_info->hmdo_office_zipcode = $agent->agent->hmdo_office_zipcode[1];
+				        		$agent_info->hmdo_office_state = $agent->agent->hmdo_office_state[1];
+				        		$agent_info->hmdo_office_phone = $agent->agent->hmdo_office_phone[1];
+				        		$agent_info->hmdo_office_website = $agent->agent->hmdo_office_website[1];
+				        		$agent_info->save();
 
-            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-		            Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+		            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+				            Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
 
-		            $this->configSMTP();
-		            $data = [
-		                'name'=>'',
-		                'verification_token'=>$verification_token,
-		                'email'=>$request->email,
-		                'url'=>$request->url
-		            ];
-		            Mail::to($request->email)->send(new SignupMail($data));
+				            $this->configSMTP();
+				            $data = [
+				                'name'=>'',
+				                'verification_token'=>$verification_token,
+				                'email'=>$request->email,
+				                'url'=>$request->url
+				            ];
+				            Mail::to($request->email)->send(new SignupMail($data));
 
-		            $showingData = [
-			      				'name' => '',
-			      				'mls_id' => $request->mls_id,
-			      				'originator' => $request->originator
-			      		];
-		            Mail::to($request->email)->send(new AgentShowingMail($showingData));
-		            return $this->sendResponse('Mail sent successfully to agent for create password!');
-            }else{
-            		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+				            $showingData = [
+					      				'name' => '',
+					      				'mls_id' => $request->mls_id,
+					      				'originator' => $request->originator
+					      		];
+				            Mail::to($request->email)->send(new AgentShowingMail($showingData));
+				            return $this->sendResponse('Mail sent successfully to agent for create password!');
+		            }else{
+		            		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+		            }
+	      		}else{
+            		return $this->sendResponse("User already exist!", 200, false);
             }
 	      }
     }
 
-    public function checkAgent($mls_id, $email, $originator){
+    public function getAgentInfo($mls_id, $email, $originator){
 				$curl = curl_init();
 
 				curl_setopt_array($curl, array(
