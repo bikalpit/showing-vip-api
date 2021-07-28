@@ -16,6 +16,8 @@ class CreatePropertyAgentsTable extends Migration
         Schema::create('property_agents', function (Blueprint $table) {
             $table->id();
             $table->string('property_id', 200)->nullable();
+            $table->string('property_mls_id', 200)->nullable();
+            $table->string('property_originator', 200)->nullable();
             $table->string('seller_id', 200)->nullable();
             $table->string('buyer_id', 200)->nullable();
             $table->string('agent_id', 200)->nullable();
