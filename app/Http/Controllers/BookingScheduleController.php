@@ -541,7 +541,7 @@ class BookingScheduleController extends Controller
         $future_bookings = [];
         $past_bookings = [];
         $today_bookings = [];
-        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->where('property_id',$request->property_id)->where('cv_status','verify')->get();
+        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->where('property_id',$request->property_id)->where('cv_status','verified')->get();
         $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey')->where('property_id',$request->property_id)->first();
         if (sizeof($bookings) > 0) {
             foreach ($bookings as $booking) {
