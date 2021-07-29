@@ -22,4 +22,9 @@ class PropertyAgents extends Model
     {
         return $this->hasOne('App\Models\Users','uuid','user_id');
     }
+
+    public function agent()
+    {
+        return $this->hasOne('App\Models\Users','uuid','agent_id');
+    }
 }

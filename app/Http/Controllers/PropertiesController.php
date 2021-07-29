@@ -225,7 +225,9 @@ class PropertiesController extends Controller
 	      ]);
 
 	      $property = Properties::with('Valuecheck', 'Zillow', 'Homendo')->where('uuid', $request->property_id)->first();
-
+	      $property['selected_agent'] = PropertyAgents::with('agent')->where('property_id', $request->property_id)->first();
+	      $property['sellers'] = PropertyOwners::with('User')->where('property_id', $request->property_id)->get();
+	      
 	      if (!empty($property)) {
 	      		return $this->sendResponse($property);
 	      }else{
