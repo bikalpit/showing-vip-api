@@ -11,6 +11,7 @@ use App\Models\Messages;
 use App\Models\AgentInfo;
 use App\Models\ApiToken;
 use App\Models\PropertyAgents;
+use App\Models\PropertyOwners;
 use App\Mail\SignupMail;
 use App\Mail\OwnerVerificationMail;
 use Carbon\Carbon;
