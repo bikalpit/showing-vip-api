@@ -218,6 +218,7 @@ class AgentController extends Controller
             $owner->property_id = $request->property_id;
             $owner->user_id = $check_user->uuid;
             $owner->type = 'main_owner';
+            $owner->verify_status = 'YES';
             $property_owner = $owner->save();
             return $this->sendResponse("Client added successfully!");
         }
@@ -260,6 +261,7 @@ class AgentController extends Controller
                     $owner->property_id = $request->property_id;
                     $owner->user_id = $user->uuid;
                     $owner->type = 'main_owner';
+                    $owner->verify_status = 'YES';
                     $property_owner = $owner->save();
                 }else{
                     $buyer = new PropertyBuyers;
@@ -321,7 +323,8 @@ class AgentController extends Controller
                     $property['buyer'] = $buyer;
                     $buying_properties[] = $property;
                 }else{
-                    $seller = PropertyOwners::with('User')->where(['property_id'=>$property->property_id, 'type'=>'main_owner'])->first();
+                    $main_seller = PropertyOwners::with('User')->where(['property_id'=>$property->property_id, 'type'=>'main_owner'])->first();
+                    $seller = Users::where('uuid', $main_seller->user_id)->first();
                     $property['seller'] = $seller;
                     $property['all_sellers'] = $propertyInfo->propertySellers;
                    
