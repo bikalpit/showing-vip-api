@@ -322,7 +322,7 @@ class AgentController extends Controller
                     $buying_properties[] = $property;
                 }else{
                     $seller = PropertyOwners::with('User')->where(['property_id'=>$property->property_id, 'type'=>'main_owner'])->first();
-                    $property['seller'] = $seller;
+                    $property['seller'] = $seller->user;
                     $property['all_sellers'] = $propertyInfo->propertySellers;
                    
                     $property_verification = 'YES';
