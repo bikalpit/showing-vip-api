@@ -212,6 +212,16 @@ class AgentController extends Controller
             'url' => 'required'
         ]);
 
+        $check_user = Users::where(['email'=>$request->email, 'phone'=>$request->phone, 'sub_role'=>'SELLER'])->first();
+        if (!empty($check_user)) {
+            $owner = new PropertyOwners;
+            $owner->property_id = $request->property_id;
+            $owner->user_id = $check_user->uuid;
+            $owner->type = 'main_owner';
+            $property_owner = $owner->save();
+            return $this->sendResponse("Client added successfully!");
+        }
+
         $prop_agent = Users::where('uuid', $request->agent_id)->first();
         $email_check = Users::where('email', $request->email)->first();
         $phone_check = Users::where('phone', $request->phone)->first();
@@ -222,7 +232,6 @@ class AgentController extends Controller
         }else{
             $property_name = '';
         }
-        
 
         if ($email_check !== null) {
             return $this->sendResponse("Sorry, Email already exist!", 200, false);
