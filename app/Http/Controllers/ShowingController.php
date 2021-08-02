@@ -305,6 +305,44 @@ class ShowingController extends Controller
 	      ]);
 
 	    	$showing_setup = PropertyShowingSetup::where('uuid', $request->showing_setup_id)->first();
+	    	if ($showing_setup->start_date != $request->start_date || $showing_setup->end_date != $request->end_date) {
+	    			$startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
+						$endDate = Carbon::createFromFormat('Y-m-d', $request->end_date);
+						$dateRange = CarbonPeriod::create($startDate, $endDate);
+						$dateArray = $dateRange->toArray();  
+						
+						$interval = 15*60;
+		        $open_time = strtotime('00:00');
+		        $close_time = strtotime('24:00');
+
+		        $output = [];
+		        for( $i=$open_time; $i<$close_time; $i+=$interval) 
+						{
+								$output[] = array('slot'=>date("h:i A", $i), 'status'=>'');
+		        }
+
+						foreach($dateArray as $newDate)
+						{
+								$date = $newDate->format('F d l');
+								$lastResult[] = array('date'=>$date,'slots'=>$output);
+						}
+						$showing_availability = PropertyShowingAvailability::where('showing_setup_id', $request->showing_setup_id)->first();
+						$get_availability = json_decode($showing_availability);
+						$availability = json_decode($get_availability->availability);
+
+						$newResult = [];
+						foreach ($lastResult as $result) {
+								foreach ($availability as $avail) {
+										if ($avail->date == $result['date']) {
+												$result['slots'] = $avail->slots;
+												break;
+										}
+								}
+								$newResult[] = $result;
+						}
+
+						PropertyShowingAvailability::where('showing_setup_id', $request->showing_setup_id)->update(['availability'=>json_encode($newResult)]);
+	    	}
 
 	    	if ($showing_setup) {
 	    			if ($request->start_date == '') {
