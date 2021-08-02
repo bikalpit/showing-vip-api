@@ -12,6 +12,7 @@ use App\Models\SurveyCategories;
 use App\Models\SurveySubCategories;
 use App\Models\PropertyHomendo;
 use App\Models\Users;
+use App\Models\PropertyBookingSchedule;
 use App\Models\AgentInfo;
 use App\Mail\AgentShowingMail;
 use App\Mail\SignupMail;
@@ -346,6 +347,22 @@ class ShowingController extends Controller
 														$newResult[] = $result;
 												}
 
+												$old_dates = [];
+												foreach ($availability as $avail) {
+														$old_dates[] = date('Y-m-d', strtotime($avail->date));
+												}
+
+												$new_dates = [];
+												foreach ($lastResult as $result) {
+														$new_dates[] = date('Y-m-d', strtotime($result['date']));
+												}
+
+												$drop_dates = array_diff($old_dates, $new_dates);
+
+												if (sizeof($drop_dates) > 0) {
+														$bookings = PropertyBookingSchedule::where('property_id', $showing_setup->property_id)->whereIn('booking_date', $drop_dates)->update(['status'=>'R']);
+												}
+												
 												PropertyShowingAvailability::where('showing_setup_id', $request->showing_setup_id)->update(['availability'=>json_encode($newResult)]);
 										}
 								}
