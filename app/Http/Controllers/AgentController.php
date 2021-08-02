@@ -107,7 +107,7 @@ class AgentController extends Controller
                 $property->mls_id = $new_property['hmdo_mls_id'][1];
                 $property->mls_name = $new_property['hmdo_mls_originator'][1];
                 $property->data = json_encode($new_property);
-                $property->verified = 'NO';
+                $property->verified = 'YES';
                 $property->last_update = date('Y-m-d H:i:s');
                 $add_property = $property->save();
 
@@ -364,7 +364,8 @@ class AgentController extends Controller
     public function addAgentProperty(Request $request){
         $this->validate($request, [
             'agent_id' => 'required',
-            'data' => 'required'
+            'data' => 'required',
+            'client_id' => 'required'
         ]);
 
         $mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
@@ -380,7 +381,7 @@ class AgentController extends Controller
             $property->mls_id = $mls_id;
             $property->mls_name = $mls_name;
             $property->data = json_encode($request->data);
-            $property->verified = 'NO';
+            $property->verified = 'YES';
             $property->last_update = date('Y-m-d H:i:s');
             $add_property = $property->save();
 
@@ -490,6 +491,13 @@ class AgentController extends Controller
             $agent->agent_type = 'seller';
             $property_agent = $agent->save();
 
+            $owner = new PropertyOwners;
+            $owner->property_id = $property->uuid;
+            $owner->user_id = $request->client_id;
+            $owner->type = 'main_owner';
+            $owner->verify_status = 'YES';
+            $property_owner = $owner->save();
+
             $showings = PropertyBookingSchedule::where('property_id', '')->orWhereNull('property_id')->get();
             foreach ($showings as $showing) {
                 if ($showing->property_mls_id == $property->mls_id) {
@@ -582,6 +590,25 @@ class AgentController extends Controller
             }
         }else{
             return $this->sendResponse("Sorry, User not found!", 200, false);
+        }
+    }
+
+    public function getClientShowings(Request $request){
+        $this->validate($request, [
+            'client_id' => 'required'
+        ]);
+
+        $showings = [];
+        $showings['buyers_showing'] = PropertyBookingSchedule::with('Property', 'Client', 'Agent.agentInfo')->where('buyer_id', $request->client_id)->get();
+
+        $seller_properties = PropertyOwners::where('user_id', $request->client_id)->distinct('property_id')->pluck('property_id')->toArray();
+
+        $showings['sellers_showing'] = PropertyBookingSchedule::with('Property', 'Client', 'Agent.agentInfo')->whereIn('property_id', $seller_properties)->get();
+
+        if (sizeof($showings['buyers_showing']) > 0 || sizeof($showings['sellers_showing']) > 0) {
+            return $this->sendResponse($showings);
+        }else{
+            return $this->sendResponse("Sorry, Showings not found!", 200, false);
         }
     }
 }

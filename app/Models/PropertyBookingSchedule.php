@@ -32,4 +32,9 @@ class PropertyBookingSchedule extends Model
     {
     	return $this->hasOne('App\Models\Users', 'uuid', 'agent_id');
     }
+
+    public function Client()
+    {
+        return $this->hasOne('App\Models\Users', 'uuid', 'buyer_id');
+    }
 }
