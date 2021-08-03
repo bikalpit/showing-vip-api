@@ -157,8 +157,8 @@
                                                 align="left">
                                                 <div
                                                    style="color: #e5eaf5; line-height: 140%; text-align: center; word-wrap: break-word;">
-                                                   <p style="font-size: 14px; line-height: 140%;"><strong>T H A N K S&nbsp; &nbsp;F O
-                                                      R&nbsp; &nbsp;S I G N I N G&nbsp; &nbsp;U P !</strong>
+                                                   <p style="font-size: 14px; line-height: 140%;"><strong>T H A N K S &nbsp; &nbsp; F O
+                                                      R &nbsp; &nbsp;S I G N I N G &nbsp; &nbsp;U P !</strong>
                                                    </p>
                                                 </div>
                                              </td>

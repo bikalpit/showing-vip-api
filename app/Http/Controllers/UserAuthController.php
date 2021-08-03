@@ -170,7 +170,7 @@ class UserAuthController extends Controller
 			          $msg = $e->getMessage();
 			          return $this->sendResponse($msg, 200, false);
 			      }
-					  return $this->sendResponse("Email send successfully for reset password!");
+					  return $this->sendResponse("Email send successfully to reset password!");
 				}else{
 						return $this->sendResponse("Email not exist", 200, false);
 				}
@@ -194,7 +194,7 @@ class UserAuthController extends Controller
 			   				return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 			   		}
 	      }else{
-	      		return $this->sendResponse("Sorry, Invalid token!", 200, false);
+	      		return $this->sendResponse("Sorry! This link is no more valid.", 200, false);
 	      }
     }
 
