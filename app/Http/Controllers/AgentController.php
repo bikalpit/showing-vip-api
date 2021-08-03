@@ -71,11 +71,26 @@ class AgentController extends Controller
         $this->validate($request, [
             'user_id' => 'required'
         ]);
-
+		
+		$all_users = [];
         $agents = UserAgents::where('user_id',$request->user_id)->pluck('agent_id')->toArray();
         if (sizeof($agents)>0) {
-            $result = Users::with('agentInfo')->whereIn('uuid',$agents)->get();
-            return $this->sendResponse($result);
+            $users = Users::with(['agentInfo', 'city', 'state'])->whereIn('uuid',$agents)->get();
+			foreach($users as $user){
+				if($user->country != null || $user->country != ''){
+					if($user->country == '231'){
+						$user->country = 'US';
+					}elseif($user->country == '38'){
+						$user->country = 'Canada';
+					}elseif($user->country == '142'){
+						$user->country = 'Mexico';
+					}else{
+						$user->country = null;
+					}
+				}
+				$all_users[] = $user;
+			}
+            return $this->sendResponse($all_users);
         }else{
             return $this->sendResponse("Agent not found!.",200,false);
         }
