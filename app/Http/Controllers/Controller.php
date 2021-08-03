@@ -15,12 +15,12 @@ class Controller extends BaseController
     {
         config([
             'mail.driver' => 'smtp',
-            'mail.host' => 'mail.showing.vip',
+            'mail.host' => 'smtp.gmail.com',
             'mail.port' => 587,
-            'mail.from' => ['address' => "no_reply@showing.vip", 'name' =>"Showing VIP"],
+            'mail.from' => ['address' => "broadviewinnovations8181@gmail.com", 'name' =>"Showing VIP"],
             'mail.encryption' => "tls",
-            'mail.username' =>  "no_reply@showing.vip",
-            'mail.password' => "p692rsV%X@X@",
+            'mail.username' =>  "broadviewinnovations8181@gmail.com",
+            'mail.password' => "famkvwztymnresye",
         ]);
     }
 
