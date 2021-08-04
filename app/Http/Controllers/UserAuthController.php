@@ -93,7 +93,7 @@ class UserAuthController extends Controller
 		    				return $this->sendResponse("Password already created!", 200, false);
 		    		}
     		}else{
-    				return $this->sendResponse("Sorry, Invalid token!", 200, false);
+    				return $this->sendResponse("Sorry! This link is no more valid.", 200, false);
     		}
     }
 
@@ -139,7 +139,7 @@ class UserAuthController extends Controller
 			   				return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 			   		}
 	      }else{
-	      		return $this->sendResponse("Sorry, Invalid token!", 200, false);
+	      		return $this->sendResponse("Sorry! This link is no more valid.", 200, false);
 	      }
     }
 
