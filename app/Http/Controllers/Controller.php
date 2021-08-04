@@ -13,7 +13,7 @@ class Controller extends BaseController
 
     public function configSMTP()
     {
-        /*config([
+        config([
             'mail.driver' => 'smtp',
             'mail.host' => 'mail.showing.vip',
             'mail.port' => 587,
@@ -21,8 +21,8 @@ class Controller extends BaseController
             'mail.encryption' => "tls",
             'mail.username' =>  "no_reply@showing.vip",
             'mail.password' => "p692rsV%X@X@",
-        ]);*/
-        config([
+        ]);
+        /*config([
             'mail.driver' => 'smtp',
             'mail.host' => 'smtp.gmail.com',
             'mail.port' => 587,
@@ -30,7 +30,7 @@ class Controller extends BaseController
             'mail.encryption' => "tls",
             'mail.username' =>  "broadviewinnovations8181@gmail.com",
             'mail.password' => "famkvwztymnresye",
-        ]);
+        ]);*/
     }
 
     public function singleImageUpload($myPath,$image)
