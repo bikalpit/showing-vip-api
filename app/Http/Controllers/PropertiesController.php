@@ -34,7 +34,7 @@ class PropertiesController extends Controller
 				$vs_listed = $request->data['property'][0][1]['vs_listed'][1];
 				$z_listed = $request->data['property'][1][1]['z_listed'][1];
 				$hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
-				
+
 				if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
 						$mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0];
 		    }else{
@@ -49,7 +49,7 @@ class PropertiesController extends Controller
 
 		    $mlsIdCheck = Properties::where(['mls_id'=>$mls_id])->first();
 		    $mlsNameCheck = Properties::where(['mls_id'=>$mls_id, 'mls_name'=>$mls_name])->first();
-		    if($vs_listed == 1 && $z_listed == 1 && $hmdo_listed == 1){
+		    if($vs_listed == 1 || $z_listed == 1 || $hmdo_listed == 1){
 		    		if ($mls_id != '' && $mls_name != '') {
 				    		if (!empty($mlsIdCheck)) {
 				    				if (!empty($mlsNameCheck)) {
