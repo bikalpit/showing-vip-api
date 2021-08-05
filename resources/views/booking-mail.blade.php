@@ -287,18 +287,16 @@
                                              <td
                                                 style="overflow-wrap:break-word;word-break:break-word;padding:41px 55px 18px;font-family:'Cabin',sans-serif;"
                                                 align="left">
-                                                <div
-                                                   style="color: #003399; line-height: 160%; text-align: center; word-wrap: break-word;">
-                                                   <p style="font-size: 14px; line-height: 160%;"><span
-                                                      style="font-size: 20px; line-height: 32px;"><strong>Get in touch</strong></span></p>
-                                                   <p style="font-size: 14px; line-height: 160%;"><span
-                                                      style="font-size: 16px; line-height: 25.6px; color: #000000;">+11 111 333
-                                                      4444</span>
-                                                   </p>
-                                                   <p style="font-size: 14px; line-height: 160%;"><span
-                                                      style="font-size: 16px; line-height: 25.6px; color: #000000;">Info@showingvip.com</span>
-                                                   </p>
-                                                </div>
+                                                  <div
+                                style="color: #003399; line-height: 160%; text-align: center; word-wrap: break-word;">
+                                <p style="font-size: 14px; line-height: 160%;"><span
+                                    style="font-size: 20px; line-height: 32px;"><strong>Get in touch</strong></span></p>
+                                <p style="font-size: 14px; line-height: 160%;"><span
+                                    style="font-size: 16px; line-height: 25.6px; color: #000000;">+1 352 289 2000</span></p>
+                                <p style="font-size: 14px; line-height: 160%;"><span
+                                    style="font-size: 16px; line-height: 25.6px; color: #000000;">support@showing.vip</span>
+                                </p>
+                              </div>
                                              </td>
                                           </tr>
                                        </tbody>
@@ -327,10 +325,8 @@
                                                 align="left">
                                                 <div
                                                    style="color: #fafafa; line-height: 180%; text-align: center; word-wrap: break-word;">
-                                                   <p style="font-size: 14px; line-height: 180%;"><span
-                                                      style="font-size: 16px; line-height: 28.8px;">Copyrights &copy; Company All Rights
-                                                      Reserved</span>
-                                                   </p>
+                                                     <p style="font-size: 14px; line-height: 180%;"><span
+                                    style="font-size: 16px; line-height: 28.8px;">© 2021-2022 Showing.VIP – All Rights Reserved</span></p>
                                                 </div>
                                              </td>
                                           </tr>
