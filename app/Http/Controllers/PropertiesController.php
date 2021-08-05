@@ -43,11 +43,13 @@ class PropertiesController extends Controller
 	      		$mls_name = $request->data['property'][2][1]['hmdo_mls_originator'][1];
 	      }
 
-	      $propertyCheck = Properties::where(['mls_id'=>$mls_id, 'mls_name'=>$mls_name])->first();
+	      $mlsIdCheck = Properties::where(['mls_id'=>$mls_id])->first();
+	      $mlsNameCheck = Properties::where(['mls_name'=>$mls_name])->first();
 
 	      if ($mls_id != '' && $mls_name != '') {
-	      		if (!empty($propertyCheck)) {
-			      		$time = strtotime(Carbon::now());
+	      		if (!empty($mlsIdCheck)) {
+	      			if (!empty($mlsNameCheck)) {
+	      				$time = strtotime(Carbon::now());
 				        $uuid = "prty".$time.rand(10,99)*rand(10,99);
 					      $property = new Properties;
 					      $property->uuid = $uuid;
@@ -193,9 +195,12 @@ class PropertiesController extends Controller
 					      }else{
 					      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 					      }
-			      }else{
+	      			}else{
 			      		return $this->sendResponse("Property already exist!", 200, false);
-			      }
+			      	}	
+			    }else{
+			      	return $this->sendResponse("Property already exist!", 200, false);
+			    }
 	      }else{
 	      		return $this->sendResponse("Sorry this property can not be added to your account yet.", 200, false);
 	      }
