@@ -54,7 +54,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('get-property',  ['uses'=>'PropertiesController@getProperty']);
 		$router->post('add-owner',  ['uses'=>'PropertiesController@addOwner']);
 		$router->post('agent-properties',  ['uses'=>'PropertiesController@agentProperties']);
-		$router->post('add-property',  ['middleware'=>'auth','uses'=>'PropertiesController@addProperty']);
+		$router->post('add-property',  ['uses'=>'PropertiesController@addProperty']);
 		$router->post('user-properties',  ['middleware'=>'auth','uses'=>'PropertiesController@userProperties']);
 		$router->post('assign-agent',  ['middleware'=>'auth','uses'=>'PropertiesController@assignAgent']);
 		$router->post('remove-agent',  ['middleware'=>'auth','uses'=>'PropertiesController@removeAgent']);
