@@ -44,167 +44,311 @@ class PropertiesController extends Controller
 	      }
 
 	      $mlsIdCheck = Properties::where(['mls_id'=>$mls_id])->first();
-	      $mlsNameCheck = Properties::where(['mls_name'=>$mls_name])->first();
+	      $mlsNameCheck = Properties::where(['mls_id'=>$mls_id, 'mls_name'=>$mls_name])->first();
 
-	      if ($mls_id != '' && $mls_name != '') {
+	      	if ($mls_id != '' && $mls_name != '') {
 	      		if (!empty($mlsIdCheck)) {
 	      			if (!empty($mlsNameCheck)) {
+	      				return $this->sendResponse("Property already exist!", 200, false);
+	      			}else{
 	      				$time = strtotime(Carbon::now());
 				        $uuid = "prty".$time.rand(10,99)*rand(10,99);
-					      $property = new Properties;
-					      $property->uuid = $uuid;
-					      $property->mls_id = $mls_id;
-					      $property->mls_name = $mls_name;
-					      $property->data = json_encode($request->data);
-					      $property->verified = 'NO';
-					      $property->last_update = date('Y-m-d H:i:s');
-					      $add_property = $property->save();
+				      	$property = new Properties;
+				      	$property->uuid = $uuid;
+				      	$property->mls_id = $mls_id;
+				      	$property->mls_name = $mls_name;
+				      	$property->data = json_encode($request->data);
+				      	$property->verified = 'NO';
+				      	$property->last_update = date('Y-m-d H:i:s');
+				      	$add_property = $property->save();
 
-					      $valuecheck = new PropertyValuecheck;
-					      $valuecheck->uuid = "vlck".$time.rand(10,99)*rand(10,99);
-					      $valuecheck->property_id = $uuid;
-					      $valuecheck->vs_streetnumber = $request->data['property'][0][1]['vs_streetnumber'][1];
-					      $valuecheck->vs_streetdirection = $request->data['property'][0][1]['vs_streetdirection'][1];
-					      $valuecheck->vs_streetname = $request->data['property'][0][1]['vs_streetname'][1];
-					      $valuecheck->vs_streettype = $request->data['property'][0][1]['vs_streettype'][1];
-					      $valuecheck->vs_unitnumber = $request->data['property'][0][1]['vs_unitnumber'][1];
-					      $valuecheck->vs_city = $request->data['property'][0][1]['vs_city'][1];
-					      $valuecheck->vs_state = $request->data['property'][0][1]['vs_state'][1];
-					      $valuecheck->vs_zipcode = $request->data['property'][0][1]['vs_zipcode'][1];
-					      $valuecheck->vs_county = $request->data['property'][0][1]['vs_county'][1];
-					      $valuecheck->vs_countyname = $request->data['property'][0][1]['vs_countyname'][1];
-					      $valuecheck->vs_country = $request->data['property'][0][1]['vs_country'][1];
-					      $valuecheck->vs_apn = $request->data['property'][0][1]['vs_apn'][1];
-					      $valuecheck->vs_assessyr = $request->data['property'][0][1]['vs_assessyr'][1];
-					      $valuecheck->vs_assesmkt = $request->data['property'][0][1]['vs_assesmkt'][1];
-					      $valuecheck->vs_landmktval = $request->data['property'][0][1]['vs_landmktval'][1];
-					      $valuecheck->vs_taxyr = $request->data['property'][0][1]['vs_taxyr'][1];
-					      $valuecheck->vs_taxdue = $request->data['property'][0][1]['vs_taxdue'][1];
-					      $valuecheck->vs_esttaxes = $request->data['property'][0][1]['vs_esttaxes'][1];
-					      $valuecheck->vs_ownername = $request->data['property'][0][1]['vs_ownername'][1];
-					      $valuecheck->vs_ownername2 = $request->data['property'][0][1]['vs_ownername2'][1];
-					      $valuecheck->vs_formallegal = $request->data['property'][0][1]['vs_formallegal'][1];
-					      $valuecheck->vs_saledate = $request->data['property'][0][1]['vs_saledate'][1];
-					      $valuecheck->vs_docdate = $request->data['property'][0][1]['vs_docdate'][1];
-					      $valuecheck->vs_saleamt = $request->data['property'][0][1]['vs_saleamt'][1];
-					      $valuecheck->vs_pricesqft = $request->data['property'][0][1]['vs_pricesqft'][1];
-					      $valuecheck->vs_longitude = $request->data['property'][0][1]['vs_longitude'][1];
-					      $valuecheck->vs_latitude = $request->data['property'][0][1]['vs_latitude'][1];
-					      $valuecheck->vs_proptype = $request->data['property'][0][1]['vs_proptype'][1];
-					      $valuecheck->vs_stories = $request->data['property'][0][1]['vs_stories'][1];
-					      $valuecheck->vs_housestyle = $request->data['property'][0][1]['vs_housestyle'][1];
-					      $valuecheck->vs_squarefeet = $request->data['property'][0][1]['vs_squarefeet'][1];
-					      $valuecheck->vs_bsmtsf = $request->data['property'][0][1]['vs_bsmtsf'][1];
-					      $valuecheck->vs_finbsmtsf = $request->data['property'][0][1]['vs_finbsmtsf'][1];
-					      $valuecheck->vs_bsmttype = $request->data['property'][0][1]['vs_bsmttype'][1];
-					      $valuecheck->vs_bedrooms = $request->data['property'][0][1]['vs_bedrooms'][1];
-					      $valuecheck->vs_bathrooms = $request->data['property'][0][1]['vs_bathrooms'][1];
-					      $valuecheck->vs_garagetype = $request->data['property'][0][1]['vs_garagetype'][1];
-					      $valuecheck->vs_garagesqft = $request->data['property'][0][1]['vs_garagesqft'][1];
-					      $valuecheck->vs_carspaces = $request->data['property'][0][1]['vs_carspaces'][1];
-					      $valuecheck->vs_fireplaces = $request->data['property'][0][1]['vs_fireplaces'][1];
-					      $valuecheck->vs_heat = $request->data['property'][0][1]['vs_heat'][1];
-					      $valuecheck->vs_cool = $request->data['property'][0][1]['vs_cool'][1];
-					      $valuecheck->vs_extwall = $request->data['property'][0][1]['vs_extwall'][1];
-					      $valuecheck->vs_roofcover = $request->data['property'][0][1]['vs_roofcover'][1];
-					      $valuecheck->vs_roofstyle = $request->data['property'][0][1]['vs_roofstyle'][1];
-					      $valuecheck->vs_yearblt = $request->data['property'][0][1]['vs_yearblt'][1];
-					      $valuecheck->vs_lotsizec = $request->data['property'][0][1]['vs_lotsizec'][1];
-					      $valuecheck->vs_lotsize = $request->data['property'][0][1]['vs_lotsize'][1];
-					      $valuecheck->vs_acre = $request->data['property'][0][1]['vs_acre'][1];
-					      $valuecheck->vs_pool = $request->data['property'][0][1]['vs_pool'][1];
-					      $valuecheck->vs_spa = $request->data['property'][0][1]['vs_spa'][1];
-					      $valuecheck->vs_foundation = $request->data['property'][0][1]['vs_foundation'][1];
-					      $valuecheck->vs_golf = $request->data['property'][0][1]['vs_golf'][1];
-					      $valuecheck->vs_lotwidth = $request->data['property'][0][1]['vs_lotwidth'][1];
-					      $valuecheck->vs_lotlength = $request->data['property'][0][1]['vs_lotlength'][1];
-					      $valuecheck->vs_waterfront = $request->data['property'][0][1]['vs_waterfront'][1];
-					      $valuecheck->vs_extwallcover = $request->data['property'][0][1]['vs_extwallcover'][1];
-					      $valuecheck->vs_intwall = $request->data['property'][0][1]['vs_intwall'][1];
-					      $valuecheck->vs_decksqft = $request->data['property'][0][1]['vs_decksqft'][1];
-					      $valuecheck->vs_deckdesc = $request->data['property'][0][1]['vs_deckdesc'][1];
-					      $valuecheck->vs_patiosqft = $request->data['property'][0][1]['vs_patiosqft'][1];
-					      $valuecheck->vs_patiodesc = $request->data['property'][0][1]['vs_patiodesc'][1];
-					      $valuecheck->vs_waterservice = $request->data['property'][0][1]['vs_waterservice'][1];
-					      $valuecheck->vs_sewerservice = $request->data['property'][0][1]['vs_sewerservice'][1];
-					      $valuecheck->vs_electricservice = $request->data['property'][0][1]['vs_electricservice'][1];
-					      $add_valuecheck = $valuecheck->save();
+				      	$valuecheck = new PropertyValuecheck;
+				      	$valuecheck->uuid = "vlck".$time.rand(10,99)*rand(10,99);
+				      	$valuecheck->property_id = $uuid;
+				      	$valuecheck->vs_streetnumber = $request->data['property'][0][1]['vs_streetnumber'][1];
+				      	$valuecheck->vs_streetdirection = $request->data['property'][0][1]['vs_streetdirection'][1];
+				      	$valuecheck->vs_streetname = $request->data['property'][0][1]['vs_streetname'][1];
+				      	$valuecheck->vs_streettype = $request->data['property'][0][1]['vs_streettype'][1];
+				      	$valuecheck->vs_unitnumber = $request->data['property'][0][1]['vs_unitnumber'][1];
+				      	$valuecheck->vs_city = $request->data['property'][0][1]['vs_city'][1];
+				      	$valuecheck->vs_state = $request->data['property'][0][1]['vs_state'][1];
+				      	$valuecheck->vs_zipcode = $request->data['property'][0][1]['vs_zipcode'][1];
+				      	$valuecheck->vs_county = $request->data['property'][0][1]['vs_county'][1];
+				      	$valuecheck->vs_countyname = $request->data['property'][0][1]['vs_countyname'][1];
+				      	$valuecheck->vs_country = $request->data['property'][0][1]['vs_country'][1];
+				      	$valuecheck->vs_apn = $request->data['property'][0][1]['vs_apn'][1];
+				      	$valuecheck->vs_assessyr = $request->data['property'][0][1]['vs_assessyr'][1];
+				      	$valuecheck->vs_assesmkt = $request->data['property'][0][1]['vs_assesmkt'][1];
+				      	$valuecheck->vs_landmktval = $request->data['property'][0][1]['vs_landmktval'][1];
+				      	$valuecheck->vs_taxyr = $request->data['property'][0][1]['vs_taxyr'][1];
+				      	$valuecheck->vs_taxdue = $request->data['property'][0][1]['vs_taxdue'][1];
+				      	$valuecheck->vs_esttaxes = $request->data['property'][0][1]['vs_esttaxes'][1];
+				      	$valuecheck->vs_ownername = $request->data['property'][0][1]['vs_ownername'][1];
+				      	$valuecheck->vs_ownername2 = $request->data['property'][0][1]['vs_ownername2'][1];
+				      	$valuecheck->vs_formallegal = $request->data['property'][0][1]['vs_formallegal'][1];
+				      	$valuecheck->vs_saledate = $request->data['property'][0][1]['vs_saledate'][1];
+				      	$valuecheck->vs_docdate = $request->data['property'][0][1]['vs_docdate'][1];
+				      	$valuecheck->vs_saleamt = $request->data['property'][0][1]['vs_saleamt'][1];
+				      	$valuecheck->vs_pricesqft = $request->data['property'][0][1]['vs_pricesqft'][1];
+				      	$valuecheck->vs_longitude = $request->data['property'][0][1]['vs_longitude'][1];
+				      	$valuecheck->vs_latitude = $request->data['property'][0][1]['vs_latitude'][1];
+				      	$valuecheck->vs_proptype = $request->data['property'][0][1]['vs_proptype'][1];
+				      	$valuecheck->vs_stories = $request->data['property'][0][1]['vs_stories'][1];
+				      	$valuecheck->vs_housestyle = $request->data['property'][0][1]['vs_housestyle'][1];
+				      	$valuecheck->vs_squarefeet = $request->data['property'][0][1]['vs_squarefeet'][1];
+				      	$valuecheck->vs_bsmtsf = $request->data['property'][0][1]['vs_bsmtsf'][1];
+				      	$valuecheck->vs_finbsmtsf = $request->data['property'][0][1]['vs_finbsmtsf'][1];
+				      	$valuecheck->vs_bsmttype = $request->data['property'][0][1]['vs_bsmttype'][1];
+				      	$valuecheck->vs_bedrooms = $request->data['property'][0][1]['vs_bedrooms'][1];
+				      	$valuecheck->vs_bathrooms = $request->data['property'][0][1]['vs_bathrooms'][1];
+				      	$valuecheck->vs_garagetype = $request->data['property'][0][1]['vs_garagetype'][1];
+				      	$valuecheck->vs_garagesqft = $request->data['property'][0][1]['vs_garagesqft'][1];
+				      	$valuecheck->vs_carspaces = $request->data['property'][0][1]['vs_carspaces'][1];
+				      	$valuecheck->vs_fireplaces = $request->data['property'][0][1]['vs_fireplaces'][1];
+				      	$valuecheck->vs_heat = $request->data['property'][0][1]['vs_heat'][1];
+				      	$valuecheck->vs_cool = $request->data['property'][0][1]['vs_cool'][1];
+				      	$valuecheck->vs_extwall = $request->data['property'][0][1]['vs_extwall'][1];
+				      	$valuecheck->vs_roofcover = $request->data['property'][0][1]['vs_roofcover'][1];
+				      	$valuecheck->vs_roofstyle = $request->data['property'][0][1]['vs_roofstyle'][1];
+				      	$valuecheck->vs_yearblt = $request->data['property'][0][1]['vs_yearblt'][1];
+				      	$valuecheck->vs_lotsizec = $request->data['property'][0][1]['vs_lotsizec'][1];
+				      	$valuecheck->vs_lotsize = $request->data['property'][0][1]['vs_lotsize'][1];
+				      	$valuecheck->vs_acre = $request->data['property'][0][1]['vs_acre'][1];
+				      	$valuecheck->vs_pool = $request->data['property'][0][1]['vs_pool'][1];
+				      	$valuecheck->vs_spa = $request->data['property'][0][1]['vs_spa'][1];
+				      	$valuecheck->vs_foundation = $request->data['property'][0][1]['vs_foundation'][1];
+				      	$valuecheck->vs_golf = $request->data['property'][0][1]['vs_golf'][1];
+				      	$valuecheck->vs_lotwidth = $request->data['property'][0][1]['vs_lotwidth'][1];
+				      	$valuecheck->vs_lotlength = $request->data['property'][0][1]['vs_lotlength'][1];
+				      	$valuecheck->vs_waterfront = $request->data['property'][0][1]['vs_waterfront'][1];
+				      	$valuecheck->vs_extwallcover = $request->data['property'][0][1]['vs_extwallcover'][1];
+				      	$valuecheck->vs_intwall = $request->data['property'][0][1]['vs_intwall'][1];
+				      	$valuecheck->vs_decksqft = $request->data['property'][0][1]['vs_decksqft'][1];
+				      	$valuecheck->vs_deckdesc = $request->data['property'][0][1]['vs_deckdesc'][1];
+				      	$valuecheck->vs_patiosqft = $request->data['property'][0][1]['vs_patiosqft'][1];
+				      	$valuecheck->vs_patiodesc = $request->data['property'][0][1]['vs_patiodesc'][1];
+				      	$valuecheck->vs_waterservice = $request->data['property'][0][1]['vs_waterservice'][1];
+				      	$valuecheck->vs_sewerservice = $request->data['property'][0][1]['vs_sewerservice'][1];
+				      	$valuecheck->vs_electricservice = $request->data['property'][0][1]['vs_electricservice'][1];
+				      	$add_valuecheck = $valuecheck->save();
 
-					      $zillow = new PropertyZillow;
-					      $zillow->uuid = "zilw".$time.rand(10,99)*rand(10,99);
-					      $zillow->property_id = $uuid;
-					      $zillow->z_zpid = $request->data['property'][1][1]['z_zpid'][1];
-					      $zillow->z_sale_amount = $request->data['property'][1][1]['z_sale_amount'][1];
-					      $zillow->z_sale_lowrange = $request->data['property'][1][1]['z_sale_lowrange'][1];
-					      $zillow->z_sale_highrange = $request->data['property'][1][1]['z_sale_highrange'][1];
-					      $zillow->z_sale_lastupdated = $request->data['property'][1][1]['z_sale_lastupdated'][1];
-					      $zillow->z_rental_amount = $request->data['property'][1][1]['z_rental_amount'][1];
-					      $zillow->z_rental_lowrange = $request->data['property'][1][1]['z_rental_lowrange'][1];
-					      $zillow->z_rental_highrange = $request->data['property'][1][1]['z_rental_highrange'][1];
-					      $zillow->z_rental_lastupdated = $request->data['property'][1][1]['z_rental_lastupdated'][1];
-					      $zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
-					      $add_zillow = $zillow->save();
+				      	$zillow = new PropertyZillow;
+				      	$zillow->uuid = "zilw".$time.rand(10,99)*rand(10,99);
+				      	$zillow->property_id = $uuid;
+				      	$zillow->z_zpid = $request->data['property'][1][1]['z_zpid'][1];
+				      	$zillow->z_sale_amount = $request->data['property'][1][1]['z_sale_amount'][1];
+				      	$zillow->z_sale_lowrange = $request->data['property'][1][1]['z_sale_lowrange'][1];
+				      	$zillow->z_sale_highrange = $request->data['property'][1][1]['z_sale_highrange'][1];
+				      	$zillow->z_sale_lastupdated = $request->data['property'][1][1]['z_sale_lastupdated'][1];
+				      	$zillow->z_rental_amount = $request->data['property'][1][1]['z_rental_amount'][1];
+				      	$zillow->z_rental_lowrange = $request->data['property'][1][1]['z_rental_lowrange'][1];
+				      	$zillow->z_rental_highrange = $request->data['property'][1][1]['z_rental_highrange'][1];
+				      	$zillow->z_rental_lastupdated = $request->data['property'][1][1]['z_rental_lastupdated'][1];
+				      	$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
+				      	$add_zillow = $zillow->save();
 
-					      $homendo = new PropertyHomendo;
-					      $homendo->uuid = "hmdo".$time.rand(10,99)*rand(10,99);
-					      $homendo->property_id = $uuid;
-					      $homendo->hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
-					      $homendo->hmdo_lastupdated = $request->data['property'][2][1]['hmdo_lastupdated'][1];
-					      if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
-					      		$homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0];
-					      }else{
-					      		$homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
-					      }
-					      if (is_array($request->data['property'][2][1]['hmdo_mls_originator'][1]) == true) {
-					      		$homendo->hmdo_mls_originator = $request->data['property'][2][1]['hmdo_mls_originator'][1][0];
-					      }else{
-					      		$homendo->hmdo_mls_originator = $request->data['property'][2][1]['hmdo_mls_originator'][1];
-					      }
-					      if (is_array($request->data['property'][2][1]['hmdo_mls_proptype'][1]) == true) {
-					      		$homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1][0];
-					      }else{
-					      		$homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1];
-					      }
-					      $homendo->hmdo_mls_propname = $request->data['property'][2][1]['hmdo_mls_propname'][1];
-					      if (is_array($request->data['property'][2][1]['hmdo_mls_status'][1]) == true) {
-					      		$homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1][0];
-					      }else{
-					      		$homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1];
-					      }
-					      $homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
-					      if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
-					      		$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0];
-					      }else{
-					      		$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
-					      }
-					      if (is_array($request->data['property'][2][1]['hmdo_mls_thumbnail'][1]) == true) {
-					      		$homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1][0];
-					      }else{
-					      		$homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1];
-					      }
-					      $add_homendo = $homendo->save();
+				      	$homendo = new PropertyHomendo;
+				      	$homendo->uuid = "hmdo".$time.rand(10,99)*rand(10,99);
+				      	$homendo->property_id = $uuid;
+				      	$homendo->hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
+				      	$homendo->hmdo_lastupdated = $request->data['property'][2][1]['hmdo_lastupdated'][1];
+				      	if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
+				      		$homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0];
+				      	}else{
+				      		$homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
+				      	}
+				      	if (is_array($request->data['property'][2][1]['hmdo_mls_originator'][1]) == true) {
+				      		$homendo->hmdo_mls_originator = $request->data['property'][2][1]['hmdo_mls_originator'][1][0];
+				      	}else{
+				      		$homendo->hmdo_mls_originator = $request->data['property'][2][1]['hmdo_mls_originator'][1];
+				      	}
+				      	if (is_array($request->data['property'][2][1]['hmdo_mls_proptype'][1]) == true) {
+				      		$homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1][0];
+				      	}else{
+				      		$homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1];
+				      	}
+				      	$homendo->hmdo_mls_propname = $request->data['property'][2][1]['hmdo_mls_propname'][1];
+				      	if (is_array($request->data['property'][2][1]['hmdo_mls_status'][1]) == true) {
+				      		$homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1][0];
+				      	}else{
+				      		$homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1];
+				      	}
+				      	$homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
+				      	if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
+				      		$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0];
+				      	}else{
+				      		$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
+				      	}
+				      	if (is_array($request->data['property'][2][1]['hmdo_mls_thumbnail'][1]) == true) {
+				      		$homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1][0];
+				      	}else{
+				      		$homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1];
+				      	}
+				      	$add_homendo = $homendo->save();
 
-					      $owner = new PropertyOwners;
-					      $owner->property_id = $property->uuid;
-					      $owner->user_id = $request->user_id;
-					      $owner->type = 'main_owner';
-					      $property_owner = $owner->save();
+				      	$owner = new PropertyOwners;
+				      	$owner->property_id = $property->uuid;
+				      	$owner->user_id = $request->user_id;
+				      	$owner->type = 'main_owner';
+				      	$property_owner = $owner->save();
 					      
-					      if ($property_owner) {
-					      		return $this->sendResponse("Property added successfully!");
-					      }else{
-					      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
-					      }
-	      			}else{
-			      		return $this->sendResponse("Property already exist!", 200, false);
+				      	if ($property_owner) {
+				      		return $this->sendResponse("Property added successfully!");
+				      	}else{
+				      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+				      	}
 			      	}	
 			    }else{
-			      	return $this->sendResponse("Property already exist!", 200, false);
-			    }
-	      }else{
-	      		return $this->sendResponse("Sorry this property can not be added to your account yet.", 200, false);
-	      }
+			    	$time = strtotime(Carbon::now());
+				    $uuid = "prty".$time.rand(10,99)*rand(10,99);
+			      	$property = new Properties;
+			      	$property->uuid = $uuid;
+			      	$property->mls_id = $mls_id;
+			      	$property->mls_name = $mls_name;
+			      	$property->data = json_encode($request->data);
+			      	$property->verified = 'NO';
+			      	$property->last_update = date('Y-m-d H:i:s');
+			      	$add_property = $property->save();
+
+			      	$valuecheck = new PropertyValuecheck;
+			      	$valuecheck->uuid = "vlck".$time.rand(10,99)*rand(10,99);
+			      	$valuecheck->property_id = $uuid;
+			      	$valuecheck->vs_streetnumber = $request->data['property'][0][1]['vs_streetnumber'][1];
+			      	$valuecheck->vs_streetdirection = $request->data['property'][0][1]['vs_streetdirection'][1];
+			      	$valuecheck->vs_streetname = $request->data['property'][0][1]['vs_streetname'][1];
+			      	$valuecheck->vs_streettype = $request->data['property'][0][1]['vs_streettype'][1];
+			      	$valuecheck->vs_unitnumber = $request->data['property'][0][1]['vs_unitnumber'][1];
+			      	$valuecheck->vs_city = $request->data['property'][0][1]['vs_city'][1];
+			      	$valuecheck->vs_state = $request->data['property'][0][1]['vs_state'][1];
+			      	$valuecheck->vs_zipcode = $request->data['property'][0][1]['vs_zipcode'][1];
+			      	$valuecheck->vs_county = $request->data['property'][0][1]['vs_county'][1];
+			      	$valuecheck->vs_countyname = $request->data['property'][0][1]['vs_countyname'][1];
+			      	$valuecheck->vs_country = $request->data['property'][0][1]['vs_country'][1];
+			      	$valuecheck->vs_apn = $request->data['property'][0][1]['vs_apn'][1];
+			      	$valuecheck->vs_assessyr = $request->data['property'][0][1]['vs_assessyr'][1];
+			      	$valuecheck->vs_assesmkt = $request->data['property'][0][1]['vs_assesmkt'][1];
+			      	$valuecheck->vs_landmktval = $request->data['property'][0][1]['vs_landmktval'][1];
+			      	$valuecheck->vs_taxyr = $request->data['property'][0][1]['vs_taxyr'][1];
+			      	$valuecheck->vs_taxdue = $request->data['property'][0][1]['vs_taxdue'][1];
+			      	$valuecheck->vs_esttaxes = $request->data['property'][0][1]['vs_esttaxes'][1];
+			      	$valuecheck->vs_ownername = $request->data['property'][0][1]['vs_ownername'][1];
+			      	$valuecheck->vs_ownername2 = $request->data['property'][0][1]['vs_ownername2'][1];
+			      	$valuecheck->vs_formallegal = $request->data['property'][0][1]['vs_formallegal'][1];
+			      	$valuecheck->vs_saledate = $request->data['property'][0][1]['vs_saledate'][1];
+			      	$valuecheck->vs_docdate = $request->data['property'][0][1]['vs_docdate'][1];
+			      	$valuecheck->vs_saleamt = $request->data['property'][0][1]['vs_saleamt'][1];
+			      	$valuecheck->vs_pricesqft = $request->data['property'][0][1]['vs_pricesqft'][1];
+			      	$valuecheck->vs_longitude = $request->data['property'][0][1]['vs_longitude'][1];
+			      	$valuecheck->vs_latitude = $request->data['property'][0][1]['vs_latitude'][1];
+			      	$valuecheck->vs_proptype = $request->data['property'][0][1]['vs_proptype'][1];
+			      	$valuecheck->vs_stories = $request->data['property'][0][1]['vs_stories'][1];
+			      	$valuecheck->vs_housestyle = $request->data['property'][0][1]['vs_housestyle'][1];
+			      	$valuecheck->vs_squarefeet = $request->data['property'][0][1]['vs_squarefeet'][1];
+			      	$valuecheck->vs_bsmtsf = $request->data['property'][0][1]['vs_bsmtsf'][1];
+			      	$valuecheck->vs_finbsmtsf = $request->data['property'][0][1]['vs_finbsmtsf'][1];
+			      	$valuecheck->vs_bsmttype = $request->data['property'][0][1]['vs_bsmttype'][1];
+			      	$valuecheck->vs_bedrooms = $request->data['property'][0][1]['vs_bedrooms'][1];
+			      	$valuecheck->vs_bathrooms = $request->data['property'][0][1]['vs_bathrooms'][1];
+			      	$valuecheck->vs_garagetype = $request->data['property'][0][1]['vs_garagetype'][1];
+			      	$valuecheck->vs_garagesqft = $request->data['property'][0][1]['vs_garagesqft'][1];
+			      	$valuecheck->vs_carspaces = $request->data['property'][0][1]['vs_carspaces'][1];
+			      	$valuecheck->vs_fireplaces = $request->data['property'][0][1]['vs_fireplaces'][1];
+			      	$valuecheck->vs_heat = $request->data['property'][0][1]['vs_heat'][1];
+			      	$valuecheck->vs_cool = $request->data['property'][0][1]['vs_cool'][1];
+			      	$valuecheck->vs_extwall = $request->data['property'][0][1]['vs_extwall'][1];
+			      	$valuecheck->vs_roofcover = $request->data['property'][0][1]['vs_roofcover'][1];
+			      	$valuecheck->vs_roofstyle = $request->data['property'][0][1]['vs_roofstyle'][1];
+			      	$valuecheck->vs_yearblt = $request->data['property'][0][1]['vs_yearblt'][1];
+			      	$valuecheck->vs_lotsizec = $request->data['property'][0][1]['vs_lotsizec'][1];
+			      	$valuecheck->vs_lotsize = $request->data['property'][0][1]['vs_lotsize'][1];
+			      	$valuecheck->vs_acre = $request->data['property'][0][1]['vs_acre'][1];
+			      	$valuecheck->vs_pool = $request->data['property'][0][1]['vs_pool'][1];
+			      	$valuecheck->vs_spa = $request->data['property'][0][1]['vs_spa'][1];
+			      	$valuecheck->vs_foundation = $request->data['property'][0][1]['vs_foundation'][1];
+			      	$valuecheck->vs_golf = $request->data['property'][0][1]['vs_golf'][1];
+			      	$valuecheck->vs_lotwidth = $request->data['property'][0][1]['vs_lotwidth'][1];
+			      	$valuecheck->vs_lotlength = $request->data['property'][0][1]['vs_lotlength'][1];
+			      	$valuecheck->vs_waterfront = $request->data['property'][0][1]['vs_waterfront'][1];
+			      	$valuecheck->vs_extwallcover = $request->data['property'][0][1]['vs_extwallcover'][1];
+			      	$valuecheck->vs_intwall = $request->data['property'][0][1]['vs_intwall'][1];
+			      	$valuecheck->vs_decksqft = $request->data['property'][0][1]['vs_decksqft'][1];
+			      	$valuecheck->vs_deckdesc = $request->data['property'][0][1]['vs_deckdesc'][1];
+			      	$valuecheck->vs_patiosqft = $request->data['property'][0][1]['vs_patiosqft'][1];
+			      	$valuecheck->vs_patiodesc = $request->data['property'][0][1]['vs_patiodesc'][1];
+			      	$valuecheck->vs_waterservice = $request->data['property'][0][1]['vs_waterservice'][1];
+			      	$valuecheck->vs_sewerservice = $request->data['property'][0][1]['vs_sewerservice'][1];
+			      	$valuecheck->vs_electricservice = $request->data['property'][0][1]['vs_electricservice'][1];
+			      	$add_valuecheck = $valuecheck->save();
+
+			      	$zillow = new PropertyZillow;
+			      	$zillow->uuid = "zilw".$time.rand(10,99)*rand(10,99);
+			      	$zillow->property_id = $uuid;
+			      	$zillow->z_zpid = $request->data['property'][1][1]['z_zpid'][1];
+			      	$zillow->z_sale_amount = $request->data['property'][1][1]['z_sale_amount'][1];
+			      	$zillow->z_sale_lowrange = $request->data['property'][1][1]['z_sale_lowrange'][1];
+			      	$zillow->z_sale_highrange = $request->data['property'][1][1]['z_sale_highrange'][1];
+			      	$zillow->z_sale_lastupdated = $request->data['property'][1][1]['z_sale_lastupdated'][1];
+			      	$zillow->z_rental_amount = $request->data['property'][1][1]['z_rental_amount'][1];
+			      	$zillow->z_rental_lowrange = $request->data['property'][1][1]['z_rental_lowrange'][1];
+			      	$zillow->z_rental_highrange = $request->data['property'][1][1]['z_rental_highrange'][1];
+			      	$zillow->z_rental_lastupdated = $request->data['property'][1][1]['z_rental_lastupdated'][1];
+			      	$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
+			      	$add_zillow = $zillow->save();
+
+			      	$homendo = new PropertyHomendo;
+			      	$homendo->uuid = "hmdo".$time.rand(10,99)*rand(10,99);
+			      	$homendo->property_id = $uuid;
+			      	$homendo->hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
+			      	$homendo->hmdo_lastupdated = $request->data['property'][2][1]['hmdo_lastupdated'][1];
+			      	if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
+			      		$homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0];
+			      	}else{
+			      		$homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
+			      	}
+			      	if (is_array($request->data['property'][2][1]['hmdo_mls_originator'][1]) == true) {
+			      		$homendo->hmdo_mls_originator = $request->data['property'][2][1]['hmdo_mls_originator'][1][0];
+			      	}else{
+			      		$homendo->hmdo_mls_originator = $request->data['property'][2][1]['hmdo_mls_originator'][1];
+			      	}
+			      	if (is_array($request->data['property'][2][1]['hmdo_mls_proptype'][1]) == true) {
+			      		$homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1][0];
+			      	}else{
+			      		$homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1];
+			      	}
+			      	$homendo->hmdo_mls_propname = $request->data['property'][2][1]['hmdo_mls_propname'][1];
+			      	if (is_array($request->data['property'][2][1]['hmdo_mls_status'][1]) == true) {
+			      		$homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1][0];
+			      	}else{
+			      		$homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1];
+			      	}
+			      	$homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
+			      	if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
+			      		$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0];
+			      	}else{
+			      		$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
+			      	}
+			      	if (is_array($request->data['property'][2][1]['hmdo_mls_thumbnail'][1]) == true) {
+			      		$homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1][0];
+			      	}else{
+			      		$homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1];
+			      	}
+			      	$add_homendo = $homendo->save();
+
+			      	$owner = new PropertyOwners;
+			      	$owner->property_id = $property->uuid;
+			      	$owner->user_id = $request->user_id;
+			      	$owner->type = 'main_owner';
+			      	$property_owner = $owner->save();
 			      
+			      	if ($property_owner) {
+			      		return $this->sendResponse("Property added successfully!");
+			      	}else{
+			      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+			      	}
+			    }
+	      	}else{
+	      		return $this->sendResponse("Sorry this property can not be added to your account yet.", 200, false);
+	      	}   
 		}
 
 		public function updateProperty(Request $request){
