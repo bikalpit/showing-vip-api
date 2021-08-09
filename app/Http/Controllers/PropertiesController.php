@@ -158,6 +158,9 @@ class PropertiesController extends Controller
 								      	$homendo->property_id = $uuid;
 								      	$homendo->hmdo_listed = $hmdo_listed;
 								      	$homendo->hmdo_lastupdated = $request->data['property'][2][1]['hmdo_lastupdated'][1];
+								      	$homendo->hmdo_mls_agent_email = $request->data['property'][2][1]['hmdo_mls_agent_email'][1];
+								      	$homendo->hmdo_mls_agentid = $request->data['property'][2][1]['hmdo_mls_agentid'][1];
+								      	$homendo->hmdo_mls_description = $request->data['property'][2][1]['hmdo_mls_description'][1];
 								      	if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
 								      			$homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0];
 								      	}else{
@@ -308,6 +311,9 @@ class PropertiesController extends Controller
 						      	$homendo->property_id = $uuid;
 						      	$homendo->hmdo_listed = $hmdo_listed;
 						      	$homendo->hmdo_lastupdated = $request->data['property'][2][1]['hmdo_lastupdated'][1];
+						      	$homendo->hmdo_mls_agent_email = $request->data['property'][2][1]['hmdo_mls_agent_email'][1];
+						      	$homendo->hmdo_mls_agentid = $request->data['property'][2][1]['hmdo_mls_agentid'][1];
+						      	$homendo->hmdo_mls_description = $request->data['property'][2][1]['hmdo_mls_description'][1];
 						      	if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
 						      			$homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0];
 						      	}else{
@@ -558,7 +564,7 @@ class PropertiesController extends Controller
 								$property_agent->seller_id = $request->user_id;
 								$property_agent->agent_type = 'seller';
 								$result = $property_agent->save();
-						
+
 			          if ($result) {
 			      				return $this->sendResponse("Verification mail sent successfully to agent!");
 			      		}else{

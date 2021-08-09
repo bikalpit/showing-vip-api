@@ -12,7 +12,7 @@ class PropertyHomendo extends Model
      */
     protected $table = 'property_homendo';
 
-    protected $fillable = ['uuid','property_id','hmdo_listed','hmdo_lastupdated','hmdo_mls_id','hmdo_mls_originator','hmdo_mls_proptype','hmdo_mls_propname','hmdo_mls_status','hmdo_mls_price','hmdo_mls_url','hmdo_mls_thumbnail'];
+    protected $fillable = ['uuid','property_id','hmdo_listed','hmdo_mls_agent_email','hmdo_mls_agentid','hmdo_mls_description','hmdo_lastupdated','hmdo_mls_id','hmdo_mls_originator','hmdo_mls_proptype','hmdo_mls_propname','hmdo_mls_status','hmdo_mls_price','hmdo_mls_url','hmdo_mls_thumbnail'];
 
     use SoftDeletes;
 
