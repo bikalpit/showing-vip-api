@@ -383,6 +383,10 @@ class AgentController extends Controller
             'client_id' => 'required'
         ]);
 
+        $vs_listed = $request->data['property'][0][1]['vs_listed'][1];
+        $z_listed = $request->data['property'][1][1]['z_listed'][1];
+        $hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
+
         $mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
         $mls_name = $request->data['property'][2][1]['hmdo_mls_originator'][1];
 
@@ -403,6 +407,7 @@ class AgentController extends Controller
             $valuecheck = new PropertyValuecheck;
             $valuecheck->uuid = "vlck".$time.rand(10,99)*rand(10,99);
             $valuecheck->property_id = $uuid;
+            $valuecheck->vs_listed = $vs_listed;
             $valuecheck->vs_streetnumber = $request->data['property'][0][1]['vs_streetnumber'][1];
             $valuecheck->vs_streetdirection = $request->data['property'][0][1]['vs_streetdirection'][1];
             $valuecheck->vs_streetname = $request->data['property'][0][1]['vs_streetname'][1];
@@ -473,6 +478,7 @@ class AgentController extends Controller
             $zillow = new PropertyZillow;
             $zillow->uuid = "zilw".$time.rand(10,99)*rand(10,99);
             $zillow->property_id = $uuid;
+            $zillow->z_listed = $z_listed;
             $zillow->z_zpid = $request->data['property'][1][1]['z_zpid'][1];
             $zillow->z_sale_amount = $request->data['property'][1][1]['z_sale_amount'][1];
             $zillow->z_sale_lowrange = $request->data['property'][1][1]['z_sale_lowrange'][1];
@@ -488,7 +494,7 @@ class AgentController extends Controller
             $homendo = new PropertyHomendo;
             $homendo->uuid = "hmdo".$time.rand(10,99)*rand(10,99);
             $homendo->property_id = $uuid;
-            $homendo->hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
+            $homendo->hmdo_listed = $hmdo_listed;
             $homendo->hmdo_lastupdated = $request->data['property'][2][1]['hmdo_lastupdated'][1];
             $homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
             $homendo->hmdo_mls_originator = $request->data['property'][2][1]['hmdo_mls_originator'][1];
