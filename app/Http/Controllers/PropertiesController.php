@@ -417,9 +417,18 @@ class PropertiesController extends Controller
 		      			$all_selling_properties[] = $property;*/
 		      			$selling_properties = PropertyOwners::with('User')->where('property_id', $property->uuid)->get();
 		      			$agent_property = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_type'=>'seller'])->first();
-	      				$agent = Users::where('uuid', $agent_property->agent_id)->first();
+		      			if (!empty($agent_property)) {
+		      					if ($agent_property->agent_id != null || $agent_property->agent_id != '') {
+				      					$agent = Users::where('uuid', $agent_property->agent_id)->first();
+				      					$property['agent'] = $agent;
+				      			}else{
+				      					$property['agent'] = null;
+				      			}
+		      			}else{
+		      					$property['agent'] = null;
+		      			}
+				      			
 		      			$property['owners'] = $selling_properties;
-		      			$property['agent'] = $agent;
 		      			$all_selling_properties[] = $property;
 	      		}
 	      }
