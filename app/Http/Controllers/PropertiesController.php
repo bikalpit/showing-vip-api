@@ -552,6 +552,13 @@ class PropertiesController extends Controller
 			          $property_varification->send_time = date('Y-m-d h:i:s');
 			          $result = $property_varification->save();
 
+			          $property_agent = new PropertyAgents;
+								$property_agent->property_id = $request->property_id;
+								$property_agent->agent_id = $request->agent_id;
+								$property_agent->seller_id = $request->user_id;
+								$property_agent->agent_type = 'seller';
+								$result = $property_agent->save();
+						
 			          if ($result) {
 			      				return $this->sendResponse("Verification mail sent successfully to agent!");
 			      		}else{
@@ -860,13 +867,6 @@ class PropertiesController extends Controller
 			      Properties::where('uuid', $request->property)->update(['verified' => 'YES']);
 
 			      PropertyVerification::where('property_id', $request->token)->delete();
-
-			      $property_agent = new PropertyAgents;
-						$property_agent->property_id = $check->property_id;
-						$property_agent->agent_id = $check->agent_id;
-						$property_agent->seller_id = $check->user_id;
-						$property_agent->agent_type = 'seller';
-						$result = $property_agent->save();
 				}else{
 						$status = 'expired';
 				}
