@@ -425,6 +425,8 @@ class PropertiesController extends Controller
 		      					$property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
 		      			}
 		      			$all_selling_properties[] = $property;*/
+		      			$showing = PropertyShowingSetup::with(['showingAvailability','showingSurvey'])->where('property_id', $property->uuid)->first();
+
 		      			$selling_properties = PropertyOwners::with('User')->where('property_id', $property->uuid)->get();
 		      			$agent_property = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_type'=>'seller'])->first();
 		      			if (!empty($agent_property)) {
@@ -439,6 +441,7 @@ class PropertiesController extends Controller
 		      			}
 				      			
 		      			$property['owners'] = $selling_properties;
+		      			$property['showing'] = $showing;
 		      			$all_selling_properties[] = $property;
 	      		}
 	      }
@@ -454,8 +457,11 @@ class PropertiesController extends Controller
 		      					$buying_property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
 		      			}
 		      			$all_buying_properties[] = $buying_property;*/
+		      			$showing = PropertyShowingSetup::with(['showingAvailability','showingSurvey'])->where('property_id', $buying_property->uuid)->first();
+
 		      			$all_properties = PropertyOwners::with('User')->where('property_id', $buying_property->uuid)->get();
 		      			$buying_property['owners'] = $all_properties;
+		      			$property['showing'] = $showing;
 		      			$all_buying_properties[] = $buying_property;
 	      		}
 	      }
