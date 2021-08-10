@@ -32,6 +32,8 @@ class PropertiesController extends Controller
 		        'data' => 'required'
 		    ]);
 
+				$user = Users::where('uuid', $request->user_id)->first();
+
 				$vs_listed = $request->data['property'][0][1]['vs_listed'][1];
 				$z_listed = $request->data['property'][1][1]['z_listed'][1];
 				$hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
@@ -195,10 +197,22 @@ class PropertiesController extends Controller
 								      	}
 								      	$add_homendo = $homendo->save();
 
+								      	$user_name = $user->first_name.' '.$user->last_name;
+								      	if (strpos($user_name, $valuecheck->vs_ownername) == true) {
+								      			if (strpos($user_name, $valuecheck->vs_ownername2) == true) {
+								      					$verify_status = 'YES';
+								      			}else{
+								      					$verify_status = 'NO';
+								      			}
+								      	}else{
+						      					$verify_status = 'NO';
+						      			}
+
 								      	$owner = new PropertyOwners;
 								      	$owner->property_id = $property->uuid;
 								      	$owner->user_id = $request->user_id;
 								      	$owner->type = 'sub_owner';
+								      	$owner->verify_status = $verify_status;
 								      	$property_owner = $owner->save();
 									      
 								      	if ($property_owner) {
@@ -347,10 +361,22 @@ class PropertiesController extends Controller
 								      	}
 								      	$add_homendo = $homendo->save();
 
+								      	$user_name = $user->first_name.' '.$user->last_name;
+								      	if (strpos($user_name, $valuecheck->vs_ownername) == true) {
+								      			if (strpos($user_name, $valuecheck->vs_ownername2) == true) {
+								      					$verify_status = 'YES';
+								      			}else{
+								      					$verify_status = 'NO';
+								      			}
+								      	}else{
+						      					$verify_status = 'NO';
+						      			}
+
 								      	$owner = new PropertyOwners;
 								      	$owner->property_id = $property->uuid;
 								      	$owner->user_id = $request->user_id;
 								      	$owner->type = 'main_owner';
+								      	$owner->verify_status = $verify_status;
 								      	$property_owner = $owner->save();
 									      
 								      	if ($property_owner) {
@@ -500,10 +526,22 @@ class PropertiesController extends Controller
 						      	}
 						      	$add_homendo = $homendo->save();
 
+						      	$user_name = $user->first_name.' '.$user->last_name;
+						      	if (strpos($user_name, $valuecheck->vs_ownername) == true) {
+						      			if (strpos($user_name, $valuecheck->vs_ownername2) == true) {
+						      					$verify_status = 'YES';
+						      			}else{
+						      					$verify_status = 'NO';
+						      			}
+						      	}else{
+				      					$verify_status = 'NO';
+				      			}
+
 						      	$owner = new PropertyOwners;
 						      	$owner->property_id = $property->uuid;
 						      	$owner->user_id = $request->user_id;
 						      	$owner->type = 'main_owner';
+						      	$owner->verify_status = $verify_status;
 						      	$property_owner = $owner->save();
 						      
 						      	if ($property_owner) {
