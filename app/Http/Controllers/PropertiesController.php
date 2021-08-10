@@ -411,14 +411,25 @@ class PropertiesController extends Controller
 				$this->validate($request, [
 	      		'user_id' => 'required'
 	      ]);
-
+				
 				$all_selling_properties = [];
 				$all_buying_properties = [];
 
 	      $property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
 	      if (sizeof($property_ids) > 0) {
 	      		$properties = Properties::with('Verification', 'Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
+
 	      		foreach ($properties as $property) {
+								$last_verification = PropertyVerification::where('property_id', $property->uuid)->orderBy('send_time', 'desc')->first();
+								if(!empty($last_verification)){
+										$start_date = strtotime($last_verification->send_time);
+										$end_date = strtotime("+7 day", $start_date);
+										if(strtotime(date('Y-m-d H:i:s')) > strtotime(date('Y-m-d H:i:s', $end_date))){
+												$property->can_verification_send = true;
+										}else{
+												$property->can_verification_send = false;
+										}
+								}
 		      			/*$user_ids = PropertyOwners::where('property_id', $property->uuid)->pluck('user_id')->toArray();
 		      			if (sizeof($user_ids) < 0) {
 		      					$property['owners'] = null;
@@ -450,7 +461,18 @@ class PropertiesController extends Controller
 	      $buying_property_ids = PropertyBuyers::where('buyer_id', $request->user_id)->pluck('property_id')->toArray();
 	      if (sizeof($buying_property_ids) > 0) {
 	      		$buying_properties = Properties::with('Verification', 'Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $buying_property_ids)->get();
+
 	      		foreach ($buying_properties as $buying_property) {
+								$last_verification = PropertyVerification::where('property_id', $buying_property->uuid)->orderBy('send_time', 'desc')->first();
+								if(!empty($last_verification)){
+										$start_date = strtotime($last_verification->send_time);
+										$end_date = strtotime("+7 day", $start_date);
+										if(strtotime(date('Y-m-d H:i:s')) > strtotime(date('Y-m-d H:i:s', $end_date))){
+												$buying_property->can_verification_send = true;
+										}else{
+												$buying_property->can_verification_send = false;
+										}
+								}
 		      			/*$user_ids = PropertyOwners::where('property_id', $buying_property->uuid)->pluck('user_id')->toArray();
 		      			if (sizeof($user_ids) < 0) {
 		      					$buying_property['owners'] = null;
