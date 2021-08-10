@@ -15,6 +15,7 @@ use App\Models\PropertyValuecheck;
 use App\Models\PropertyHomendo;
 use App\Models\PropertyZillow;
 use App\Models\PropertyBuyers;
+use App\Models\PropertyBookingSchedule;
 use App\Mail\AssignAgent;
 use App\Mail\SignupMail;
 use App\Mail\AssignOwner;
@@ -459,7 +460,7 @@ class PropertiesController extends Controller
 		      			$all_buying_properties[] = $buying_property;*/
 
 		      			$showings = PropertyBookingSchedule::where('property_id', $buying_property->uuid)->get();
-		      			
+
 		      			$all_properties = PropertyOwners::with('User')->where('property_id', $buying_property->uuid)->get();
 		      			$buying_property['owners'] = $all_properties;
 		      			$buying_property['showings'] = $showings;
