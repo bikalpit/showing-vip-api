@@ -461,7 +461,7 @@ class PropertiesController extends Controller
 
 		      			$all_properties = PropertyOwners::with('User')->where('property_id', $buying_property->uuid)->get();
 		      			$buying_property['owners'] = $all_properties;
-		      			$property['showing'] = $showing;
+		      			$buying_property['showing'] = $showing;
 		      			$all_buying_properties[] = $buying_property;
 	      		}
 	      }
