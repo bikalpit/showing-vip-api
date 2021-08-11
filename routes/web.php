@@ -29,6 +29,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('user-logout',  ['middleware'=>'auth', 'uses'=>'UserAuthController@userLogout']);
 		$router->post('send-verify-email',  ['uses'=>'UserAuthController@sendVerifyEmail']);
 		$router->post('verify-email',  ['uses'=>'UserAuthController@verifyEmail']);
+		$router->post('check-token',  ['uses'=>'UserAuthController@checkToken']);
 		/* UserAuthController APIs End */
 
 		/* UsersController APIs Start */

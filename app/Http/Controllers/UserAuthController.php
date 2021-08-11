@@ -323,4 +323,27 @@ class UserAuthController extends Controller
         		return $this->sendResponse("Sorry, Invalid OTP!", 200, false);
         }
     }
+
+    public function checkToken(Request $request){
+    		$this->validate($request, [
+    				'type' => 'required|in:reset,create',
+    				'token' => 'required'
+	      ]);
+
+	      if ($request->type == 'reset') {
+	      		$checkToken = UserPasswordReset::where('token', $request->token)->first();
+	      		if (!empty($checkToken)) {
+	      				return $this->sendResponse('true');
+	      		}else{
+	      				return $this->sendResponse('false');
+	      		}
+	      }elseif ($request->type == 'create') {
+	      		$checkToken = Users::where(['email_verification_token' => $request->token])->first();
+	      		if (!empty($checkToken)) {
+	      				return $this->sendResponse('true');
+	      		}else{
+	      				return $this->sendResponse('false');
+	      		}
+	      }
+    }
 }
