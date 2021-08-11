@@ -59,8 +59,9 @@ class PropertiesController extends Controller
 				    						//return $this->sendResponse("Property already exist!", 200, false);
 
 								      	$user_name = $user->first_name.' '.$user->last_name;
-								      	if (strpos($user_name, $valuecheck->vs_ownername) == true) {
-								      			if (strpos($user_name, $valuecheck->vs_ownername2) == true) {
+								      	if (strpos($user_name, $request->data['property'][0][1]['vs_ownername'][1];
+) == true) {
+								      			if (strpos($user_name, $request->data['property'][0][1]['vs_ownername2'][1];) == true) {
 								      					$verify_status = 'YES';
 								      			}else{
 								      					$verify_status = 'NO';
