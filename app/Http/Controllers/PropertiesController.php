@@ -58,17 +58,24 @@ class PropertiesController extends Controller
 				    				if (!empty($mlsNameCheck)) {
 				    						//return $this->sendResponse("Property already exist!", 200, false);
 
-								      	$user_name = $user->first_name.' '.$user->last_name;
-								      	if (strpos($user_name, $request->data['property'][0][1]['vs_ownername'][1]
-) == true) {
-								      			if (strpos($user_name, $request->data['property'][0][1]['vs_ownername2'][1]) == true) {
-								      					$verify_status = 'YES';
-								      			}else{
-								      					$verify_status = 'NO';
+								      	$verify_status = 'NO';
+								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
+								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
+										      			$verify_status = 'YES';
+										      	}else{
+										      			$verify_status = 'NO';
 								      			}
-								      	}else{
-						      					$verify_status = 'NO';
-						      			}
+								      	}
+
+								      	if ($verify_status == 'NO') {
+								      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
+								      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
+										      					$verify_status = 'YES';
+										      			}else{
+										      					$verify_status = 'NO';
+										      			}
+										      	}
+								      	}
 
 								      	$owner = new PropertyOwners;
 								      	$owner->property_id = $mlsNameCheck->uuid;
@@ -223,16 +230,24 @@ class PropertiesController extends Controller
 								      	}
 								      	$add_homendo = $homendo->save();
 
-								      	$user_name = $user->first_name.' '.$user->last_name;
-								      	if (strpos($user_name, $valuecheck->vs_ownername) == true) {
-								      			if (strpos($user_name, $valuecheck->vs_ownername2) == true) {
-								      					$verify_status = 'YES';
-								      			}else{
-								      					$verify_status = 'NO';
+								      	$verify_status = 'NO';
+								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
+								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
+										      			$verify_status = 'YES';
+										      	}else{
+										      			$verify_status = 'NO';
 								      			}
-								      	}else{
-						      					$verify_status = 'NO';
-						      			}
+								      	}
+
+								      	if ($verify_status == 'NO') {
+								      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
+								      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
+										      					$verify_status = 'YES';
+										      			}else{
+										      					$verify_status = 'NO';
+										      			}
+										      	}
+								      	}
 
 								      	$owner = new PropertyOwners;
 								      	$owner->property_id = $property->uuid;
@@ -388,16 +403,24 @@ class PropertiesController extends Controller
 						      	}
 						      	$add_homendo = $homendo->save();
 
-						      	$user_name = $user->first_name.' '.$user->last_name;
-						      	if (strpos($user_name, $valuecheck->vs_ownername) == true) {
-						      			if (strpos($user_name, $valuecheck->vs_ownername2) == true) {
-						      					$verify_status = 'YES';
-						      			}else{
-						      					$verify_status = 'NO';
+						      	$verify_status = 'NO';
+						      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
+						      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
+								      			$verify_status = 'YES';
+								      	}else{
+								      			$verify_status = 'NO';
 						      			}
-						      	}else{
-				      					$verify_status = 'NO';
-				      			}
+						      	}
+
+						      	if ($verify_status == 'NO') {
+						      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
+						      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
+								      					$verify_status = 'YES';
+								      			}else{
+								      					$verify_status = 'NO';
+								      			}
+								      	}
+						      	}
 
 						      	$owner = new PropertyOwners;
 						      	$owner->property_id = $property->uuid;
