@@ -218,7 +218,7 @@ class UserAuthController extends Controller
 								        $phone,
 								        array(
 								            "from" => $twilio_setting->twilio_sender_number,
-								            "body" => 'your phone number OTP verification is '.$otp
+								            "body" => 'Your Showing.VIP verification code is: '.$otp
 								        )
 						        );
 						    } catch(\Exception $e) {
