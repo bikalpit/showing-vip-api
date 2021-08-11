@@ -228,6 +228,7 @@ class PropertiesController extends Controller
 								      	}else{
 								      			$homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1];
 								      	}
+								      	$homendo->hmdo_mls_officeid = $request->data['property'][2][1]['hmdo_mls_officeid'][1];
 								      	$add_homendo = $homendo->save();
 
 								      	$verify_status = 'NO';
@@ -401,6 +402,7 @@ class PropertiesController extends Controller
 						      	}else{
 						      			$homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1];
 						      	}
+						      	$homendo->hmdo_mls_officeid = $request->data['property'][2][1]['hmdo_mls_officeid'][1];
 						      	$add_homendo = $homendo->save();
 
 						      	$verify_status = 'NO';
