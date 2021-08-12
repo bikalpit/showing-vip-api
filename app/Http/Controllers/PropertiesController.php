@@ -506,13 +506,7 @@ class PropertiesController extends Controller
 												$property->can_verification_send = false;
 										}
 								}
-		      			/*$user_ids = PropertyOwners::where('property_id', $property->uuid)->pluck('user_id')->toArray();
-		      			if (sizeof($user_ids) < 0) {
-		      					$property['owners'] = null;
-		      			}else{
-		      					$property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
-		      			}
-		      			$all_selling_properties[] = $property;*/
+						
 		      			$showings = PropertyBookingSchedule::where('property_id', $property->uuid)->get();
 
 		      			$selling_properties = PropertyOwners::with('User')->where('property_id', $property->uuid)->get();
@@ -549,14 +543,7 @@ class PropertiesController extends Controller
 												$buying_property->can_verification_send = false;
 										}
 								}
-		      			/*$user_ids = PropertyOwners::where('property_id', $buying_property->uuid)->pluck('user_id')->toArray();
-		      			if (sizeof($user_ids) < 0) {
-		      					$buying_property['owners'] = null;
-		      			}else{
-		      					$buying_property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
-		      			}
-		      			$all_buying_properties[] = $buying_property;*/
-
+						
 		      			$showings = PropertyBookingSchedule::where('property_id', $buying_property->uuid)->get();
 
 		      			$all_properties = PropertyOwners::with('User')->where('property_id', $buying_property->uuid)->get();
@@ -572,12 +559,35 @@ class PropertiesController extends Controller
 
 		public function agentClientsProperties(Request $request){
 				$this->validate($request, [
-	      		'agent_id' => 'required|in:selling,buying',
-	      		'user_id' => 'required',
-	      		'type' => 'required'
-	      ]);
+						'agent_id' => 'required',
+						'user_id' => 'required',
+						'type' => 'required|in:selling,buying'
+				]);
+				
+				$all_selling_properties = [];
+				$all_buying_properties = [];
+			
+				if($request->type == 'selling'){
+						$property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
+				}else{
+						$property_ids = PropertyBuyers::where('buyer_id', $request->user_id)->pluck('property_id')->toArray();
+				}
+				
+				if (sizeof($property_ids) > 0) {
+						$agent_properties = PropertyAgents::with('property.Valuecheck','property.Zillow','property.Homendo')->whereIn('property_id', $property_ids)->get();
+						foreach ($agent_properties as $agent_property) {
+								if ($agent_property->agent_type == 'seller') {
+										$all_selling_properties[] = $agent_property;
+								}else{
+										$all_buying_properties[] = $agent_property;
+								}
+						}
 
-	      dd($request->all());
+						$response = array('selling_property'=>$all_selling_properties, 'buying_property'=>$all_buying_properties);
+			      return $this->sendResponse($response);
+				}else{
+						return $this->sendResponse("Sorry, Properties not found!", 200, false);
+				}	
 		}
 
 		public function assignAgent(Request $request){
