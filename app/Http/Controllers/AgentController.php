@@ -227,7 +227,7 @@ class AgentController extends Controller
             'url' => 'required'
         ]);
 
-        $check_user = Users::where(['email'=>$request->email, 'phone'=>$request->phone, 'sub_role'=>'SELLER'])->first();
+        $check_user = Users::where(['email'=>$request->email, 'sub_role'=>'SELLER'])->first();
         if (!empty($check_user)) {
             $owner = new PropertyOwners;
             $owner->property_id = $request->property_id;
