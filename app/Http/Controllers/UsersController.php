@@ -176,7 +176,7 @@ class UsersController extends Controller
         	$user->image = $request->agent_info['hmdo_agent_photo_url'][1];
         }
         $user->about = $request->agent_info['hmdo_agent_skills'][1];
-        $user->website_url = $request->agent_info['hmdo_office_website'][1];
+        $user->website_url = $request->agent_info['hmdo_agent_website'][1];
         $result = $user->save();
 
         if ($result) {
@@ -190,7 +190,7 @@ class UsersController extends Controller
         		$agent_info->hmdo_agent_email = $request->agent_info['hmdo_agent_email'][1];
         		$agent_info->hmdo_office_main_phone = $request->agent_info['hmdo_office_main_phone'][1];
         		$agent_info->hmdo_office_direct_phone = $request->agent_info['hmdo_office_direct_phone'][1];
-        		$agent_info->hmdo_office_mobile_phone = $request->agent_info['hmdo_office_mobile_phone'][1];
+        		$agent_info->hmdo_agent_mobile_phone = $request->agent_info['hmdo_agent_mobile_phone'][1];
         		$agent_info->hmdo_agent_skills = $request->agent_info['hmdo_agent_skills'][1];
         		$agent_info->hmdo_office_id = $request->agent_info['hmdo_office_id'][1];
         		$agent_info->hmdo_office_name = $request->agent_info['hmdo_office_name'][1];
@@ -201,6 +201,7 @@ class UsersController extends Controller
         		$agent_info->hmdo_office_state = $request->agent_info['hmdo_office_state'][1];
         		$agent_info->hmdo_office_phone = $request->agent_info['hmdo_office_phone'][1];
         		$agent_info->hmdo_office_website = $request->agent_info['hmdo_office_website'][1];
+        		$agent_info->hmdo_agent_website = $request->agent_info['hmdo_agent_website'][1];
         		$agent_info->save();
 
 						$this->configSMTP();

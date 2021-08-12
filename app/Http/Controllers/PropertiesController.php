@@ -570,10 +570,20 @@ class PropertiesController extends Controller
 	      return $this->sendResponse($response);
 		}
 
+		public function agentClientsProperties(Request $request){
+				$this->validate($request, [
+	      		'agent_id' => 'required|in:selling,buying',
+	      		'user_id' => 'required',
+	      		'type' => 'required'
+	      ]);
+
+	      dd($request->all());
+		}
+
 		public function assignAgent(Request $request){
 				$this->validate($request, [
 	      		'property_id' => 'required',
-	      		'agent_id' => 'required',
+	      		'agent_id' => 'required|in:selling,buying',
 	      		'user_id' => 'required'
 	      ]);
 
@@ -714,71 +724,66 @@ class PropertiesController extends Controller
 	      		'property_id' => 'required',
 	      		'url' => 'required'
 	      ]);
+				
+				$user_check = Users::where('email', $request->email)->first();
+				if (!empty($user_check)) {
+						$owner = new PropertyOwners;
+			      $owner->property_id = $request->property_id;
+			      $owner->user_id = $user_check->uuid;
+			      $property_owner = $owner->save();
+
+			      return $this->sendResponse("Owner added successfully!");
+				}
 
 	      $prop_owner = Users::where('uuid', $request->user_id)->first();
-	      $email_check = Users::where('email', $request->email)->first();
-	      $phone_check = Users::where('phone', $request->phone)->first();
 	      $property = Properties::where('uuid', $request->property_id)->first();
 	      $homendo = PropertyHomendo::where('property_id', $request->property_id)->first();
 
-	      if ($email_check !== null) {
-	    			return $this->sendResponse("Sorry, Email already exist!", 200, false);
-	      }elseif ($phone_check !== null) {
-	    			return $this->sendResponse("Sorry, Phone no. already exist!", 200, false);
-	      }else{
-	      		\DB::beginTransaction();
-	      		try{
-								$time = strtotime(Carbon::now());
-				        $uuid = "usr".$time.rand(10,99)*rand(10,99);
-					      $user = new Users;
-				        $user->uuid = $uuid;
-				        $user->first_name = $request->first_name;
-				        $user->last_name = $request->last_name;
-				        $user->email = $request->email;
-				        $user->phone = $request->phone;
-				        $user->role = "USER";
-				        $user->sub_role = "SELLER";
-				        $user->phone_verified = "NO";
-				        $user->email_verified = "NO";
-				        $user->image = "default.png";
-				        $result = $user->save();
+				$time = strtotime(Carbon::now());
+        $uuid = "usr".$time.rand(10,99)*rand(10,99);
+	      $user = new Users;
+        $user->uuid = $uuid;
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+        $user->role = "USER";
+        $user->sub_role = "SELLER";
+        $user->phone_verified = "NO";
+        $user->email_verified = "NO";
+        $user->image = "default.png";
+        $result = $user->save();
 
-				        $owner = new PropertyOwners;
-					      $owner->property_id = $property->uuid;
-					      $owner->user_id = $user->uuid;
-					      $property_owner = $owner->save();
+        $owner = new PropertyOwners;
+	      $owner->property_id = $property->uuid;
+	      $owner->user_id = $user->uuid;
+	      $property_owner = $owner->save();
 
-								$this->configSMTP();
-								$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-		      			Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+				$this->configSMTP();
+				$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+  			Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
 
-		      			$dataAssignOwner = [
-		      					'name'=>$request->first_name.' '.$request->last_name,
-  									'owner_name'=>$prop_owner->first_name.' '.$prop_owner->last_name,
-  									'property_name'=>$homendo->hmdo_mls_propname
-  							];
+  			$dataAssignOwner = [
+  					'name'=>$request->first_name.' '.$request->last_name,
+						'owner_name'=>$prop_owner->first_name.' '.$prop_owner->last_name,
+						'property_name'=>$homendo->hmdo_mls_propname
+				];
 
-					      $dataSignupMail = [
-					      		'name'=>$request->first_name.' '.$request->last_name,
-		                'verification_token'=>$verification_token,
-		                'email'=>$request->email,
-		                'url'=>$request->url
-	              ];
+	      $dataSignupMail = [
+	      		'name'=>$request->first_name.' '.$request->last_name,
+            'verification_token'=>$verification_token,
+            'email'=>$request->email,
+            'url'=>$request->url
+        ];
 
-					      try{
-					          Mail::to($request->email)->send(new AssignOwner($dataAssignOwner));
-					          Mail::to($request->email)->send(new SignupMail($dataSignupMail));
-					      }catch(\Exception $e){
-					          $msg = $e->getMessage();
-					          return $this->sendResponse($msg, 200, false);
-					      }
-
-							  return $this->sendResponse("Owner added successfully!");
-						} catch(\Exception $e) {
-			      		\DB::rollBack();
-			      		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
-			      }
-				}
+	      try{
+	          Mail::to($request->email)->send(new AssignOwner($dataAssignOwner));
+	          Mail::to($request->email)->send(new SignupMail($dataSignupMail));
+	          return $this->sendResponse("Owner added successfully!");
+	      }catch(\Exception $e){
+	          $msg = $e->getMessage();
+	          return $this->sendResponse($msg, 200, false);
+	      }
 		}
 
 		public function agentProperties(Request $request){
