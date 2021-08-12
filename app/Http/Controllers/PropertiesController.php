@@ -576,6 +576,32 @@ class PropertiesController extends Controller
 				if (sizeof($property_ids) > 0) {
 						$agent_properties = PropertyAgents::with('property.Valuecheck','property.Zillow','property.Homendo')->whereIn('property_id', $property_ids)->get();
 						foreach ($agent_properties as $agent_property) {
+								$propertyInfo = Properties::with('propertySellers.User')->where('uuid', $agent_property->property_id)->first();
+								$seller = PropertyOwners::with('User')->where(['property_id'=>$agent_property->property_id, 'type'=>'main_owner'])->first();
+                $agent_property['seller'] = $seller;
+                $agent_property['all_sellers'] = $propertyInfo->propertySellers;
+               
+                $property_verification = 'YES';
+                if ($propertyInfo->verified == 'NO') {
+                    $property_verification = 'NO';
+                }
+
+                $owner_verification = 'YES';
+                if (sizeof($agent_property['all_sellers']) > 0) {
+                    foreach ($agent_property['all_sellers'] as $property_seller) {
+                        if ($property_seller->verify_status == 'NO') {
+                            $owner_verification = 'NO';
+                            break;
+                        }
+                    }
+                }
+                
+                if ($property_verification == 'NO' || $owner_verification == 'NO') {
+                    $agent_property['verify_ownership'] = 'NO';
+                }else{
+                    $agent_property['verify_ownership'] = 'YES';
+                }
+
 								if ($agent_property->agent_type == 'seller') {
 										$all_selling_properties[] = $agent_property;
 								}else{
