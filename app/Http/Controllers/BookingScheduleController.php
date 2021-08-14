@@ -42,6 +42,7 @@ class BookingScheduleController extends Controller
             'buyer_id'              => 'nullable',
             'agent_id'              => 'nullable',
             'url'                   => 'nullable',
+            'interval'              => 'required',
         ]);
 
         $formetted_date = date('Y-m-d', strtotime($request->booking_date));
@@ -103,6 +104,7 @@ class BookingScheduleController extends Controller
                 $propertyBookingSchedule->agent_id = $request->agent_id;
             }
             $propertyBookingSchedule->showing_note = $request->showing_note;
+            $propertyBookingSchedule->interval = $request->interval;
             $propertyBookingSchedule->cancel_at = null;
 
             if ($propertyBookingSchedule->save()) {
@@ -277,6 +279,7 @@ class BookingScheduleController extends Controller
                     $propertyBookingSchedule->agent_id = $request->agent_id;
                 }
                 $propertyBookingSchedule->showing_note = $request->showing_note;
+                $propertyBookingSchedule->interval = $request->interval;
                 $propertyBookingSchedule->cancel_at = null;
 
                 if ($propertyBookingSchedule->save()) {
