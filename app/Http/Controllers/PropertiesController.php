@@ -560,21 +560,17 @@ class PropertiesController extends Controller
 		public function agentClientsProperties(Request $request){
 				$this->validate($request, [
 						'agent_id' => 'required',
-						'user_id' => 'required',
-						'type' => 'required|in:selling,buying'
+						'user_id' => 'required'
 				]);
 				
 				$all_selling_properties = [];
 				$all_buying_properties = [];
-			
-				if($request->type == 'selling'){
-						$property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
-				}else{
-						$property_ids = PropertyBuyers::where('buyer_id', $request->user_id)->pluck('property_id')->toArray();
-				}
-				
+
+				$owner_property_ids = PropertyOwners::where('user_id', $request->user_id)->pluck('property_id')->toArray();
+				$buyer_property_ids = PropertyBuyers::where('buyer_id', $request->user_id)->pluck('property_id')->toArray();
+				$property_ids = array_merge($owner_property_ids, $buyer_property_ids);
 				if (sizeof($property_ids) > 0) {
-						$agent_properties = PropertyAgents::with('property.Valuecheck','property.Zillow','property.Homendo')->whereIn('property_id', $property_ids)->get();
+						$agent_properties = PropertyAgents::where('agent_id', $request->agent_id)->with('property.Valuecheck','property.Zillow','property.Homendo')->whereIn('property_id', $property_ids)->get();
 						foreach ($agent_properties as $agent_property) {
 								$propertyInfo = Properties::with('propertySellers.User')->where('uuid', $agent_property->property_id)->first();
 								$seller = PropertyOwners::with('User')->where(['property_id'=>$agent_property->property_id, 'type'=>'main_owner'])->first();

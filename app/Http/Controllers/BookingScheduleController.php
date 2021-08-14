@@ -40,7 +40,8 @@ class BookingScheduleController extends Controller
             'booking_time'          => 'nullable',
             'showing_note'          => 'nullable',
             'buyer_id'              => 'nullable',
-            'agent_id'              => 'nullable',
+            'seller_agent_id'       => 'nullable',
+            'buyer_agent_id'        => 'nullable',
             'url'                   => 'nullable',
             'interval'              => 'required',
         ]);
@@ -100,8 +101,11 @@ class BookingScheduleController extends Controller
                 $propertyBookingSchedule->status = 'P';
             }
             $propertyBookingSchedule->cv_status = 'verified';
-            if ($request->agent_id !== '' || $request->agent_id !== null) {
-                $propertyBookingSchedule->agent_id = $request->agent_id;
+            if ($request->seller_agent_id != '' || $request->seller_agent_id != null) {
+                $propertyBookingSchedule->seller_agent_id = $request->seller_agent_id;
+            }
+            if ($request->buyer_agent_id != '' || $request->buyer_agent_id != null) {
+                $propertyBookingSchedule->buyer_agent_id = $request->buyer_agent_id;
             }
             $propertyBookingSchedule->showing_note = $request->showing_note;
             $propertyBookingSchedule->interval = $request->interval;
@@ -109,13 +113,19 @@ class BookingScheduleController extends Controller
 
             if ($propertyBookingSchedule->save()) {
                 $check_buyer = PropertyBuyers::where(['buyer_id'=>$request->buyer_id, 'property_id'=>$property_id])->first();
+                $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
+                if (!empty($check_seller)) {
+                    $seller_id = $check_seller->user_id;
+                }else{
+                    $seller_id = null;
+                }
                 if (empty($check_buyer)) {
                     $property_buyer = new PropertyBuyers;
                     $property_buyer->property_id = $property_id;
-                    //$property_buyer->seller_id = $seller_id;
+                    $property_buyer->seller_id = $seller_id;
                     $property_buyer->buyer_id = $request->buyer_id;
-                    if ($request->agent_id !== '' || $request->agent_id !== null) {
-                        $property_buyer->agent_id = $request->agent_id;
+                    if ($request->buyer_agent_id != '' || $request->buyer_agent_id != null) {
+                        $property_buyer->agent_id = $request->buyer_agent_id;
                     }
                     $property_buyer->save();
                 }
@@ -275,8 +285,11 @@ class BookingScheduleController extends Controller
                 $propertyBookingSchedule->booking_time = $booking_time;
                 $propertyBookingSchedule->status = 'P';
                 $propertyBookingSchedule->cv_status = 'on-hold';
-                if ($request->agent_id !== '' || $request->agent_id !== null) {
-                    $propertyBookingSchedule->agent_id = $request->agent_id;
+                if ($request->seller_agent_id != '' || $request->seller_agent_id != null) {
+                    $propertyBookingSchedule->seller_agent_id = $request->seller_agent_id;
+                }
+                if ($request->buyer_agent_id != '' || $request->buyer_agent_id != null) {
+                    $propertyBookingSchedule->buyer_agent_id = $request->buyer_agent_id;
                 }
                 $propertyBookingSchedule->showing_note = $request->showing_note;
                 $propertyBookingSchedule->interval = $request->interval;
@@ -284,13 +297,19 @@ class BookingScheduleController extends Controller
 
                 if ($propertyBookingSchedule->save()) {
                     $check_buyer = PropertyBuyers::where(['buyer_id'=>$buyer_uuid, 'property_id'=>$property_id])->first();
+                    $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
+                    if (!empty($check_seller)) {
+                        $seller_id = $check_seller->user_id;
+                    }else{
+                        $seller_id = null;
+                    }
                     if (empty($check_buyer)) {
                         $property_buyer = new PropertyBuyers;
                         $property_buyer->property_id = $property_id;
-                        //$property_buyer->seller_id = $seller_id;
+                        $property_buyer->seller_id = $seller_id;
                         $property_buyer->buyer_id = $buyer_uuid;
-                        if ($request->agent_id !== '' || $request->agent_id !== null) {
-                            $property_buyer->agent_id = $request->agent_id;
+                        if ($request->buyer_agent_id != '' || $request->buyer_agent_id != null) {
+                            $property_buyer->agent_id = $request->buyer_agent_id;
                         }
                         $property_buyer->save();
                     }
@@ -519,7 +538,7 @@ class BookingScheduleController extends Controller
 
                 try {
                     Mail::to($validator->email)->send(new BookingUpdateMail($data));
-                    $booking_info = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->where('uuid',$id)->first();
+                    $booking_info = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where('uuid',$id)->first();
                     $response['booking_info'] = $booking_info;
                     $response['response_message'] = "Showing ".$msg;
                     return $this->sendResponse($response);
@@ -544,7 +563,7 @@ class BookingScheduleController extends Controller
         $future_bookings = [];
         $past_bookings = [];
         $today_bookings = [];
-        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->where('property_id',$request->property_id)->where('cv_status','verified')->get();
+        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where('property_id',$request->property_id)->where('cv_status','verified')->get();
         $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey')->where('property_id',$request->property_id)->first();
         if (sizeof($bookings) > 0) {
             foreach ($bookings as $booking) {
@@ -579,7 +598,7 @@ class BookingScheduleController extends Controller
 
     public function allShowingBookings(Request $request){
 
-        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo')->where('cv_status','verify')->get();
+        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where('cv_status','verify')->get();
         if (sizeof($bookings) > 0) {
             return $this->sendResponse($bookings);
         }else{

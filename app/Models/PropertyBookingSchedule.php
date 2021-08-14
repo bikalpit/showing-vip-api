@@ -12,7 +12,7 @@ class PropertyBookingSchedule extends Model
      */
     protected $table = 'property_booking_schedule';
 
-    protected $fillable = ['uuid','buyer_id','property_id','property_mls_id','property_originator','agent_id','booking_date','booking_time','status','cv_status','showing_note','interval','cancel_by','cancel_reason','cancel_at'];
+    protected $fillable = ['uuid','buyer_id','property_id','property_mls_id','property_originator','seller_agent_id','buyer_agent_id','booking_date','booking_time','status','cv_status','showing_note','interval','cancel_by','cancel_reason','cancel_at'];
 
     use SoftDeletes;
     
@@ -30,7 +30,12 @@ class PropertyBookingSchedule extends Model
 
     public function Agent()
     {
-    	return $this->hasOne('App\Models\Users', 'uuid', 'agent_id');
+    	return $this->hasOne('App\Models\Users', 'uuid', 'seller_agent_id');
+    }
+
+    public function BuyerAgent()
+    {
+        return $this->hasOne('App\Models\Users', 'uuid', 'buyer_agent_id');
     }
 
     public function Client()
