@@ -16,7 +16,7 @@ class CreateShowingFeedbackTable extends Migration
         Schema::create('showing_feedback', function (Blueprint $table) {
             $table->id();
             $table->string('booking_id', 200)->nullable();
-            $table->longText('feedback')->nullable();
+            $table->text('feedback')->nullable();
             $table->timestamps();
         });
     }

@@ -17,7 +17,7 @@ class CreatePropertyShowingSurveyTable extends Migration
             $table->id();
             $table->string('uuid', 200);
             $table->string('showing_setup_id', 200);
-            $table->string('survey', 200);
+            $table->text('survey');
             $table->timestamps();
             $table->softDeletes();
         });

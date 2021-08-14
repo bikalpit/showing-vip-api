@@ -19,6 +19,7 @@ class CreatePropertyVerificationTable extends Migration
             $table->string('agent_id', 200);
             $table->string('user_id', 200);
             $table->string('token', 200);
+            $table->string('send_time', 200);
             $table->timestamps();
         });
     }

@@ -17,6 +17,7 @@ class CreatePropertyZillowTable extends Migration
             $table->id();
             $table->string('uuid', 200)->nullable();
             $table->string('property_id', 200)->nullable();
+            $table->string('z_listed', 200)->nullable();
             $table->string('z_zpid', 200)->nullable();
             $table->string('z_sale_amount', 200)->nullable();
             $table->string('z_sale_lowrange', 200)->nullable();
@@ -26,7 +27,7 @@ class CreatePropertyZillowTable extends Migration
             $table->string('z_rental_lowrange', 200)->nullable();
             $table->string('z_rental_highrange', 200)->nullable();
             $table->string('z_rental_lastupdated', 200)->nullable();
-            $table->string('z_prop_url', 1000)->nullable();
+            $table->text('z_prop_url')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

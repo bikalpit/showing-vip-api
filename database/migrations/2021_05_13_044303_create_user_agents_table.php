@@ -15,8 +15,13 @@ class CreateUserAgentsTable extends Migration
     {
         Schema::create('user_agents', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id', 200);
-            $table->string('agent_id', 200);
+            $table->string('property_id', 200)->nullable();
+            $table->string('property_mls_id', 200)->nullable();
+            $table->string('property_originator', 200)->nullable();
+            $table->string('seller_id', 200)->nullable();
+            $table->string('buyer_id', 200)->nullable();
+            $table->string('agent_id', 200)->nullable();
+            $table->enum('agent_type', ['seller', 'buyer'])->default('buyer');
             $table->timestamps();
         });
     }

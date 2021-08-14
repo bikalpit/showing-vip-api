@@ -20,7 +20,7 @@ class CreatePropertyShowingSetupTable extends Migration
             $table->enum('notification_email', ['YES', 'NO'])->default('NO');
             $table->enum('notification_text', ['YES', 'NO'])->default('NO');
             $table->enum('type', ['VALID', 'NO VALID'])->comment('VALID - validation | NO VALID - no validation')->default('NO VALID');
-            $table->string('validator', 200)->nullable();
+            $table->text('validator')->nullable();
             $table->string('presence', 200)->nullable();
             $table->longText('instructions')->nullable();
             $table->string('lockbox_type', 200)->nullable();

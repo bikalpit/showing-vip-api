@@ -18,7 +18,7 @@ class CreatePropertyOwnersTable extends Migration
             $table->string('property_id', 200);
             $table->string('user_id', 200);
             $table->enum('type', ['main_owner', 'sub_owner'])->default('sub_owner');
-            $table->string('verification_token', 200);
+            $table->string('verification_token', 200)->nullable();
             $table->enum('verify_status', ['YES', 'NO', 'VC'])->comment('YES - Verified | NO - Unverified | CV - Cancelled verification')->default('NO');
             $table->timestamps();
         });

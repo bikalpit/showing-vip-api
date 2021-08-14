@@ -17,6 +17,7 @@ class CreatePropertyValuecheckTable extends Migration
             $table->id();
             $table->string('uuid', 200);
             $table->string('property_id', 200);
+            $table->string('vs_listed', 200)->nullable();
             $table->string('vs_streetnumber', 200)->nullable();
             $table->string('vs_streetdirection', 200)->nullable();
             $table->string('vs_streetname', 200)->nullable();

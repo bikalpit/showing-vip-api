@@ -24,7 +24,7 @@ class CreateAgentInfoTable extends Migration
             $table->string('hmdo_agent_email', 200)->nullable();
             $table->string('hmdo_office_main_phone', 200)->nullable();
             $table->string('hmdo_office_direct_phone', 200)->nullable();
-            $table->string('hmdo_office_mobile_phone', 200)->nullable();
+            $table->string('hmdo_agent_mobile_phone', 200)->nullable();
             $table->text('hmdo_agent_skills')->nullable();
             $table->string('hmdo_office_id', 200)->nullable();
             $table->string('hmdo_office_name', 200)->nullable();
@@ -35,6 +35,7 @@ class CreateAgentInfoTable extends Migration
             $table->string('hmdo_office_state', 200)->nullable();
             $table->string('hmdo_office_phone', 200)->nullable();
             $table->string('hmdo_office_website', 200)->nullable();
+            $table->string('hmdo_agent_website', 200)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

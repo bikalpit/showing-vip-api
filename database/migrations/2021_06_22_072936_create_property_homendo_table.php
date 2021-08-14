@@ -19,6 +19,9 @@ class CreatePropertyHomendoTable extends Migration
             $table->string('property_id', 200)->nullable();
             $table->string('hmdo_listed', 200)->nullable();
             $table->string('hmdo_lastupdated', 200)->nullable();
+            $table->string('hmdo_mls_agent_email', 200)->nullable();
+            $table->string('hmdo_mls_agentid', 200)->nullable();
+            $table->string('hmdo_mls_description', 200)->nullable();
             $table->string('hmdo_mls_id', 200)->nullable();
             $table->string('hmdo_mls_originator', 200)->nullable();
             $table->string('hmdo_mls_proptype', 200)->nullable();
@@ -43,6 +46,7 @@ class CreatePropertyHomendoTable extends Migration
             $table->string('hmdo_mls_carspaces', 200)->nullable();
             $table->string('hmdo_mls_url', 1000)->nullable();
             $table->string('hmdo_mls_thumbnail', 1000)->nullable();
+            $table->string('hmdo_mls_officeid', 1000)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
