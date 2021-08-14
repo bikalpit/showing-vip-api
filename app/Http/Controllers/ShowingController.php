@@ -540,7 +540,7 @@ class ShowingController extends Controller
 	      		if (!empty($checkAgent)) {
 	      				$checkAgentInfo = 0;
 	      				$agentInfo = $this->getAgentInfo($request->agent_id, $request->email, $request->agent_originator);
-	      				if ($agentInfo || $agentInfo != null || $agentInfo != '') {
+	      				if ($agentInfo) {
 	      					$checkAgentInfo = 1;
 	      					$agent = json_decode($agentInfo);
 	      				}

@@ -620,13 +620,44 @@ class AgentController extends Controller
         ]);
 
         $showings = [];
-        $showings['buyers_showing'] = PropertyBookingSchedule::with('Property', 'Client', 'Agent.agentInfo')->where('buyer_id', $request->client_id)->get();
+        $future_bookings = [];
+        $past_bookings = [];
+        $today_bookings = [];
+        $all_buyers_showing = null;
+        $all_sellers_showing = null;
+        $buyers_showings = PropertyBookingSchedule::with('Property', 'Client', 'Agent.agentInfo')->where('buyer_id', $request->client_id)->get();
+        if (sizeof($buyers_showings) > 0) {
+            foreach ($buyers_showings as $b_showing) {
+                if (strtotime(date('Y-m-d')) < strtotime($b_showing->booking_date)) {
+                    $future_bookings[] = $b_showing;
+                }else if (strtotime(date('Y-m-d')) > strtotime($b_showing->booking_date)) {
+                    $past_bookings[] = $b_showing;
+                }else if (strtotime(date('Y-m-d')) == strtotime($b_showing->booking_date)) {
+                    $today_bookings[] = $b_showing;
+                }
+            }
+            $all_buyers_showing = array('future' => $future_bookings, 'past' => $past_bookings, 'today' => $today_bookings);
+        }
 
         $seller_properties = PropertyOwners::where('user_id', $request->client_id)->distinct('property_id')->pluck('property_id')->toArray();
 
-        $showings['sellers_showing'] = PropertyBookingSchedule::with('Property', 'Client', 'Agent.agentInfo')->whereIn('property_id', $seller_properties)->get();
+        $sellers_showings = PropertyBookingSchedule::with('Property', 'Client', 'Agent.agentInfo')->whereIn('property_id', $seller_properties)->get();
+        if (sizeof($sellers_showings) > 0) {
+            foreach ($sellers_showings as $s_showing) {
+                if (strtotime(date('Y-m-d')) < strtotime($s_showing->booking_date)) {
+                    $future_bookings[] = $s_showing;
+                }else if (strtotime(date('Y-m-d')) > strtotime($s_showing->booking_date)) {
+                    $past_bookings[] = $s_showing;
+                }else if (strtotime(date('Y-m-d')) == strtotime($s_showing->booking_date)) {
+                    $today_bookings[] = $s_showing;
+                }
+            }
+            $all_sellers_showing = array('future' => $future_bookings, 'past' => $past_bookings, 'today' => $today_bookings);
+        }
 
-        if (sizeof($showings['buyers_showing']) > 0 || sizeof($showings['sellers_showing']) > 0) {
+        if ($all_buyers_showing != '' || $all_sellers_showing != '') {
+            $showings['buyers_showing'] = $all_buyers_showing;
+            $showings['sellers_showing'] = $all_sellers_showing;
             return $this->sendResponse($showings);
         }else{
             return $this->sendResponse("Sorry, Showings not found!", 200, false);
