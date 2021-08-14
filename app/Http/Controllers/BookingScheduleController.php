@@ -130,9 +130,9 @@ class BookingScheduleController extends Controller
                     $property_buyer->save();
                 }
 
-                if ($request->agent_id !== null) {
+                if ($request->buyer_agent_id !== null) {
                     if ($property_id !== null) {
-                        $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
+                        $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->buyer_agent_id, 'agent_type'=>'buyer'])->first();
                         $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
                         if (!empty($check_seller)) {
                             $seller_id = $check_seller->user_id;
@@ -146,12 +146,12 @@ class BookingScheduleController extends Controller
                             $property_agent->property_originator = $request->property_originator;
                             $property_agent->seller_id = $seller_id;
                             $property_agent->buyer_id = $request->buyer_id;
-                            $property_agent->agent_id = $request->agent_id;
+                            $property_agent->agent_id = $request->buyer_agent_id;
                             $property_agent->agent_type = 'buyer';
                             $property_agent->save();
                         }
                     }else{
-                        $check_agent = PropertyAgents::where(['property_mls_id'=>$request->property_mls_id, 'property_originator'=>$request->property_originator, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
+                        $check_agent = PropertyAgents::where(['property_mls_id'=>$request->property_mls_id, 'property_originator'=>$request->property_originator, 'agent_id'=>$request->buyer_agent_id, 'agent_type'=>'buyer'])->first();
                         $check_property = PropertyHomendo::where(['hmdo_mls_id'=>$request->property_mls_id, 'hmdo_mls_originator'=>$request->property_originator])->first();
                         if (!empty($check_property)) {
                             $check_seller = PropertyOwners::where(['property_id'=>$check_property->property_id, 'type'=>'main_owner'])->orWhere('property_id', $check_property->property_id)->first();
@@ -160,8 +160,10 @@ class BookingScheduleController extends Controller
                             }else{
                                 $seller_id = null;
                             }
+                            $property_id = $check_property->property_id;
                         }else{
                             $seller_id = null;
+                            $property_id = null;
                         }
                         if (empty($check_agent)) {
                             $property_agent = new PropertyAgents;
@@ -170,7 +172,7 @@ class BookingScheduleController extends Controller
                             $property_agent->property_originator = $request->property_originator;
                             $property_agent->seller_id = $seller_id;
                             $property_agent->buyer_id = $request->buyer_id;
-                            $property_agent->agent_id = $request->agent_id;
+                            $property_agent->agent_id = $request->buyer_agent_id;
                             $property_agent->agent_type = 'buyer';
                             $property_agent->save();
                         }
@@ -199,7 +201,7 @@ class BookingScheduleController extends Controller
                                     $validator->phone,
                                     array(
                                         "from" => $twilio_setting->twilio_sender_number,
-                                        "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$users->first_name.' '.$users->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                                        "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$users->first_name.' '.$users->last_name.' want to visit your property on '.$request->booking_date.' '.$request->booking_time
                                     )
                                 );
                             } catch(\Exception $e) {
@@ -314,9 +316,9 @@ class BookingScheduleController extends Controller
                         $property_buyer->save();
                     }
 
-                    if ($request->agent_id !== null) {
+                    if ($request->buyer_agent_id !== null) {
                         if ($property_id !== null) {
-                            $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
+                            $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->buyer_agent_id, 'agent_type'=>'buyer'])->first();
                             $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
                             if (!empty($check_seller)) {
                                 $seller_id = $check_seller->user_id;
@@ -330,12 +332,12 @@ class BookingScheduleController extends Controller
                                 $property_agent->property_originator = $request->property_originator;
                                 $property_agent->seller_id = $seller_id;
                                 $property_agent->buyer_id = $request->buyer_id;
-                                $property_agent->agent_id = $request->agent_id;
+                                $property_agent->agent_id = $request->buyer_agent_id;
                                 $property_agent->agent_type = 'buyer';
                                 $property_agent->save();
                             }
                         }else{
-                            $check_agent = PropertyAgents::where(['property_mls_id'=>$request->property_mls_id, 'property_originator'=>$request->property_originator, 'agent_id'=>$request->agent_id, 'agent_type'=>'buyer'])->first();
+                            $check_agent = PropertyAgents::where(['property_mls_id'=>$request->property_mls_id, 'property_originator'=>$request->property_originator, 'agent_id'=>$request->buyer_agent_id, 'agent_type'=>'buyer'])->first();
                             $check_property = PropertyHomendo::where(['hmdo_mls_id'=>$request->property_mls_id, 'hmdo_mls_originator'=>$request->property_originator])->first();
                             if (!empty($check_property)) {
                                 $check_seller = PropertyOwners::where(['property_id'=>$check_property->property_id, 'type'=>'main_owner'])->orWhere('property_id', $check_property->property_id)->first();
@@ -354,7 +356,7 @@ class BookingScheduleController extends Controller
                                 $property_agent->property_originator = $request->property_originator;
                                 $property_agent->seller_id = $seller_id;
                                 $property_agent->buyer_id = $request->buyer_id;
-                                $property_agent->agent_id = $request->agent_id;
+                                $property_agent->agent_id = $request->buyer_agent_id;
                                 $property_agent->agent_type = 'buyer';
                                 $property_agent->save();
                             }
@@ -401,7 +403,7 @@ class BookingScheduleController extends Controller
                                         $validator->phone,
                                         array(
                                             "from" => $twilio_setting->twilio_sender_number,
-                                            "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$request->first_name.' '.$request->last_name.' want to visit your this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                                            "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$request->first_name.' '.$request->last_name.' want to visit your property on '.$request->booking_date.' '.$request->booking_time
                                         )
                                     );
                                 } catch(\Exception $e) {
@@ -519,7 +521,7 @@ class BookingScheduleController extends Controller
                             '+919624730644',
                             array(
                                 "from" => $twilio_setting->twilio_sender_number,
-                                "body" => 'Your booking request has been '.$msg.' for this Luxury Property property on '.$request->booking_date.' '.$request->booking_time
+                                "body" => 'Your booking request has been '.$msg.' for property on '.$request->booking_date.' '.$request->booking_time
                             )
                         );
                     } catch(\Exception $e) {
