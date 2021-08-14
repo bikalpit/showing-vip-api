@@ -332,7 +332,7 @@ class UsersController extends Controller
 	      		'first_name' => 'nullable',
 	      		'last_name' => 'nullable',
 	      		'phone' => 'nullable',
-	      		'email' => 'nullable',
+	      		'email' => 'required',
 	      		'address' => 'nullable',
 	      		'city' => 'nullable',
 	      		'zipcode' => 'nullable',
