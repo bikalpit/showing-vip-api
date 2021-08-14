@@ -343,11 +343,11 @@ class UsersController extends Controller
 	      		'image' => 'nullable'
 	      ]);
 
-    		if ($request->email == '' || $request->email == null ||) {
+    		if ($request->email == '' || $request->email == null) {
     				return $this->sendResponse("Email is required.", 200, false);
     		}
 
-    		if ($request->phone == '' || $request->phone == null ||) {
+    		if ($request->phone == '' || $request->phone == null) {
     				return $this->sendResponse("Phone is required.", 200, false);
     		}
 

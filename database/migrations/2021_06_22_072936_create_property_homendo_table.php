@@ -17,7 +17,7 @@ class CreatePropertyHomendoTable extends Migration
             $table->id();
             $table->string('uuid', 200)->nullable();
             $table->string('property_id', 200)->nullable();
-            $table->string('hmdo_listed', 200)->nullable()
+            $table->string('hmdo_listed', 200)->nullable();
             $table->string('hmdo_lastupdated', 200)->nullable();
             $table->string('hmdo_mls_id', 200)->nullable();
             $table->string('hmdo_mls_originator', 200)->nullable();

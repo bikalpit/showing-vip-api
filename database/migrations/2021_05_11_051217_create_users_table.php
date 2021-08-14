@@ -30,6 +30,8 @@ class CreateUsersTable extends Migration
             $table->enum('phone_verified', ['YES', 'NO']);
             $table->string('email_verification_token', 200)->nullable();
             $table->enum('email_verified', ['YES', 'NO']);
+            $table->string('verification_token', 200)->nullable();
+            $table->enum('verify_status', ['YES', 'NO', 'VC'])->comment('YES - Verified | NO - Unverified | CV - Cancelled verification')->default('NO');
             $table->string('ip_address', 200)->nullable();
             $table->string('image', 200);
             $table->string('address', 200)->nullable();
