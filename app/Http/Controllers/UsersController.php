@@ -331,7 +331,7 @@ class UsersController extends Controller
 	      		'user_id' => 'required',
 	      		'first_name' => 'nullable',
 	      		'last_name' => 'nullable',
-	      		'phone' => 'nullable',
+	      		'phone' => 'required',
 	      		'email' => 'required',
 	      		'address' => 'nullable',
 	      		'city' => 'nullable',
@@ -342,6 +342,14 @@ class UsersController extends Controller
 	      		'website_url' => 'nullable',
 	      		'image' => 'nullable'
 	      ]);
+
+    		if ($request->email == '' || $request->email == null ||) {
+    				return $this->sendResponse("Email is required.", 200, false);
+    		}
+
+    		if ($request->phone == '' || $request->phone == null ||) {
+    				return $this->sendResponse("Phone is required.", 200, false);
+    		}
 
 				$user = Users::where('uuid', $request->user_id)->first();
     		if ($request->email !== $user->email) {
