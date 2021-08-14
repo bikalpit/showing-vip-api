@@ -1078,4 +1078,20 @@ class PropertiesController extends Controller
 						return $this->sendResponse("Sorry, Property Owner not found!", 200, false);
 				}
 		}
+
+		public function getAllProperties(Request $request){
+				$this->validate($request, [
+						'client_id' => 'required',
+				]);
+
+				$client_properties = PropertyOwners::where('user_id', $request->client_id)->pluck('property_id')->toArray();
+				
+				$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereNotIn('uuid', $client_properties)->get();
+
+				if (sizeof($properties) > 0) {
+						return $this->sendResponse($properties);
+				}else{
+						return $this->sendResponse("Sorry, Properties not found!", 200, false);
+				}
+		}
 }
