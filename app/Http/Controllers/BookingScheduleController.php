@@ -130,6 +130,55 @@ class BookingScheduleController extends Controller
                     $property_buyer->save();
                 }
 
+                if ($request->seller_agent_id !== null) {
+                    if ($property_id !== null) {
+                        $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->seller_agent_id, 'agent_type'=>'seller'])->first();
+                        $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
+                        if (!empty($check_seller)) {
+                            $seller_id = $check_seller->user_id;
+                        }else{
+                            $seller_id = null;
+                        }
+                        if (empty($check_agent)) {
+                            $property_agent = new PropertyAgents;
+                            $property_agent->property_id = $property_id;
+                            $property_agent->property_mls_id = $request->property_mls_id;
+                            $property_agent->property_originator = $request->property_originator;
+                            $property_agent->seller_id = $seller_id;
+                            $property_agent->buyer_id = $request->buyer_id;
+                            $property_agent->agent_id = $request->seller_agent_id;
+                            $property_agent->agent_type = 'seller';
+                            $property_agent->save();
+                        }
+                    }else{
+                        $check_agent = PropertyAgents::where(['property_mls_id'=>$request->property_mls_id, 'property_originator'=>$request->property_originator, 'agent_id'=>$request->seller_agent_id, 'agent_type'=>'seller'])->first();
+                        $check_property = PropertyHomendo::where(['hmdo_mls_id'=>$request->property_mls_id, 'hmdo_mls_originator'=>$request->property_originator])->first();
+                        if (!empty($check_property)) {
+                            $check_seller = PropertyOwners::where(['property_id'=>$check_property->property_id, 'type'=>'main_owner'])->orWhere('property_id', $check_property->property_id)->first();
+                            if (!empty($check_seller)) {
+                                $seller_id = $check_seller->user_id;
+                            }else{
+                                $seller_id = null;
+                            }
+                            $property_id = $check_property->property_id;
+                        }else{
+                            $seller_id = null;
+                            $property_id = null;
+                        }
+                        if (empty($check_agent)) {
+                            $property_agent = new PropertyAgents;
+                            $property_agent->property_id = $property_id;
+                            $property_agent->property_mls_id = $request->property_mls_id;
+                            $property_agent->property_originator = $request->property_originator;
+                            $property_agent->seller_id = $seller_id;
+                            $property_agent->buyer_id = $request->buyer_id;
+                            $property_agent->agent_id = $request->seller_agent_id;
+                            $property_agent->agent_type = 'seller';
+                            $property_agent->save();
+                        }
+                    }
+                }
+
                 if ($request->buyer_agent_id !== null) {
                     if ($property_id !== null) {
                         $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->buyer_agent_id, 'agent_type'=>'buyer'])->first();
@@ -316,6 +365,53 @@ class BookingScheduleController extends Controller
                         $property_buyer->save();
                     }
 
+                    if ($request->seller_agent_id !== null) {
+                        if ($property_id !== null) {
+                            $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->seller_agent_id, 'agent_type'=>'seller'])->first();
+                            $check_seller = PropertyOwners::where(['property_id'=>$property_id, 'type'=>'main_owner'])->orWhere('property_id', $property_id)->first();
+                            if (!empty($check_seller)) {
+                                $seller_id = $check_seller->user_id;
+                            }else{
+                                $seller_id = null;
+                            }
+                            if (empty($check_agent)) {
+                                $property_agent = new PropertyAgents;
+                                $property_agent->property_id = $property_id;
+                                $property_agent->property_mls_id = $request->property_mls_id;
+                                $property_agent->property_originator = $request->property_originator;
+                                $property_agent->seller_id = $seller_id;
+                                $property_agent->buyer_id = $request->buyer_id;
+                                $property_agent->agent_id = $request->seller_agent_id;
+                                $property_agent->agent_type = 'seller';
+                                $property_agent->save();
+                            }
+                        }else{
+                            $check_agent = PropertyAgents::where(['property_mls_id'=>$request->property_mls_id, 'property_originator'=>$request->property_originator, 'agent_id'=>$request->seller_agent_id, 'agent_type'=>'seller'])->first();
+                            $check_property = PropertyHomendo::where(['hmdo_mls_id'=>$request->property_mls_id, 'hmdo_mls_originator'=>$request->property_originator])->first();
+                            if (!empty($check_property)) {
+                                $check_seller = PropertyOwners::where(['property_id'=>$check_property->property_id, 'type'=>'main_owner'])->orWhere('property_id', $check_property->property_id)->first();
+                                if (!empty($check_seller)) {
+                                    $seller_id = $check_seller->user_id;
+                                }else{
+                                    $seller_id = null;
+                                }
+                            }else{
+                                $seller_id = null;
+                            }
+                            if (empty($check_agent)) {
+                                $property_agent = new PropertyAgents;
+                                $property_agent->property_id = $property_id;
+                                $property_agent->property_mls_id = $request->property_mls_id;
+                                $property_agent->property_originator = $request->property_originator;
+                                $property_agent->seller_id = $seller_id;
+                                $property_agent->buyer_id = $request->buyer_id;
+                                $property_agent->agent_id = $request->seller_agent_id;
+                                $property_agent->agent_type = 'seller';
+                                $property_agent->save();
+                            }
+                        }
+                    }
+                    
                     if ($request->buyer_agent_id !== null) {
                         if ($property_id !== null) {
                             $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->buyer_agent_id, 'agent_type'=>'buyer'])->first();
