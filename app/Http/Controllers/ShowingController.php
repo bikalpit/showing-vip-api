@@ -601,6 +601,7 @@ class ShowingController extends Controller
 					      				'originator' => $request->originator
 					      		];
 				            Mail::to($request->email)->send(new AgentShowingMail($showingData));
+				            
 				            return $this->sendResponse('Mail sent successfully to agent for create password!');
 		            }else{
 		            		return $this->sendResponse("Sorry, Something went wrong!", 200, false);
@@ -623,7 +624,15 @@ class ShowingController extends Controller
 					  CURLOPT_FOLLOWLOCATION => true,
 					  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 					  CURLOPT_CUSTOMREQUEST => 'POST',
-					  CURLOPT_POSTFIELDS => array('login' => '@*8Dom0sH0Ag3#DI','token' => '"'.md5(strtotime('now')).'"','agentid' => '"'.$mls_id.'"','email' => '"'.$email.'"','originator' => '"'.$originator.'"','deviceid' => '"'.$_SERVER['HTTP_USER_AGENT'].'"','hmdoapp' => 'Showing.VIP-1.0'),
+					  CURLOPT_POSTFIELDS => array(
+					  	'login' => '@*8Dom0sH0Ag3#DI',
+					  	'token' => '"'.md5(strtotime('now')).'"',
+					  	'agentid' => '"'.$mls_id.'"',
+					  	'email' => '"'.$email.'"',
+					  	'originator' => '"'.$originator.'"',
+					  	'deviceid' => '"'.$_SERVER['HTTP_USER_AGENT'].'"',
+					  	'hmdoapp' => 'Showing.VIP-1.0'
+					  ),
 				));
 
 				$response = curl_exec($curl);
