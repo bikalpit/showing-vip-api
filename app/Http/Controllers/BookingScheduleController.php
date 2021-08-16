@@ -694,6 +694,55 @@ class BookingScheduleController extends Controller
         }
     }
 
+    public function clientShowingBookings(Request $request){
+        $this->validate($request, [
+            'property_id'   => 'required',
+            'agent_id'   => 'required',
+            'agent_type'   => 'required|in:selling,buying'
+        ]);
+
+        $all_bookings = [];
+        $future_bookings = [];
+        $past_bookings = [];
+        $today_bookings = [];
+        if ($request->agent_type == 'selling') {
+            $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where(['property_id'=>$request->property_id, 'seller_agent_id'=>$request->agent_id])->where('cv_status','verified')->get();
+        }else{
+            $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where(['property_id'=>$request->property_id, 'buyer_agent_id'=>$request->agent_id])->where('cv_status','verified')->get();
+        }
+        
+        if (sizeof($bookings) > 0) {
+            $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey')->where('property_id',$request->property_id)->first();
+            foreach ($bookings as $booking) {
+                $booking['showing_setup'] = $showing_setup;
+                $surveys = json_decode($booking['showing_setup']->showingSurvey->survey);
+                $answers = [];
+                foreach ($surveys as $survey) {
+                    $subCategory = SurveySubCategories::with('category')->where('uuid',$survey)->first();
+                    $answers[] = $subCategory;
+                }
+                $booking['answers'] = $answers;
+                $booking['feedback'] = ShowingFeedback::where('booking_id', $booking->uuid)->first();
+                $booking['office'] = '';
+
+                $booking_count = PropertyBookingSchedule::where(['property_id'=>$booking->property_id, 'buyer_id'=>$booking->buyer_id, 'cv_status'=>'verify'])->get();
+                $booking['booking_count'] = sizeof($booking_count);
+                if (strtotime(date('Y-m-d')) < strtotime($booking->booking_date)) {
+                    $future_bookings[] = $booking;
+                }else if (strtotime(date('Y-m-d')) > strtotime($booking->booking_date)) {
+                    $past_bookings[] = $booking;
+                }else if (strtotime(date('Y-m-d')) == strtotime($booking->booking_date)) {
+                    $today_bookings[] = $booking;
+                }
+            }
+
+            $all_bookings = array('future' => $future_bookings, 'past' => $past_bookings, 'today' => $today_bookings);
+            return $this->sendResponse($all_bookings);
+        }else{
+            return $this->sendResponse("Sorry, Bookings not found!", 200, false);
+        }
+    }
+
     public function allShowingBookings(Request $request){
 
         $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where('cv_status','verify')->get();

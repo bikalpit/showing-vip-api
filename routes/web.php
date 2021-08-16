@@ -93,6 +93,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('create-schedule-booking',  ['uses'=>'BookingScheduleController@createBooking']);
 		$router->post('update-schedule-booking',  ['middleware'=>'auth','uses'=>'BookingScheduleController@updateBooking']);
 		$router->post('get-showing-bookings',  ['middleware'=>'auth','uses'=>'BookingScheduleController@getShowingBookings']);
+		$router->post('client-showing-bookings',  ['middleware'=>'auth','uses'=>'BookingScheduleController@clientShowingBookings']);
 		$router->post('all-showing-bookings',  ['middleware'=>'auth','uses'=>'BookingScheduleController@allShowingBookings']);
 		$router->post('submit-feedback',  ['middleware'=>'auth','uses'=>'BookingScheduleController@submitFeedback']);
 		$router->post('get-feedback',  ['middleware'=>'auth','uses'=>'BookingScheduleController@getFeedback']);
