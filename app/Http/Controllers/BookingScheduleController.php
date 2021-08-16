@@ -654,16 +654,24 @@ class BookingScheduleController extends Controller
 
     public function getShowingBookings(Request $request){
         $this->validate($request, [
-            'property_id'   => 'required'
+            'property_id'   => 'required',
+            'user_id'   => 'required',
+            'user_type'   => 'required|in:seller,buyer'
         ]);
 
         $all_bookings = [];
         $future_bookings = [];
         $past_bookings = [];
         $today_bookings = [];
-        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where('property_id',$request->property_id)->where('cv_status','verified')->get();
-        $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey')->where('property_id',$request->property_id)->first();
+        if ($request->buyer) {
+            $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where(['property_id'=>$request->property_id, 'cv_status'=>'verified', 'buyer_id'=>$request->user_id])->get();
+        }else{
+            $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where(['property_id'=>$request->property_id, 'cv_status'=>'verified'])->get();
+
+        }
+
         if (sizeof($bookings) > 0) {
+            $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey')->where('property_id',$request->property_id)->first();
             foreach ($bookings as $booking) {
                 $booking['showing_setup'] = $showing_setup;
                 $surveys = json_decode($booking['showing_setup']->showingSurvey->survey);
@@ -706,9 +714,9 @@ class BookingScheduleController extends Controller
         $past_bookings = [];
         $today_bookings = [];
         if ($request->agent_type == 'selling') {
-            $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where(['property_id'=>$request->property_id, 'seller_agent_id'=>$request->agent_id])->where('cv_status','verified')->get();
+            $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where(['property_id'=>$request->property_id, 'seller_agent_id'=>$request->agent_id, 'cv_status'=>'verified'])->get();
         }else{
-            $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where(['property_id'=>$request->property_id, 'buyer_agent_id'=>$request->agent_id])->where('cv_status','verified')->get();
+            $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where(['property_id'=>$request->property_id, 'buyer_agent_id'=>$request->agent_id, 'cv_status'=>'verified'])->get();
         }
         
         if (sizeof($bookings) > 0) {
