@@ -537,7 +537,8 @@ class ShowingController extends Controller
 	      		return $this->sendResponse('Mail sent successfully to agent for property showing!');
 	      }else{
 	      		$checkAgent = Users::where(['email'=>$request->email, 'mls_id'=>$request->agent_id, 'mls_name'=>$request->agent_originator])->first();
-	      		if (!empty($checkAgent)) {
+	      		
+	      		if (empty($checkAgent)) {
 	      				$checkAgentInfo = 0;
 	      				$agentInfo = $this->getAgentInfo($request->agent_id, $request->email, $request->agent_originator);
 	      				if ($agentInfo) {
