@@ -94,6 +94,7 @@ class PropertiesController extends Controller
 										        		$agent_info->hmdo_office_photo = $request->agent_info['hmdo_office_photo'][1];
 										        		$agent_info->hmdo_office_street = $request->agent_info['hmdo_office_street'][1];
 										        		$agent_info->hmdo_office_city = $request->agent_info['hmdo_office_city'][1];
+										        		$agent_info->hmdo_office_zipcode = $request->agent_info['hmdo_office_zipcode'][1];
 										        		$agent_info->hmdo_office_state = $request->agent_info['hmdo_office_state'][1];
 										        		$agent_info->hmdo_office_phone = $request->agent_info['hmdo_office_phone'][1];
 										        		$agent_info->hmdo_office_website = $request->agent_info['hmdo_office_website'][1];
@@ -110,10 +111,10 @@ class PropertiesController extends Controller
 										                'email'=>$agent->email,
 										                'url'=>$request->url
 										            ];
-										            Mail::to($request->email)->send(new SignupMail($data));
+										            Mail::to($agent->email)->send(new SignupMail($data));
 								            }
 							      		}
-
+							      		
 							      		$verify_status = 'NO';
 								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
 								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
@@ -132,7 +133,7 @@ class PropertiesController extends Controller
 										      			}
 										      	}
 								      	}
-								      	
+
 								      	$owner = new PropertyOwners;
 								      	$owner->property_id = $mlsNameCheck->uuid;
 								      	$owner->user_id = $request->user_id;
@@ -319,6 +320,7 @@ class PropertiesController extends Controller
 										        		$agent_info->hmdo_office_photo = $request->agent_info['hmdo_office_photo'][1];
 										        		$agent_info->hmdo_office_street = $request->agent_info['hmdo_office_street'][1];
 										        		$agent_info->hmdo_office_city = $request->agent_info['hmdo_office_city'][1];
+										        		$agent_info->hmdo_office_zipcode = $request->agent_info['hmdo_office_zipcode'][1];
 										        		$agent_info->hmdo_office_state = $request->agent_info['hmdo_office_state'][1];
 										        		$agent_info->hmdo_office_phone = $request->agent_info['hmdo_office_phone'][1];
 										        		$agent_info->hmdo_office_website = $request->agent_info['hmdo_office_website'][1];
@@ -335,7 +337,7 @@ class PropertiesController extends Controller
 										                'email'=>$agent->email,
 										                'url'=>$request->url
 										            ];
-										            Mail::to($request->email)->send(new SignupMail($data));
+										            Mail::to($agent->email)->send(new SignupMail($data));
 								            }
 							      		}
 
@@ -545,6 +547,7 @@ class PropertiesController extends Controller
 								        		$agent_info->hmdo_office_photo = $request->agent_info['hmdo_office_photo'][1];
 								        		$agent_info->hmdo_office_street = $request->agent_info['hmdo_office_street'][1];
 								        		$agent_info->hmdo_office_city = $request->agent_info['hmdo_office_city'][1];
+								        		$agent_info->hmdo_office_zipcode = $request->agent_info['hmdo_office_zipcode'][1];
 								        		$agent_info->hmdo_office_state = $request->agent_info['hmdo_office_state'][1];
 								        		$agent_info->hmdo_office_phone = $request->agent_info['hmdo_office_phone'][1];
 								        		$agent_info->hmdo_office_website = $request->agent_info['hmdo_office_website'][1];
@@ -561,7 +564,7 @@ class PropertiesController extends Controller
 								                'email'=>$agent->email,
 								                'url'=>$request->url
 								            ];
-								            Mail::to($request->email)->send(new SignupMail($data));
+								            Mail::to($agent->email)->send(new SignupMail($data));
 						            }
 					      		}
 
