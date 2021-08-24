@@ -14,6 +14,7 @@ use App\Models\PropertyZillow;
 use App\Models\PropertyHomendo;
 use App\Models\PropertyOwners;
 use App\Models\PropertyBookingSchedule;
+use App\Models\PropertyBuyers;
 use App\Mail\TestMail;
 use App\Mail\AssignOwner;
 use App\Mail\SignupMail;
@@ -372,7 +373,65 @@ class AgentController extends Controller
         if (sizeof($response) > 0) {
             return $this->sendResponse($response);
         }else{
-            return $this->sendResponse("No Properties found!.",200,false);
+            return $this->sendResponse("No Properties found!",200,false);
+        }
+    }
+
+    public function allClientProperties(Request $request){
+        $this->validate($request, [
+            'agent_id' => 'required'
+        ]);
+
+        $property_ids = PropertyAgents::with('property.Valuecheck','property.Zillow','property.Homendo')->where('agent_id',$request->agent_id)->pluck('property_id')->toArray();
+
+        $seller_ids = PropertyOwners::whereIn('property_id', $property_ids)->pluck('user_id')->toArray();
+        $buyer_ids = PropertyBuyers::whereIn('property_id', $property_ids)->pluck('buyer_id')->toArray();
+        
+        $sellers = [];
+        if (sizeof($seller_ids) > 0) {
+            foreach (array_filter($seller_ids) as $seller_id) {
+                $seller_properties = [];
+                $seller = Users::where('uuid', $seller_id)->first();
+                
+                $seller_props = PropertyOwners::where('user_id', $seller_id)->get();
+                
+                foreach ($seller_props as $seller_prop) {
+                    $check_agent = PropertyAgents::where(['property_id'=>$seller_prop->property_id, 'agent_id'=>$request->agent_id])->first();
+                    if ($check_agent != null) {
+                        $property = Properties::with('Valuecheck', 'Zillow', 'Homendo')->where('uuid', $seller_prop->property_id)->first();
+                        $seller_properties[] = $property;
+                    }
+                }
+                $seller['proprties'] = $seller_properties;
+                $sellers[] = $seller;
+            }
+        }
+
+        $buyers = [];
+        if (sizeof($buyer_ids) > 0) {
+            foreach (array_filter($buyer_ids) as $buyer_id) {
+                $buyer_properties = [];
+                $buyer = Users::where('uuid', $buyer_id)->first();
+                
+                $buyer_props = PropertyBuyers::where('buyer_id', $buyer_id)->get();
+
+                foreach ($buyer_props as $buyer_prop) {
+                    $check_agent = PropertyAgents::where(['property_id'=>$buyer_prop->property_id, 'agent_id'=>$request->agent_id])->first();
+                    if ($check_agent != null) {
+                        $property = Properties::with('Valuecheck', 'Zillow', 'Homendo')->where('uuid', $buyer_prop->property_id)->first();
+                        $buyer_properties[] = $property;
+                    }
+                }
+                $buyer['proprties'] = $buyer_properties;
+                $buyers[] = $seller;
+            }
+        }
+
+        if (sizeof($sellers) > 0 || sizeof($buyers) > 0) {
+            $response = array('sellers'=>$sellers, 'buyers'=>$buyers);
+            return $this->sendResponse($response);
+        }else{
+            return $this->sendResponse("No data found!",200,false);
         }
     }
 

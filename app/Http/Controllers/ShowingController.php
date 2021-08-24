@@ -510,34 +510,32 @@ class ShowingController extends Controller
 						'url'								=> 'nullable',
 	      ]);
 
-	      $property = PropertyHomendo::where(['hmdo_mls_id'=>$request->mls_id, 'hmdo_mls_originator'=>$request->originator])->first();
-	      $agent = Users::where(['mls_id'=>$request->agent_id, 'mls_name'=>$request->agent_originator, 'email'=>$request->email])->first();
+	      $checkProperty = PropertyHomendo::where(['hmdo_mls_id'=>$request->mls_id, 'hmdo_mls_originator'=>$request->originator])->first();
+	      $checkAgent = Users::where(['mls_id'=>$request->agent_id, 'mls_name'=>$request->agent_originator, 'email'=>$request->email])->first();
 
-	      if ($property != null) {
-	      		$showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey', 'Property')->where('property_id', $property->property_id)->first();
+	      if ($checkProperty != null) {
+	      		$showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey', 'Property')->where('property_id', $checkProperty->property_id)->first();
 
 			      if ($showing_setup) {
-			      		return $this->sendResponse($showing_setup);
+		            return $this->sendResponse($showing_setup);
 			      }else{
 			      		return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
 			      }
-	      }elseif ($agent != null) {
+	      }elseif ($checkAgent != null) {
 	      		$data = [
-                'name' => $agent->first_name.' '.$agent->last_name,
+                'name' => $checkAgent->first_name.' '.$checkAgent->last_name,
                 'mls_id' => $request->mls_id,
                 'originator' => $request->originator
             ];
 
             try{
-                Mail::to($agent->email)->send(new AgentShowingMail($data));
+                Mail::to($checkAgent->email)->send(new AgentShowingMail($data));
             }catch(\Exception $e){
                 /*$msg = $e->getMessage();
                 return $this->sendResponse($msg, 200, false);*/
             }
 	      		return $this->sendResponse('Mail sent successfully to agent for property showing!');
 	      }else{
-	      		$checkAgent = Users::where(['email'=>$request->email, 'mls_id'=>$request->agent_id, 'mls_name'=>$request->agent_originator])->first();
-	      		
 	      		if (empty($checkAgent)) {
 	      				$checkAgentInfo = 0;
 	      				$agentInfo = $this->getAgentInfo($request->agent_id, $request->email, $request->agent_originator);
@@ -627,11 +625,11 @@ class ShowingController extends Controller
 					  CURLOPT_CUSTOMREQUEST => 'POST',
 					  CURLOPT_POSTFIELDS => array(
 					  	'login' => '@*8Dom0sH0Ag3#DI',
-					  	'token' => '"'.md5(strtotime('now')).'"',
-					  	'agentid' => '"'.$mls_id.'"',
-					  	'email' => '"'.$email.'"',
-					  	'originator' => '"'.$originator.'"',
-					  	'deviceid' => '"'.$_SERVER['HTTP_USER_AGENT'].'"',
+					  	'token' => md5(strtotime('now')),
+					  	'agentid' => $mls_id,
+					  	'email' => $email,
+					  	'originator' => $originator,
+					  	'deviceid' => $_SERVER['HTTP_USER_AGENT'],
 					  	'hmdoapp' => 'Showing.VIP-1.0'
 					  ),
 				));

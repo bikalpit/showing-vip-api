@@ -500,7 +500,7 @@ class UsersController extends Controller
 					  CURLOPT_CUSTOMREQUEST => 'POST',
 					  CURLOPT_POSTFIELDS => array(
 					  	'login' => '@*8Dom0sH0Ag3#DI',
-					  	'token' => '"'.md5(strtotime('now')).'"',
+					  	'token' => md5(strtotime('now')),
 					  	'agentid' => 'rxm_999991',
 					  	'email' => 'kalpit@broadview-innovations.com',
 					  	'originator' => 'RECOLORADO',
