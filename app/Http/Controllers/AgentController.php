@@ -36,24 +36,6 @@ class AgentController extends Controller
         }
     }
 
-    public function getSingleClient(Request $request){
-        $this->validate($request, [
-            'client_id' => 'required',
-            'agent_id'  => 'required'
-        ]);
-
-        $properteyIds = PropertyAgents::where(['agent_id'=>$request->agent_id,'seller_id'=>$request->client_id])
-                        ->pluck('property_id')->toArray();
-        $result = Users::where('uuid',$request->client_id)->first();
-        if ($result) {
-            $allProperty = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid',$properteyIds)->get();
-            $finalArray = ['profile'=>$result,'property_list'=>$allProperty];
-            return $this->sendResponse($finalArray);
-        }else{
-            return $this->sendResponse("Sorry!Something Wrong!.",200,false);
-        }
-    }
-
     public function GetRandomAgents(Request $request){
         $this->validate($request, [
             'number' => 'required'
@@ -386,7 +368,7 @@ class AgentController extends Controller
 
         $seller_ids = PropertyOwners::whereIn('property_id', $property_ids)->pluck('user_id')->toArray();
         $buyer_ids = PropertyBuyers::whereIn('property_id', $property_ids)->pluck('buyer_id')->toArray();
-        
+
         $sellers = [];
         if (sizeof($seller_ids) > 0) {
             foreach (array_filter($seller_ids) as $seller_id) {
@@ -616,12 +598,14 @@ class AgentController extends Controller
             'agent_id' => 'required'
         ]);
 
+        $property_ids = PropertyAgents::with('property.Valuecheck','property.Zillow','property.Homendo')->where('agent_id',$request->agent_id)->pluck('property_id')->toArray();
+
         $user_ids = [];
-        $user_ids[] = PropertyAgents::where('agent_id', $request->agent_id)->whereNotNull('seller_id')->pluck('seller_id')->toArray();
-        $user_ids[] = PropertyAgents::where('agent_id', $request->agent_id)->whereNotNull('buyer_id')->pluck('buyer_id')->toArray();
+        $user_ids[] = PropertyOwners::whereIn('property_id', $property_ids)->pluck('user_id')->toArray();
+        $user_ids[] = PropertyBuyers::whereIn('property_id', $property_ids)->pluck('buyer_id')->toArray();
         
         $all_user_ids = call_user_func_array('array_merge', $user_ids);
-
+        
         if (sizeof($all_user_ids) > 0) {
             $all_users = Users::whereIn('uuid', array_unique($all_user_ids))->get();
         }else{

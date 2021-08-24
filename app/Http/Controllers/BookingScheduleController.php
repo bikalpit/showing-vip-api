@@ -122,7 +122,7 @@ class BookingScheduleController extends Controller
                 if (empty($check_buyer)) {
                     $property_buyer = new PropertyBuyers;
                     $property_buyer->property_id = $property_id;
-                    $property_buyer->seller_id = $seller_id;
+                    //$property_buyer->seller_id = $seller_id;
                     $property_buyer->buyer_id = $request->buyer_id;
                     if ($request->buyer_agent_id != '' || $request->buyer_agent_id != null) {
                         $property_buyer->agent_id = $request->buyer_agent_id;
@@ -144,7 +144,7 @@ class BookingScheduleController extends Controller
                             $property_agent->property_id = $property_id;
                             $property_agent->property_mls_id = $request->property_mls_id;
                             $property_agent->property_originator = $request->property_originator;
-                            $property_agent->seller_id = $seller_id;
+                            //$property_agent->seller_id = $seller_id;
                             $property_agent->buyer_id = $request->buyer_id;
                             $property_agent->agent_id = $request->seller_agent_id;
                             $property_agent->agent_type = 'seller';
@@ -170,7 +170,7 @@ class BookingScheduleController extends Controller
                             $property_agent->property_id = $property_id;
                             $property_agent->property_mls_id = $request->property_mls_id;
                             $property_agent->property_originator = $request->property_originator;
-                            $property_agent->seller_id = $seller_id;
+                            //$property_agent->seller_id = $seller_id;
                             $property_agent->buyer_id = $request->buyer_id;
                             $property_agent->agent_id = $request->seller_agent_id;
                             $property_agent->agent_type = 'seller';
@@ -193,7 +193,7 @@ class BookingScheduleController extends Controller
                             $property_agent->property_id = $property_id;
                             $property_agent->property_mls_id = $request->property_mls_id;
                             $property_agent->property_originator = $request->property_originator;
-                            $property_agent->seller_id = $seller_id;
+                            //$property_agent->seller_id = $seller_id;
                             $property_agent->buyer_id = $request->buyer_id;
                             $property_agent->agent_id = $request->buyer_agent_id;
                             $property_agent->agent_type = 'buyer';
@@ -219,7 +219,7 @@ class BookingScheduleController extends Controller
                             $property_agent->property_id = $property_id;
                             $property_agent->property_mls_id = $request->property_mls_id;
                             $property_agent->property_originator = $request->property_originator;
-                            $property_agent->seller_id = $seller_id;
+                            //$property_agent->seller_id = $seller_id;
                             $property_agent->buyer_id = $request->buyer_id;
                             $property_agent->agent_id = $request->buyer_agent_id;
                             $property_agent->agent_type = 'buyer';
@@ -357,7 +357,7 @@ class BookingScheduleController extends Controller
                     if (empty($check_buyer)) {
                         $property_buyer = new PropertyBuyers;
                         $property_buyer->property_id = $property_id;
-                        $property_buyer->seller_id = $seller_id;
+                        //$property_buyer->seller_id = $seller_id;
                         $property_buyer->buyer_id = $buyer_uuid;
                         if ($request->buyer_agent_id != '' || $request->buyer_agent_id != null) {
                             $property_buyer->agent_id = $request->buyer_agent_id;
@@ -379,7 +379,7 @@ class BookingScheduleController extends Controller
                                 $property_agent->property_id = $property_id;
                                 $property_agent->property_mls_id = $request->property_mls_id;
                                 $property_agent->property_originator = $request->property_originator;
-                                $property_agent->seller_id = $seller_id;
+                                //$property_agent->seller_id = $seller_id;
                                 $property_agent->buyer_id = $request->buyer_id;
                                 $property_agent->agent_id = $request->seller_agent_id;
                                 $property_agent->agent_type = 'seller';
@@ -403,7 +403,7 @@ class BookingScheduleController extends Controller
                                 $property_agent->property_id = $property_id;
                                 $property_agent->property_mls_id = $request->property_mls_id;
                                 $property_agent->property_originator = $request->property_originator;
-                                $property_agent->seller_id = $seller_id;
+                                //$property_agent->seller_id = $seller_id;
                                 $property_agent->buyer_id = $request->buyer_id;
                                 $property_agent->agent_id = $request->seller_agent_id;
                                 $property_agent->agent_type = 'seller';
@@ -426,7 +426,7 @@ class BookingScheduleController extends Controller
                                 $property_agent->property_id = $property_id;
                                 $property_agent->property_mls_id = $request->property_mls_id;
                                 $property_agent->property_originator = $request->property_originator;
-                                $property_agent->seller_id = $seller_id;
+                                //$property_agent->seller_id = $seller_id;
                                 $property_agent->buyer_id = $request->buyer_id;
                                 $property_agent->agent_id = $request->buyer_agent_id;
                                 $property_agent->agent_type = 'buyer';
@@ -450,7 +450,7 @@ class BookingScheduleController extends Controller
                                 $property_agent->property_id = $property_id;
                                 $property_agent->property_mls_id = $request->property_mls_id;
                                 $property_agent->property_originator = $request->property_originator;
-                                $property_agent->seller_id = $seller_id;
+                                //$property_agent->seller_id = $seller_id;
                                 $property_agent->buyer_id = $request->buyer_id;
                                 $property_agent->agent_id = $request->buyer_agent_id;
                                 $property_agent->agent_type = 'buyer';
@@ -813,5 +813,18 @@ class BookingScheduleController extends Controller
         Mail::to($booker->email)->send(new UpdateShowingMail($data));
         
         return view('update-showing', ["status"=>$request->d]);
+    }
+
+    public function adminCreateBooking(Request $request){
+        $this->validate($request, [
+            'property_id'   => 'required',
+            'buyer_id'   => 'required',
+            'buyer_agent_id'   => 'required',
+            'booking_date'   => 'required',
+            'booking_time'   => 'required',
+            'interval'   => 'required',
+        ]);
+
+
     }
 }

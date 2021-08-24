@@ -114,7 +114,7 @@ class PropertiesController extends Controller
 										            Mail::to($agent->email)->send(new SignupMail($data));
 								            }
 							      		}
-							      		
+
 							      		$verify_status = 'NO';
 								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
 								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
@@ -778,8 +778,8 @@ class PropertiesController extends Controller
 		public function assignAgent(Request $request){
 				$this->validate($request, [
 	      		'property_id' => 'required',
-	      		'agent_id' => 'required|in:selling,buying',
-	      		'user_id' => 'required'
+	      		'agent_id' => 'required',
+	      		'agent_type' => 'required|in:seller,buyer',
 	      ]);
 
 				$property = Properties::where('uuid', $request->property_id)->first();
@@ -790,7 +790,7 @@ class PropertiesController extends Controller
 						$property_agent = new PropertyAgents;
 						$property_agent->property_id = $request->property_id;
 						$property_agent->agent_id = $request->agent_id;
-						$property_agent->seller_id = $request->seller_id;
+						$property_agent->agent_type = $request->agent_type;
 						$result = $property_agent->save();
 						if ($result) {
 								$this->configSMTP();
@@ -819,10 +819,10 @@ class PropertiesController extends Controller
 				$this->validate($request, [
 	      		'property_id' => 'required',
 	      		'agent_id' => 'required',
-	      		'user_id' => 'required'
+	      		'agent_type' => 'required|in:seller,buyer',
 	      ]);
 
-	      $result = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id, 'seller_id'=>$request->user_id])->delete();
+	      $result = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>$request->agent_type])->delete();
 
 	      if ($result) {
 	      		return $this->sendResponse("Agent removed successfully!");
@@ -872,7 +872,7 @@ class PropertiesController extends Controller
 			          $property_agent = new PropertyAgents;
 								$property_agent->property_id = $request->property_id;
 								$property_agent->agent_id = $request->agent_id;
-								$property_agent->seller_id = $request->user_id;
+								//$property_agent->seller_id = $request->user_id;
 								$property_agent->agent_type = 'seller';
 								$result = $property_agent->save();
 

@@ -26,7 +26,9 @@ class ShowingController extends Controller
 				$this->validate($request, [
 						'interval'  => 'required',
 						'start_date'=> 'required|date',
-						'end_date'  => 'required|date'
+						'end_date'  => 'required|date',
+						'open_time'  => 'required',
+						'close_time'  => 'required'
 			  ]);
 
 				$startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
@@ -35,8 +37,8 @@ class ShowingController extends Controller
 				$dateArray = $dateRange->toArray();  
 				
 				$interval = $request->interval*60;
-        $open_time = strtotime('00:00');
-        $close_time = strtotime('24:00');
+        $open_time = strtotime($request->open_time);
+        $close_time = strtotime($request->close_time);
 
         $output = [];
         for( $i=$open_time; $i<$close_time; $i+=$interval) 
