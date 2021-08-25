@@ -823,8 +823,131 @@ class BookingScheduleController extends Controller
             'booking_date'   => 'required',
             'booking_time'   => 'required',
             'interval'   => 'required',
+            'showing_note'   => 'required',
         ]);
 
+        $formetted_date = date('Y-m-d', strtotime($request->booking_date));
+        $property_id = $request->property_id;
+        $booking_date = $request->booking_date;
+        $booking_time = $request->booking_time;
+        $property = Properties::where('uuid', $property_id)->first();
+        
+        $homendo = PropertyHomendo::where('property_id', $property_id)->first();
+        if ($homendo != null || $homendo != '') {
+            $hmdo_mls_propname = $homendo->hmdo_mls_propname;
+        }else{
+            $hmdo_mls_propname = '';
+        }
+        $showing_setup = PropertyShowingSetup::where('property_id', $property_id)->first();
+        if ($showing_setup != null || $showing_setup != '') {
+            if ($showing_setup->validator != null || $showing_setup->validator != '') {
+                $validator = $showing_setup->validator[0];
+            }else{
+                $validator = '';
+            }
 
+            $availibility = PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->first();
+            if($availibility !== null){
+                $get_availibility = json_decode($availibility);
+                $availibility_data = json_decode($get_availibility->availability);
+            }
+        }else{
+            $validator = '';
+        }
+        
+        $selling_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_type'=>'seller'])->first();
+        
+        $settings = Settings::where('option_key', 'twillio')->first();
+        $twilio_setting = json_decode($settings->option_value);
+
+        $user = Users::where('uuid',$request->buyer_id)->first();
+
+        $time = strtotime(Carbon::now());
+        $uuid = "sch".$time.rand(10,99)*rand(10,99);
+
+        $propertyBookingSchedule = new PropertyBookingSchedule;
+        $propertyBookingSchedule->uuid = $uuid;
+        $propertyBookingSchedule->buyer_id = $user->uuid;
+        $propertyBookingSchedule->property_id = $property_id;
+        $propertyBookingSchedule->property_mls_id = $property->mls_id;
+        $propertyBookingSchedule->property_originator = $property->mls_name;
+        $propertyBookingSchedule->booking_date = $formetted_date;
+        $propertyBookingSchedule->booking_time = $booking_time;
+        if ($showing_setup != null || $showing_setup != '') {
+            if ($showing_setup->type == 'VALID') {
+                $propertyBookingSchedule->status = 'P';
+            }else{
+                $propertyBookingSchedule->status = 'A';
+            }
+        }else{
+            $propertyBookingSchedule->status = 'P';
+        }
+        $propertyBookingSchedule->cv_status = 'verified';
+        if ($selling_agent != '' || $selling_agent != null) {
+            $propertyBookingSchedule->seller_agent_id = $selling_agent->agent_id;
+        }
+        if ($request->buyer_agent_id != '' || $request->buyer_agent_id != null) {
+            $propertyBookingSchedule->buyer_agent_id = $request->buyer_agent_id;
+        }
+        $propertyBookingSchedule->showing_note = $request->showing_note;
+        $propertyBookingSchedule->interval = $request->interval;
+        $propertyBookingSchedule->cancel_at = null;
+
+        if ($propertyBookingSchedule->save()) {
+            if ($showing_setup != null || $showing_setup != '') {
+                if ($availibility !== null) {
+                    foreach ($availibility_data as $data) {
+                        if ($data->date == date('F d l', strtotime($booking_date))) {
+                            foreach ($data->slots as $slot) {
+                                if ($slot->slot == date('H:i A', strtotime($booking_time))) {
+                                    $slot->status = 'booked';
+                                }
+                            }
+                        }
+                    }
+                    PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
+                }
+                
+                if ($showing_setup->validator != null || $showing_setup->validator != '') {
+                    if ($twilio_setting->status == true) {
+                        try {
+                            $this->twilioClient = new TwilioClient($twilio_setting->account_sid, $twilio_setting->auth_token);
+                            $message =  $this->twilioClient->messages->create(
+                                $validator->phone,
+                                array(
+                                    "from" => $twilio_setting->twilio_sender_number,
+                                    "body" => 'Hi '.$validator->first_name.' '.$validator->last_name.', '.$user->first_name.' '.$user->last_name.' want to visit your property on '.$request->booking_date.' '.$request->booking_time
+                                )
+                            );
+                        } catch(\Exception $e) {
+
+                        }
+                    }
+
+                    $this->configSMTP();
+                    $mail_data = [
+                        'name'=>$user->first_name.' '.$user->last_name,
+                        'validator_name'=>$validator->first_name.' '.$validator->last_name,
+                        'property_name'=>$hmdo_mls_propname,
+                        'booking_date'=>$request->booking_date,
+                        'booking_time'=>$request->booking_time,
+                        'booking_id'=>base64_encode($uuid),
+                        'validator_id'=>base64_encode($validator->uuid),
+                        'booker_id'=>base64_encode($request->buyer_id)
+                    ];
+
+                    try {
+                        Mail::to($validator->email)->send(new BookingMail($mail_data));
+                    } catch(\Exception $e) {
+                        /*$msg = $e->getMessage();
+                        return $this->sendResponse($msg, 200, false);*/
+                    }
+                }
+            }
+
+            return $this->sendResponse("Showing booked successfully!");
+        }else{
+            return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+        }
     }
 }
