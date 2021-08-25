@@ -134,6 +134,18 @@ class PropertiesController extends Controller
 											          $property_varification->token = $property_varification_token;
 											          $property_varification->send_time = date('Y-m-d h:i:s');
 											          $result = $property_varification->save();
+
+											          $check_agent = PropertyAgents::where(['property_id'=>$mlsNameCheck->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
+				                        
+				                        if (empty($check_agent)) {
+				                            $property_agent = new PropertyAgents;
+				                            $property_agent->property_id = $mlsNameCheck->uuid;
+				                            $property_agent->property_mls_id = $mlsNameCheck->mls_id;
+				                            $property_agent->property_originator = $mlsNameCheck->mls_name;
+				                            $property_agent->agent_id = $agent->uuid;
+				                            $property_agent->agent_type = 'seller';
+				                            $property_agent->save();
+				                        }
 								            }
 							      		}else{
 							      				$this->configSMTP();
@@ -156,6 +168,18 @@ class PropertiesController extends Controller
 									          $property_varification->token = $property_varification_token;
 									          $property_varification->send_time = date('Y-m-d h:i:s');
 									          $result = $property_varification->save();
+
+									          $check_agent = PropertyAgents::where(['property_id'=>$mlsNameCheck->uuid, 'agent_id'=>$checkAgent->uuid, 'agent_type'=>'seller'])->first();
+									          
+		                        if (empty($check_agent)) {
+		                            $property_agent = new PropertyAgents;
+		                            $property_agent->property_id = $mlsNameCheck->uuid;
+		                            $property_agent->property_mls_id = $mlsNameCheck->mls_id;
+		                            $property_agent->property_originator = $mlsNameCheck->mls_name;
+		                            $property_agent->agent_id = $checkAgent->uuid;
+		                            $property_agent->agent_type = 'seller';
+		                            $property_agent->save();
+		                        }
 							      		}
 
 							      		$verify_status = 'NO';
@@ -407,6 +431,18 @@ class PropertiesController extends Controller
 											          $property_varification->token = $property_varification_token;
 											          $property_varification->send_time = date('Y-m-d h:i:s');
 											          $result = $property_varification->save();
+
+											          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
+				                        
+				                        if (empty($check_agent)) {
+				                            $property_agent = new PropertyAgents;
+				                            $property_agent->property_id = $property->uuid;
+				                            $property_agent->property_mls_id = $property->mls_id;
+				                            $property_agent->property_originator = $property->mls_name;
+				                            $property_agent->agent_id = $agent->uuid;
+				                            $property_agent->agent_type = 'seller';
+				                            $property_agent->save();
+				                        }
 								            }
 							      		}else{
 							      				$this->configSMTP();
@@ -429,6 +465,18 @@ class PropertiesController extends Controller
 									          $property_varification->token = $property_varification_token;
 									          $property_varification->send_time = date('Y-m-d h:i:s');
 									          $result = $property_varification->save();
+
+									          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$checkAgent->uuid, 'agent_type'=>'seller'])->first();
+				                        
+		                        if (empty($check_agent)) {
+		                            $property_agent = new PropertyAgents;
+		                            $property_agent->property_id = $property->uuid;
+		                            $property_agent->property_mls_id = $property->mls_id;
+		                            $property_agent->property_originator = $property->mls_name;
+		                            $property_agent->agent_id = $checkAgent->uuid;
+		                            $property_agent->agent_type = 'seller';
+		                            $property_agent->save();
+		                        }
 							      		}
 
 							      		$verify_status = 'NO';
@@ -681,6 +729,18 @@ class PropertiesController extends Controller
 									          $property_varification->token = $property_varification_token;
 									          $property_varification->send_time = date('Y-m-d h:i:s');
 									          $result = $property_varification->save();
+
+									          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
+				                        
+		                        if (empty($check_agent)) {
+		                            $property_agent = new PropertyAgents;
+		                            $property_agent->property_id = $property->uuid;
+		                            $property_agent->property_mls_id = $property->mls_id;
+		                            $property_agent->property_originator = $property->mls_name;
+		                            $property_agent->agent_id = $agent->uuid;
+		                            $property_agent->agent_type = 'seller';
+		                            $property_agent->save();
+		                        }
 						            }
 					      		}else{
 					      				$this->configSMTP();
@@ -703,6 +763,18 @@ class PropertiesController extends Controller
 							          $property_varification->token = $property_varification_token;
 							          $property_varification->send_time = date('Y-m-d h:i:s');
 							          $result = $property_varification->save();
+
+							          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$checkAgent->uuid, 'agent_type'=>'seller'])->first();
+				                        
+                        if (empty($check_agent)) {
+                            $property_agent = new PropertyAgents;
+                            $property_agent->property_id = $property->uuid;
+                            $property_agent->property_mls_id = $property->mls_id;
+                            $property_agent->property_originator = $property->mls_name;
+                            $property_agent->agent_id = $checkAgent->uuid;
+                            $property_agent->agent_type = 'seller';
+                            $property_agent->save();
+                        }
 					      		}
 
 					      		$verify_status = 'NO';
