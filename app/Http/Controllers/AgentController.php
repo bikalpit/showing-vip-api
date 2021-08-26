@@ -381,6 +381,7 @@ class AgentController extends Controller
                     $check_agent = PropertyAgents::where(['property_id'=>$seller_prop->property_id, 'agent_id'=>$request->agent_id])->first();
                     if ($check_agent != null) {
                         $property = Properties::with('Valuecheck', 'Zillow', 'Homendo')->where('uuid', $seller_prop->property_id)->first();
+                        $property['verify_status'] = $seller_prop->verify_status;
                         $seller_properties[] = $property;
                     }
                 }

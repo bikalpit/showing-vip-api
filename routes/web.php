@@ -66,6 +66,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->get('verified-property-owner',  ['uses'=>'PropertiesController@verifiedPropertyOwner']);
 		$router->post('agent-clients-properties',  ['middleware'=>'auth','uses'=>'PropertiesController@agentClientsProperties']);
 		$router->post('get-all-properties',  ['middleware'=>'auth','uses'=>'PropertiesController@getAllProperties']);
+		$router->post('delete-property',  ['middleware'=>'auth','uses'=>'PropertiesController@deleteProperty']);
 		/* PropertiesController APIs End */
 
 		/* ShowingController APIs Start */

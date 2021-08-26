@@ -1474,4 +1474,18 @@ class PropertiesController extends Controller
 						return $this->sendResponse("Sorry, Properties not found!", 200, false);
 				}
 		}
+
+		public function deleteProperty(Request $request){
+				$this->validate($request, [
+						'property_id' => 'required',
+				]);
+
+				$delete = Properties::where('uuid', $request->property_id)->delete();
+
+				if ($delete) {
+						return $this->sendResponse("Properties deleted successfully!");
+				}else{
+						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+				}
+		}
 }
