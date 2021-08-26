@@ -116,6 +116,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('agent-owner-verification', ['middleware'=>'auth','uses'=>'AgentController@agentOwnerVerification']);
 		$router->post('get-client-showing', ['middleware'=>'auth','uses'=>'AgentController@getClientShowings']);
 		$router->post('all-client-properties', ['middleware'=>'auth','uses'=>'AgentController@allClientProperties']);
+		$router->post('hide-agent-property', ['middleware'=>'auth','uses'=>'AgentController@hideAgentProperty']);
 		/*AgentController APIs End*/
 
 		/*SuperAdminController APIs Start*/

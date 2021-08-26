@@ -707,4 +707,19 @@ class AgentController extends Controller
             return $this->sendResponse("Sorry, Showings not found!", 200, false);
         }
     }
+
+    public function hideAgentProperty(Request $request){
+        $this->validate($request, [
+            'agent_id' => 'required',
+            'property_id' => 'required'
+        ]);
+
+        $hide_property = PropertyAgents::where(['agent_id'=>$request->agent_id, 'property_id'=>$request->property_id])->update(['status'=>'hide']);
+
+        if ($hide_property) {
+            return $this->sendResponse("Property hided!");
+        }else{
+            return $this->sendResponse("Sorry, Property not found or Something went wrong!", 200, false);
+        }
+    }
 }

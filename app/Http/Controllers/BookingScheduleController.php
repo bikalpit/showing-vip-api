@@ -823,7 +823,7 @@ class BookingScheduleController extends Controller
             'booking_date'   => 'required',
             'booking_time'   => 'required',
             'interval'   => 'required',
-            'showing_note'   => 'required',
+            'showing_note'   => 'nullable',
         ]);
 
         $formetted_date = date('Y-m-d', strtotime($request->booking_date));
