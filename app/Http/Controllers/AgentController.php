@@ -371,7 +371,7 @@ class AgentController extends Controller
 
         $sellers = [];
         if (sizeof($seller_ids) > 0) {
-            foreach (array_filter($seller_ids) as $seller_id) {
+            foreach (array_unique($seller_ids) as $seller_id) {
                 $seller_properties = [];
                 $seller = Users::where('uuid', $seller_id)->first();
                 
@@ -392,7 +392,7 @@ class AgentController extends Controller
 
         $buyers = [];
         if (sizeof($buyer_ids) > 0) {
-            foreach (array_filter($buyer_ids) as $buyer_id) {
+            foreach (array_unique($buyer_ids) as $buyer_id) {
                 $buyer_properties = [];
                 $buyer = Users::where('uuid', $buyer_id)->first();
                 
