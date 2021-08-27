@@ -1485,8 +1485,23 @@ class PropertiesController extends Controller
 										}else{
 												return $this->sendResponse("Sorry, Data not found or Something went wrong!", 200, false);
 										}
+								}
+						}else{
+								if (empty($agent) || $agent == null) {
+										$removeSeller = PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$request->user_id])->delete();
+										if ($removeSeller) {
+												return $this->sendResponse("Property deleted successfully!");
+										}else{
+												return $this->sendResponse("Sorry, Data not found or Something went wrong!", 200, false);
+										}
 								}else{
-										dd('out');
+										$removeSeller = PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$request->user_id])->delete();
+										$removeAgent = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id])->delete();
+										if ($removeSeller && $removeAgent) {
+												return $this->sendResponse("Property deleted successfully!");
+										}else{
+												return $this->sendResponse("Sorry, Data not found or Something went wrong!", 200, false);
+										}
 								}
 						}
 				}
