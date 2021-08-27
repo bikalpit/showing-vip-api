@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Messages extends Model
 {
@@ -13,6 +14,8 @@ class Messages extends Model
 
     protected $fillable = ['sender_id','receiver_id','message'];
 
+    use SoftDeletes;
+    
     public function sender(){
         return $this->hasOne('App\Models\Users', 'uuid', 'sender_id');
     }

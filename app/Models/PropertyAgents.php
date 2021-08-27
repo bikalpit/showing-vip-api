@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PropertyAgents extends Model
 {
@@ -12,6 +13,8 @@ class PropertyAgents extends Model
     protected $table = 'property_agents';
 
     protected $fillable = ['property_id','property_mls_id','property_originator','seller_id','buyer_id','agent_id','agent_type','status'];
+
+    use SoftDeletes;
 
     public function property()
     {

@@ -92,6 +92,7 @@ class BookingScheduleController extends Controller
             $propertyBookingSchedule->property_originator = $request->property_originator;
             $propertyBookingSchedule->booking_date = $formetted_date;
             $propertyBookingSchedule->booking_time = $booking_time;
+            $propertyBookingSchedule->booking_slots = $request->booking_slots;
             if ($showing_setup != null || $showing_setup != '') {
                 if ($showing_setup->type == 'VALID') {
                     $propertyBookingSchedule->status = 'P';
@@ -340,6 +341,7 @@ class BookingScheduleController extends Controller
                 $propertyBookingSchedule->property_originator = $request->property_originator;
                 $propertyBookingSchedule->booking_date = $formetted_date;
                 $propertyBookingSchedule->booking_time = $booking_time;
+                $propertyBookingSchedule->booking_slots = $request->booking_slots;
                 $propertyBookingSchedule->status = 'P';
                 $propertyBookingSchedule->cv_status = 'on-hold';
                 if ($request->seller_agent_id != '' || $request->seller_agent_id != null) {
@@ -569,7 +571,8 @@ class BookingScheduleController extends Controller
             'booking_id'        => 'required',
             'booking_date'      => 'required',
             'booking_time'      => 'required',
-            'user_id'           => 'required',
+            'booking_slots'     => 'required',
+            'user_id'           => 'nullable',
             'status'            => 'required|in:A,R,P',
             'reason'            => 'nullable',
             'keep_slot'         => 'required'
@@ -592,7 +595,7 @@ class BookingScheduleController extends Controller
         $settings = Settings::where('option_key', 'twillio')->first();
         $twilio_setting = json_decode($settings->option_value);
 
-        if (!empty($users)) {
+        if (!empty($booking)) {
             $update['status'] = $status;
             $update['cancel_reason'] = $reason;
             $update['cancel_at'] = date('Y-m-d H:i:s');
@@ -610,10 +613,17 @@ class BookingScheduleController extends Controller
                     foreach ($availibility_data as $data) {
                         if ($data->date == $request->booking_date) {
                             foreach ($data->slots as $slot) {
-                                if ($slot->slot == $request->booking_time) {
+                                /*if ($slot->slot == $request->booking_time) {
                                     $slot->status = 'booked';
                                 }else{
                                     $slot->status = 'confirm';
+                                }*/
+                                foreach (json_decode($booking->booking_slots) as $booking_slot) {
+                                    if ($slot->slot == $booking_slot) {
+                                        $slot->status = 'booked';
+                                    }else{
+                                        $slot->status = 'confirm';
+                                    }
                                 }
                             }
                         }
@@ -659,15 +669,15 @@ class BookingScheduleController extends Controller
                 return $this->sendResponse("Sorry, Something went wrong!", 200, false);
             }
         }else{
-            return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+            return $this->sendResponse("Sorry, Showing not found!", 200, false);
         }
     }
 
     public function getShowingBookings(Request $request){
         $this->validate($request, [
             'property_id'   => 'required',
-            'user_id'   => 'required',
-            'user_type'   => 'required|in:seller,buyer'
+            'user_id'       => 'required',
+            'user_type'     => 'required|in:seller,buyer'
         ]);
 
         $all_bookings = [];
@@ -716,8 +726,8 @@ class BookingScheduleController extends Controller
     public function clientShowingBookings(Request $request){
         $this->validate($request, [
             'property_id'   => 'required',
-            'agent_id'   => 'required',
-            'agent_type'   => 'required|in:selling,buying'
+            'agent_id'      => 'required',
+            'agent_type'    => 'required|in:selling,buying'
         ]);
 
         $all_bookings = [];
@@ -774,8 +784,8 @@ class BookingScheduleController extends Controller
 
     public function submitFeedback(Request $request){
         $this->validate($request, [
-            'booking_id'   => 'required',
-            'feedback'   => 'required'
+            'booking_id'    => 'required',
+            'feedback'      => 'required'
         ]);
 
         $feedback = new ShowingFeedback;
@@ -885,6 +895,7 @@ class BookingScheduleController extends Controller
         $propertyBookingSchedule->property_originator = $property->mls_name;
         $propertyBookingSchedule->booking_date = $formetted_date;
         $propertyBookingSchedule->booking_time = $booking_time;
+        $propertyBookingSchedule->booking_slots = $request->booking_slots;
         if ($showing_setup != null || $showing_setup != '') {
             if ($showing_setup->type == 'VALID') {
                 $propertyBookingSchedule->status = 'P';

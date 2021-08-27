@@ -957,32 +957,13 @@ class PropertiesController extends Controller
 						$agent_properties = PropertyAgents::where('agent_id', $request->agent_id)->with('property.Valuecheck','property.Zillow','property.Homendo')->whereIn('property_id', $property_ids)->get();
 						foreach ($agent_properties as $agent_property) {
 								$propertyInfo = Properties::with('propertySellers.User')->where('uuid', $agent_property->property_id)->first();
-								$seller = PropertyOwners::with('User')->where(['property_id'=>$agent_property->property_id, 'type'=>'main_owner'])->first();
-                $agent_property['seller'] = $seller;
-                $agent_property['all_sellers'] = $propertyInfo->propertySellers;
-               
-                $property_verification = 'YES';
-                if ($propertyInfo->verified == 'NO') {
-                    $property_verification = 'NO';
-                }
+								$user = Users::where('uuid', $request->user_id)->first();
 
-                $owner_verification = 'YES';
-                if (sizeof($agent_property['all_sellers']) > 0) {
-                    foreach ($agent_property['all_sellers'] as $property_seller) {
-                        if ($property_seller->verify_status == 'NO') {
-                            $owner_verification = 'NO';
-                            break;
-                        }
-                    }
-                }
-                
-                if ($property_verification == 'NO' || $owner_verification == 'NO') {
-                    $agent_property['verify_ownership'] = 'NO';
-                }else{
-                    $agent_property['verify_ownership'] = 'YES';
-                }
+                $agent_property['seller'] = $user;
 
 								if ($agent_property->agent_type == 'seller') {
+										$verify_ownership = PropertyOwners::where(['property_id'=>$agent_property->property_id, 'user_id'=>$request->user_id])->first();
+										$agent_property['verify_status'] = $verify_ownership->verify_status;
 										$all_selling_properties[] = $agent_property;
 								}else{
 										$all_buying_properties[] = $agent_property;
@@ -1478,14 +1459,17 @@ class PropertiesController extends Controller
 		public function deleteProperty(Request $request){
 				$this->validate($request, [
 						'property_id' => 'required',
+						'user_id' => 'required',
 				]);
 
-				$delete = Properties::where('uuid', $request->property_id)->delete();
+				$property = Properties::where('uuid', $request->property_id)->first();
+				$user = Users::where('uuid', $request->user_id)->first();
 
-				if ($delete) {
-						return $this->sendResponse("Properties deleted successfully!");
+				if ($user->role == 'AGENT') {
+						$removeAgent = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id])->delete();
+						dd('AGENT');
 				}else{
-						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+						dd('SELLER');
 				}
 		}
 }
