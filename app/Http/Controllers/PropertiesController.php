@@ -956,14 +956,13 @@ class PropertiesController extends Controller
 				if (sizeof($property_ids) > 0) {
 						$agent_properties = PropertyAgents::where('agent_id', $request->agent_id)->with('property.Valuecheck','property.Zillow','property.Homendo')->whereIn('property_id', $property_ids)->get();
 						foreach ($agent_properties as $agent_property) {
-								$propertyInfo = Properties::with('propertySellers.User')->where('uuid', $agent_property->property_id)->first();
 								$user = Users::where('uuid', $request->user_id)->first();
 
                 $agent_property['seller'] = $user;
 
 								if ($agent_property->agent_type == 'seller') {
 										$verify_ownership = PropertyOwners::where(['property_id'=>$agent_property->property_id, 'user_id'=>$request->user_id])->first();
-										$agent_property['verify_status'] = $verify_ownership->verify_status;
+										$agent_property->property['verify_status'] = $verify_ownership->verify_status;
 										$all_selling_properties[] = $agent_property;
 								}else{
 										$all_buying_properties[] = $agent_property;
@@ -1193,7 +1192,7 @@ class PropertiesController extends Controller
 				$search_item = $request->search;
 				$sorting = $request->sorting;
 				
-	      $property_ids = PropertyAgents::where('agent_id', $request->agent_id)->pluck('property_id')->toArray();
+	      $property_ids = PropertyAgents::where(['agent_id'=>$request->agent_id, 'status'=>'show'])->pluck('property_id')->toArray();
 
 	      if (sizeof($property_ids) > 0) {
 	      		if ($sorting !== '') {
@@ -1462,14 +1461,34 @@ class PropertiesController extends Controller
 						'user_id' => 'required',
 				]);
 
-				$property = Properties::where('uuid', $request->property_id)->first();
+				$property = Properties::with('Homendo')->where('uuid', $request->property_id)->first();
 				$user = Users::where('uuid', $request->user_id)->first();
+				$agent = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_type'=>'seller'])->first();
 
 				if ($user->role == 'AGENT') {
-						$removeAgent = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id])->delete();
-						dd('AGENT');
+						if ($property->Homendo->hmdo_listed == 1) {
+								return $this->sendResponse("You only hide this property, Can't delete!", 200, false);
+						}else{
+								$removeAgent = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id])->delete();
+								if ($removeAgent) {
+										return $this->sendResponse("Property deleted successfully!");
+								}else{
+										return $this->sendResponse("Sorry, Data not found or Something went wrong!", 200, false);
+								}
+						}
 				}else{
-						dd('SELLER');
+						if ($property->Homendo->hmdo_listed == 1) {
+								if (!empty($agent)) {
+										$removeSeller = PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$request->user_id])->delete();
+										if ($removeSeller) {
+												return $this->sendResponse("Property deleted successfully!");
+										}else{
+												return $this->sendResponse("Sorry, Data not found or Something went wrong!", 200, false);
+										}
+								}else{
+										dd('out');
+								}
+						}
 				}
 		}
 }

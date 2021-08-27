@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PropertyOwners extends Model
 {
@@ -13,6 +14,8 @@ class PropertyOwners extends Model
 
     protected $fillable = ['property_id','user_id','type','verification_token','verify_status'];
 
+    use SoftDeletes;
+    
     public function User(){
         return $this->hasOne('App\Models\Users', 'uuid', 'user_id');
     }
