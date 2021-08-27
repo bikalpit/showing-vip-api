@@ -38,6 +38,7 @@ class BookingScheduleController extends Controller
             'property_originator'   => 'nullable',
             'booking_date'          => 'nullable',
             'booking_time'          => 'nullable',
+            'booking_slots'         => 'nullable',
             'showing_note'          => 'nullable',
             'buyer_id'              => 'nullable',
             'seller_agent_id'       => 'nullable',
@@ -233,8 +234,13 @@ class BookingScheduleController extends Controller
                         foreach ($availibility_data as $data) {
                             if ($data->date == date('F d l', strtotime($booking_date))) {
                                 foreach ($data->slots as $slot) {
-                                    if ($slot->slot == date('H:i A', strtotime($booking_time))) {
+                                    /*if ($slot->slot == date('H:i A', strtotime($booking_time))) {
                                         $slot->status = 'booked';
+                                    }*/
+                                    foreach (json_decode($request->booking_slots) as $booking_slot) {
+                                        if ($slot->slot == date('H:i A', strtotime($booking_slot))) {
+                                            $slot->status = 'booked';
+                                        }
                                     }
                                 }
                             }
@@ -482,8 +488,13 @@ class BookingScheduleController extends Controller
                             foreach ($availibility_data as $data) {
                                 if ($data->date == date('F d l', strtotime($booking_date))) {
                                     foreach ($data->slots as $slot) {
-                                        if ($slot->slot == date('H:i A', strtotime($booking_time))) {
+                                        /*if ($slot->slot == date('H:i A', strtotime($booking_time))) {
                                             $slot->status = 'booked';
+                                        }*/
+                                        foreach (json_decode($request->booking_slots) as $booking_slot) {
+                                            if ($slot->slot == date('H:i A', strtotime($booking_slot))) {
+                                                $slot->status = 'booked';
+                                            }
                                         }
                                     }
                                 }
@@ -817,13 +828,14 @@ class BookingScheduleController extends Controller
 
     public function adminCreateBooking(Request $request){
         $this->validate($request, [
-            'property_id'   => 'required',
-            'buyer_id'   => 'required',
-            'buyer_agent_id'   => 'required',
-            'booking_date'   => 'required',
-            'booking_time'   => 'required',
-            'interval'   => 'required',
-            'showing_note'   => 'nullable',
+            'property_id'       => 'required',
+            'buyer_id'          => 'required',
+            'buyer_agent_id'    => 'required',
+            'booking_date'      => 'required',
+            'booking_time'      => 'required',
+            'booking_slots'     => 'required',
+            'interval'          => 'required',
+            'showing_note'      => 'nullable',
         ]);
 
         $formetted_date = date('Y-m-d', strtotime($request->booking_date));
@@ -899,8 +911,13 @@ class BookingScheduleController extends Controller
                     foreach ($availibility_data as $data) {
                         if ($data->date == date('F d l', strtotime($booking_date))) {
                             foreach ($data->slots as $slot) {
-                                if ($slot->slot == date('H:i A', strtotime($booking_time))) {
+                                /*if ($slot->slot == date('H:i A', strtotime($booking_time))) {
                                     $slot->status = 'booked';
+                                }*/
+                                foreach (json_decode($request->booking_slots) as $booking_slot) {
+                                    if ($slot->slot == date('H:i A', strtotime($booking_slot))) {
+                                        $slot->status = 'booked';
+                                    }
                                 }
                             }
                         }
