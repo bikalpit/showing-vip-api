@@ -1196,7 +1196,7 @@ class PropertiesController extends Controller
 				$search_item = $request->search;
 				$sorting = $request->sorting;
 				
-	      $property_ids = PropertyAgents::where(['agent_id'=>$request->agent_id, 'status'=>'show'])->pluck('property_id')->toArray();
+	      $property_ids = PropertyAgents::where(['agent_id'=>$request->agent_id])->pluck('property_id')->toArray();
 
 	      if (sizeof($property_ids) > 0) {
 	      		if ($sorting !== '') {
@@ -1403,7 +1403,7 @@ class PropertiesController extends Controller
 				      			}
 
 				      			$property_info = PropertyAgents::where('property_id', $property->uuid)->first();
-
+				      			$property['agent_status'] = $property_info->status;
 				      			if ($property_info->agent_type == 'seller') {
 				      					$selling_properties[] = $property;
 				      			}else{
