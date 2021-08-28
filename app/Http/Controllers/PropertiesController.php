@@ -185,7 +185,7 @@ class PropertiesController extends Controller
 							      		$verify_status = 'NO';
 								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
 								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
-										      			$verify_status = 'YES';
+										      			$verify_status = 'PV';
 										      	}else{
 										      			$verify_status = 'NO';
 								      			}
@@ -194,7 +194,7 @@ class PropertiesController extends Controller
 								      	if ($verify_status == 'NO') {
 								      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
 								      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
-										      					$verify_status = 'YES';
+										      					$verify_status = 'PV';
 										      			}else{
 										      					$verify_status = 'NO';
 										      			}
@@ -1019,12 +1019,19 @@ class PropertiesController extends Controller
 		public function removeAgent(Request $request){
 				$this->validate($request, [
 	      		'property_id' => 'required',
+	      		'seller_id' => 'required',
 	      		'agent_id' => 'required',
 	      		'agent_type' => 'required|in:seller,buyer',
 	      ]);
 
 	      $result = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>$request->agent_type])->delete();
 
+	      $checkVerification = PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$request->seller_id])->get();
+
+	      if ($checkVerification->verify_status !== 'PV') {
+	      		PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$request->seller_id])->update(['verify_status'=>'NO']);
+	      }
+	      
 	      if ($result) {
 	      		return $this->sendResponse("Agent removed successfully!");
 	      }else{
