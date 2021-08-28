@@ -35,8 +35,26 @@ class PropertyShowingSetup extends Model
         return $this->hasMany('App\Models\Users', 'uuid', 'validator');
     }
 
+    public function Presence(){
+        return $this->hasMany('App\Models\Users', 'uuid', 'presence');
+    }
+
     public function getValidatorAttribute($value){
+        $check_json = json_decode($value);
         if ($value == null || $value == '') {
+            return null;
+        }elseif ($check_json === null) {
+            return null;
+        }else{
+            return Users::whereIn('uuid', json_decode($value))->get();    
+        }
+    }
+    
+    public function getPresenceAttribute($value){
+        $check_json = json_decode($value);
+        if ($value == null || $value == '') {
+            return null;
+        }elseif ($check_json === null) {
             return null;
         }else{
             return Users::whereIn('uuid', json_decode($value))->get();    
