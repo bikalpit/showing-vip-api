@@ -201,7 +201,7 @@ class PropertiesController extends Controller
 										      	}
 								      	}
 
-								      	$checkOwner = PropertyOwners::where(['property_id'=>$mlsNameCheck->uuid, 'user_id'=>$request->user_id, 'type'=>'sub_owner'])->first();
+								      	$checkOwner = PropertyOwners::where(['property_id'=>$mlsNameCheck->uuid, 'user_id'=>$request->user_id])->first();
 
 								      	if ($checkOwner == null) {
 								      			$owner = new PropertyOwners;
@@ -498,7 +498,7 @@ class PropertiesController extends Controller
 										      	}
 								      	}
 
-								      	$checkOwner = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id, 'type'=>'main_owner'])->first();
+								      	$checkOwner = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id])->first();
 
 								      	if ($checkOwner == null) {
 								      			$owner = new PropertyOwners;
@@ -796,7 +796,7 @@ class PropertiesController extends Controller
 								      	}
 						      	}
 
-						      	$checkOwner = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id, 'type'=>'main_owner'])->first();
+						      	$checkOwner = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id])->first();
 
 						      	if ($checkOwner == null) {
 						      			$owner = new PropertyOwners;
