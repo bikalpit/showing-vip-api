@@ -1026,8 +1026,8 @@ class PropertiesController extends Controller
 
 	      $result = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>$request->agent_type])->delete();
 
-	      $checkVerification = PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$request->seller_id])->get();
-
+	      $checkVerification = PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$request->seller_id])->first();
+	      
 	      if ($checkVerification->verify_status !== 'PV') {
 	      		PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$request->seller_id])->update(['verify_status'=>'NO']);
 	      }
