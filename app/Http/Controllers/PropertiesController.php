@@ -1123,12 +1123,16 @@ class PropertiesController extends Controller
 				
 				$user_check = Users::where('email', $request->email)->first();
 				if (!empty($user_check)) {
-						$owner = new PropertyOwners;
-			      $owner->property_id = $request->property_id;
-			      $owner->user_id = $user_check->uuid;
-			      $property_owner = $owner->save();
-
-			      return $this->sendResponse("Owner added successfully!");
+						$checkOwner = PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$user_check->uuid])->first();
+						if ($checkOwner == null) {
+								$owner = new PropertyOwners;
+					      $owner->property_id = $request->property_id;
+					      $owner->user_id = $user_check->uuid;
+					      $property_owner = $owner->save();
+					      return $this->sendResponse("Owner added successfully!");
+					  }else{
+					  		return $this->sendResponse("Already added!", 200, false);
+					  }
 				}
 
 	      $prop_owner = Users::where('uuid', $request->user_id)->first();
