@@ -1197,9 +1197,9 @@ class PropertiesController extends Controller
 	      if (sizeof($property_ids) > 0) {
 	      		if ($sorting !== '') {
 	      				if ($sorting == 'date') {
-	      						if ($search_item !== '') {
+	      						$search_array = explode(' ', $search_item);
+	      						if (sizeof(array_filter($search_array)) > 0) {
 	      								$searched_property_ids = [];
-	      								$search_array = explode(' ', $search_item);
 
 	      								foreach (array_filter($search_array) as $search_array_item) {
 														$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
@@ -1234,9 +1234,9 @@ class PropertiesController extends Controller
 												$properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->orderBy('created_at', 'ASC')->get();
 										}
 	      				}elseif ($sorting == 'listing_status') {
-	      						if ($search_item !== '') {
+	      						$search_array = explode(' ', $search_item);
+	      						if (sizeof(array_filter($search_array)) > 0) {
 	      								$searched_property_ids = [];
-	      								$search_array = explode(' ', $search_item);
 
 	      								foreach (array_filter($search_array) as $search_array_item) {
 			      								$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
@@ -1272,9 +1272,9 @@ class PropertiesController extends Controller
 	      										->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->orderBy('property_homendo.hmdo_mls_status', 'DESC')->get('properties.*');
 										}
 	      				}elseif ($sorting == 'property_type') {
-	      						if ($search_item !== '') {
+	      						$search_array = explode(' ', $search_item);
+	      						if (sizeof(array_filter($search_array)) > 0) {
 	      								$searched_property_ids = [];
-	      								$search_array = explode(' ', $search_item);
 
 	      								foreach (array_filter($search_array) as $search_array_item) {
 			      								$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
@@ -1310,9 +1310,9 @@ class PropertiesController extends Controller
 	      										->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->orderBy('property_homendo.hmdo_mls_proptype', 'DESC')->get('properties.*');
 										}
 	      				}elseif ($sorting == 'listing_originator') {
-	      						if ($search_item !== '') {
+	      						$search_array = explode(' ', $search_item);
+	      						if (sizeof(array_filter($search_array)) > 0) {
 	      								$searched_property_ids = [];
-	      								$search_array = explode(' ', $search_item);
 
 	      								foreach (array_filter($search_array) as $search_array_item) {
 			      								$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
@@ -1349,9 +1349,9 @@ class PropertiesController extends Controller
 										}
 	      				}
 	      		}else{
-	      				if ($search_item !== '') {
+	      				$search_array = explode(' ', $search_item);
+	      				if (sizeof(array_filter($search_array)) > 0) {
 	      						$searched_property_ids = [];
-	      						$search_array = explode(' ', $search_item);
 
 	      						foreach (array_filter($search_array) as $search_array_item) {
 												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
