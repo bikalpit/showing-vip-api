@@ -16,6 +16,8 @@ class PropertyAgents extends Model
 
     use SoftDeletes;
 
+    protected $dates = ['deleted_at'];
+    
     public function property()
     {
         return $this->hasOne('App\Models\Properties','uuid','property_id');

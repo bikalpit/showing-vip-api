@@ -15,4 +15,6 @@ class PropertyBuyers extends Model
     protected $fillable = ['property_id','user_id','agent_id'];
 
     use SoftDeletes;
+
+    protected $dates = ['deleted_at'];
 }

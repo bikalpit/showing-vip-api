@@ -16,6 +16,8 @@ class PropertyOwners extends Model
 
     use SoftDeletes;
     
+    protected $dates = ['deleted_at'];
+    
     public function User(){
         return $this->hasOne('App\Models\Users', 'uuid', 'user_id');
     }

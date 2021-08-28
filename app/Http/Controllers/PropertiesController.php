@@ -1461,15 +1461,18 @@ class PropertiesController extends Controller
 						'user_id' => 'required',
 				]);
 
-				$property = Properties::with('Homendo')->where('uuid', $request->property_id)->first();
-				$user = Users::where('uuid', $request->user_id)->first();
-				$agent = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_type'=>'seller'])->first();
+				$property_id = $request->property_id;
+				$user_id = $request->user_id;
+
+				$property = Properties::with('Homendo')->where('uuid', $property_id)->first();
+				$user = Users::where('uuid', $user_id)->first();
+				$agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_type'=>'seller'])->first();
 
 				if ($user->role == 'AGENT') {
 						if ($property->Homendo->hmdo_listed == 1) {
 								return $this->sendResponse("You only hide this property, Can't delete!", 200, false);
 						}else{
-								$removeAgent = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id])->delete();
+								$removeAgent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$user_id])->delete();
 								if ($removeAgent) {
 										return $this->sendResponse("Property deleted successfully!");
 								}else{
@@ -1479,7 +1482,7 @@ class PropertiesController extends Controller
 				}else{
 						if ($property->Homendo->hmdo_listed == 1) {
 								if (!empty($agent)) {
-										$removeSeller = PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$request->user_id])->delete();
+										$removeSeller = PropertyOwners::where(['property_id'=>$property_id, 'user_id'=>$user_id])->delete();
 										if ($removeSeller) {
 												return $this->sendResponse("Property deleted successfully!");
 										}else{
@@ -1488,16 +1491,32 @@ class PropertiesController extends Controller
 								}
 						}else{
 								if (empty($agent) || $agent == null) {
-										$removeSeller = PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$request->user_id])->delete();
+										$removeSeller = PropertyOwners::where(['property_id'=>$property_id, 'user_id'=>$user_id])->delete();
 										if ($removeSeller) {
 												return $this->sendResponse("Property deleted successfully!");
 										}else{
 												return $this->sendResponse("Sorry, Data not found or Something went wrong!", 200, false);
 										}
 								}else{
-										$removeSeller = PropertyOwners::where(['property_id'=>$request->property_id, 'user_id'=>$request->user_id])->delete();
-										$removeAgent = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id])->delete();
-										if ($removeSeller && $removeAgent) {
+										$removeSeller = PropertyOwners::where(['property_id'=>$property_id, 'user_id'=>$user_id])->delete();
+										$checkSeller = PropertyOwners::where(['property_id'=>$property_id, 'user_id'=>$user_id])->get();
+										if (sizeof($checkSeller) == 1) {
+												$removeAgent = PropertyAgents::where('property_id', $property_id)->delete();
+												$removeBuyers = PropertyBuyers::where('property_id', $property_id)->delete();
+												$deleteProperty = Properties::where('uuid', $property_id)->delete();
+												$deletePropertyHomendo = PropertyHomendo::where('property_id', $property_id)->delete();
+												$deletePropertyValuecheck = PropertyValuecheck::where('property_id', $property_id)->delete();
+												$deletePropertyZillow = PropertyZillow::where('property_id', $property_id)->delete();
+												$deletePropertyShowings = PropertyBookingSchedule::where('property_id', $property_id)->delete();
+												$getShowingSetup = PropertyShowingSetup::where('property_id', $property_id)->first();
+												$deleteShowingAvailibility = PropertyShowingAvailability::where('showing_setup_id', $getShowingSetup->uuid)->delete();
+												$deleteShowingSurvey = PropertyShowingSurvey::where('showing_setup_id', $getShowingSetup->uuid)->delete();
+												$deleteShowingSetup = PropertyShowingSetup::where('property_id', $property_id)->delete();
+												$deletePropertyVerification = PropertyVerification::where('property_id', $property_id)->delete();
+												$deletePropertyImages = PropertyImages::where('property_id', $property_id)->delete();
+										}
+										
+										if ($removeSeller) {
 												return $this->sendResponse("Property deleted successfully!");
 										}else{
 												return $this->sendResponse("Sorry, Data not found or Something went wrong!", 200, false);
