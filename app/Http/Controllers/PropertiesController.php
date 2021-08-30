@@ -30,11 +30,10 @@ class PropertiesController extends Controller
 		public function addProperty(Request $request){
 				$this->validate($request, [
 		    		'user_id' => 'required',
-		        'data' => 'required',
-		        'agent_info' => 'required',
-		        'url' => 'required'
-		    ]);
-
+		        	'data' => 'required',
+		        	'agent_info' => 'nullable',
+		        	'url' => 'required'
+		    ]);	
 				$user = Users::where('uuid', $request->user_id)->first();
 
 				$vs_listed = $request->data['property'][0][1]['vs_listed'][1];
@@ -81,26 +80,26 @@ class PropertiesController extends Controller
 								            if ($result) {
 									            	$agent_info = new AgentInfo;
 										        		$agent_info->agent_id = $agent_uuid;
-										        		$agent_info->hmdo_lastupdated = $request->agent_info['hmdo_lastupdated'][1];
-										        		$agent_info->hmdo_mls_originator = $request->agent_info['hmdo_mls_originator'][1];
-										        		$agent_info->hmdo_agent_name = $request->agent_info['hmdo_agent_name'][1];
-										        		$agent_info->hmdo_agent_title = $request->agent_info['hmdo_agent_title'][1];
-										        		$agent_info->hmdo_agent_photo_url = $request->agent_info['hmdo_agent_photo_url'][1];
-										        		$agent_info->hmdo_agent_email = $request->agent_info['hmdo_agent_email'][1];
-										        		$agent_info->hmdo_office_main_phone = $request->agent_info['hmdo_office_main_phone'][1];
-										        		$agent_info->hmdo_office_direct_phone = $request->agent_info['hmdo_office_direct_phone'][1];
-										        		$agent_info->hmdo_agent_mobile_phone = $request->agent_info['hmdo_agent_mobile_phone'][1];
-										        		$agent_info->hmdo_agent_skills = $request->agent_info['hmdo_agent_skills'][1];
-										        		$agent_info->hmdo_office_id = $request->agent_info['hmdo_office_id'][1];
-										        		$agent_info->hmdo_office_name = $request->agent_info['hmdo_office_name'][1];
-										        		$agent_info->hmdo_office_photo = $request->agent_info['hmdo_office_photo'][1];
-										        		$agent_info->hmdo_office_street = $request->agent_info['hmdo_office_street'][1];
-										        		$agent_info->hmdo_office_city = $request->agent_info['hmdo_office_city'][1];
-										        		$agent_info->hmdo_office_zipcode = $request->agent_info['hmdo_office_zipcode'][1];
-										        		$agent_info->hmdo_office_state = $request->agent_info['hmdo_office_state'][1];
-										        		$agent_info->hmdo_office_phone = $request->agent_info['hmdo_office_phone'][1];
-										        		$agent_info->hmdo_office_website = $request->agent_info['hmdo_office_website'][1];
-										        		$agent_info->hmdo_agent_website = $request->agent_info['hmdo_agent_website'][1];
+										        		$agent_info->hmdo_lastupdated = ($request->agent_info != null)?$request->agent_info['hmdo_lastupdated'][1]:NULL;
+										        		$agent_info->hmdo_mls_originator = ($request->agent_info != null)?$request->agent_info['hmdo_mls_originator'][1]:NULL;
+										        		$agent_info->hmdo_agent_name = ($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:NULL;
+										        		$agent_info->hmdo_agent_title = ($request->agent_info != null)?$request->agent_info['hmdo_agent_title'][1]:NULL;
+										        		$agent_info->hmdo_agent_photo_url = ($request->agent_info != null)?$request->agent_info['hmdo_agent_photo_url'][1]:NULL;
+										        		$agent_info->hmdo_agent_email = ($request->agent_info != null)?$request->agent_info['hmdo_agent_email'][1]:NULL;
+										        		$agent_info->hmdo_office_main_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_main_phone'][1]:NULL;
+										        		$agent_info->hmdo_office_direct_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_direct_phone'][1]:NULL;
+										        		$agent_info->hmdo_agent_mobile_phone = ($request->agent_info != null)?$request->agent_info['hmdo_agent_mobile_phone'][1]:NULL;
+										        		$agent_info->hmdo_agent_skills = ($request->agent_info != null)?$request->agent_info['hmdo_agent_skills'][1]:NULL;
+										        		$agent_info->hmdo_office_id = ($request->agent_info != null)?$request->agent_info['hmdo_office_id'][1]:NULL;
+										        		$agent_info->hmdo_office_name = ($request->agent_info != null)?$request->agent_info['hmdo_office_name'][1]:NULL;
+										        		$agent_info->hmdo_office_photo = ($request->agent_info != null)?$request->agent_info['hmdo_office_photo'][1]:NULL;
+										        		$agent_info->hmdo_office_street = ($request->agent_info != null)?$request->agent_info['hmdo_office_street'][1]:NULL;
+										        		$agent_info->hmdo_office_city = ($request->agent_info != null)?$request->agent_info['hmdo_office_city'][1]:NULL;
+										        		$agent_info->hmdo_office_zipcode = ($request->agent_info != null)?$request->agent_info['hmdo_office_zipcode'][1]:NULL;
+										        		$agent_info->hmdo_office_state = ($request->agent_info != null)?$request->agent_info['hmdo_office_state'][1]:NULL;
+										        		$agent_info->hmdo_office_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_phone'][1]:NULL;
+										        		$agent_info->hmdo_office_website = ($request->agent_info != null)?$request->agent_info['hmdo_office_website'][1]:NULL;
+										        		$agent_info->hmdo_agent_website = ($request->agent_info != null)?$request->agent_info['hmdo_agent_website'][1]:NULL;
 										        		$agent_info->save();
 
 								            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
@@ -117,7 +116,7 @@ class PropertiesController extends Controller
 
 										            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 										            $verification_data = [
-																		'name'=>$request->agent_info['hmdo_agent_name'][1],
+																		'name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
 																		'owner_name'=>$user->first_name.' '.$user->last_name,
 										                'property_id'=>$mlsNameCheck->uuid,
 										                'property_link'=>$property_homendo->hmdo_mls_url,
@@ -378,26 +377,26 @@ class PropertiesController extends Controller
 								            if ($result) {
 									            	$agent_info = new AgentInfo;
 										        		$agent_info->agent_id = $agent_uuid;
-										        		$agent_info->hmdo_lastupdated = $request->agent_info['hmdo_lastupdated'][1];
-										        		$agent_info->hmdo_mls_originator = $request->agent_info['hmdo_mls_originator'][1];
-										        		$agent_info->hmdo_agent_name = $request->agent_info['hmdo_agent_name'][1];
-										        		$agent_info->hmdo_agent_title = $request->agent_info['hmdo_agent_title'][1];
-										        		$agent_info->hmdo_agent_photo_url = $request->agent_info['hmdo_agent_photo_url'][1];
-										        		$agent_info->hmdo_agent_email = $request->agent_info['hmdo_agent_email'][1];
-										        		$agent_info->hmdo_office_main_phone = $request->agent_info['hmdo_office_main_phone'][1];
-										        		$agent_info->hmdo_office_direct_phone = $request->agent_info['hmdo_office_direct_phone'][1];
-										        		$agent_info->hmdo_agent_mobile_phone = $request->agent_info['hmdo_agent_mobile_phone'][1];
-										        		$agent_info->hmdo_agent_skills = $request->agent_info['hmdo_agent_skills'][1];
-										        		$agent_info->hmdo_office_id = $request->agent_info['hmdo_office_id'][1];
-										        		$agent_info->hmdo_office_name = $request->agent_info['hmdo_office_name'][1];
-										        		$agent_info->hmdo_office_photo = $request->agent_info['hmdo_office_photo'][1];
-										        		$agent_info->hmdo_office_street = $request->agent_info['hmdo_office_street'][1];
-										        		$agent_info->hmdo_office_city = $request->agent_info['hmdo_office_city'][1];
-										        		$agent_info->hmdo_office_zipcode = $request->agent_info['hmdo_office_zipcode'][1];
-										        		$agent_info->hmdo_office_state = $request->agent_info['hmdo_office_state'][1];
-										        		$agent_info->hmdo_office_phone = $request->agent_info['hmdo_office_phone'][1];
-										        		$agent_info->hmdo_office_website = $request->agent_info['hmdo_office_website'][1];
-										        		$agent_info->hmdo_agent_website = $request->agent_info['hmdo_agent_website'][1];
+										        		$agent_info->hmdo_lastupdated = ($request->agent_info != null)?$request->agent_info['hmdo_lastupdated'][1]:NULL;
+										        		$agent_info->hmdo_mls_originator = ($request->agent_info != null)?$request->agent_info['hmdo_mls_originator'][1]:NULL;
+										        		$agent_info->hmdo_agent_name = ($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:NULL;
+										        		$agent_info->hmdo_agent_title = ($request->agent_info != null)?$request->agent_info['hmdo_agent_title'][1]:NULL;
+										        		$agent_info->hmdo_agent_photo_url = ($request->agent_info != null)?$request->agent_info['hmdo_agent_photo_url'][1]:NULL;
+										        		$agent_info->hmdo_agent_email = ($request->agent_info != null)?$request->agent_info['hmdo_agent_email'][1]:NULL;
+										        		$agent_info->hmdo_office_main_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_main_phone'][1]:NULL;
+										        		$agent_info->hmdo_office_direct_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_direct_phone'][1]:NULL;
+										        		$agent_info->hmdo_agent_mobile_phone = ($request->agent_info != null)?$request->agent_info['hmdo_agent_mobile_phone'][1]:NULL;
+										        		$agent_info->hmdo_agent_skills = ($request->agent_info != null)?$request->agent_info['hmdo_agent_skills'][1]:NULL;
+										        		$agent_info->hmdo_office_id = ($request->agent_info != null)?$request->agent_info['hmdo_office_id'][1]:NULL;
+										        		$agent_info->hmdo_office_name = ($request->agent_info != null)?$request->agent_info['hmdo_office_name'][1]:NULL;
+										        		$agent_info->hmdo_office_photo = ($request->agent_info != null)?$request->agent_info['hmdo_office_photo'][1]:NULL;
+										        		$agent_info->hmdo_office_street = ($request->agent_info != null)?$request->agent_info['hmdo_office_street'][1]:NULL;
+										        		$agent_info->hmdo_office_city = ($request->agent_info != null)?$request->agent_info['hmdo_office_city'][1]:NULL;
+										        		$agent_info->hmdo_office_zipcode = ($request->agent_info != null)?$request->agent_info['hmdo_office_zipcode'][1]:NULL;
+										        		$agent_info->hmdo_office_state = ($request->agent_info != null)?$request->agent_info['hmdo_office_state'][1]:NULL;
+										        		$agent_info->hmdo_office_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_phone'][1]:NULL;
+										        		$agent_info->hmdo_office_website = ($request->agent_info != null)?$request->agent_info['hmdo_office_website'][1]:NULL;
+										        		$agent_info->hmdo_agent_website = ($request->agent_info != null)?$request->agent_info['hmdo_agent_website'][1]:NULL;
 										        		$agent_info->save();
 
 								            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
@@ -414,7 +413,7 @@ class PropertiesController extends Controller
 
 										            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 										            $verification_data = [
-																		'name'=>$request->agent_info['hmdo_agent_name'][1],
+																		'name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
 																		'owner_name'=>$user->first_name.' '.$user->last_name,
 										                'property_id'=>$property->uuid,
 										                'property_link'=>$homendo->hmdo_mls_url,
@@ -676,26 +675,26 @@ class PropertiesController extends Controller
 						            if ($result) {
 							            	$agent_info = new AgentInfo;
 								        		$agent_info->agent_id = $agent_uuid;
-								        		$agent_info->hmdo_lastupdated = $request->agent_info['hmdo_lastupdated'][1];
-								        		$agent_info->hmdo_mls_originator = $request->agent_info['hmdo_mls_originator'][1];
-								        		$agent_info->hmdo_agent_name = $request->agent_info['hmdo_agent_name'][1];
-								        		$agent_info->hmdo_agent_title = $request->agent_info['hmdo_agent_title'][1];
-								        		$agent_info->hmdo_agent_photo_url = $request->agent_info['hmdo_agent_photo_url'][1];
-								        		$agent_info->hmdo_agent_email = $request->agent_info['hmdo_agent_email'][1];
-								        		$agent_info->hmdo_office_main_phone = $request->agent_info['hmdo_office_main_phone'][1];
-								        		$agent_info->hmdo_office_direct_phone = $request->agent_info['hmdo_office_direct_phone'][1];
-								        		$agent_info->hmdo_agent_mobile_phone = $request->agent_info['hmdo_agent_mobile_phone'][1];
-								        		$agent_info->hmdo_agent_skills = $request->agent_info['hmdo_agent_skills'][1];
-								        		$agent_info->hmdo_office_id = $request->agent_info['hmdo_office_id'][1];
-								        		$agent_info->hmdo_office_name = $request->agent_info['hmdo_office_name'][1];
-								        		$agent_info->hmdo_office_photo = $request->agent_info['hmdo_office_photo'][1];
-								        		$agent_info->hmdo_office_street = $request->agent_info['hmdo_office_street'][1];
-								        		$agent_info->hmdo_office_city = $request->agent_info['hmdo_office_city'][1];
-								        		$agent_info->hmdo_office_zipcode = $request->agent_info['hmdo_office_zipcode'][1];
-								        		$agent_info->hmdo_office_state = $request->agent_info['hmdo_office_state'][1];
-								        		$agent_info->hmdo_office_phone = $request->agent_info['hmdo_office_phone'][1];
-								        		$agent_info->hmdo_office_website = $request->agent_info['hmdo_office_website'][1];
-								        		$agent_info->hmdo_agent_website = $request->agent_info['hmdo_agent_website'][1];
+								        		$agent_info->hmdo_lastupdated = ($request->agent_info != null)?$request->agent_info['hmdo_lastupdated'][1]:NULL;
+								        		$agent_info->hmdo_mls_originator = ($request->agent_info != null)?$request->agent_info['hmdo_mls_originator'][1]:NULL;
+								        		$agent_info->hmdo_agent_name = ($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:NULL;
+								        		$agent_info->hmdo_agent_title = ($request->agent_info != null)?$request->agent_info['hmdo_agent_title'][1]:NULL;
+								        		$agent_info->hmdo_agent_photo_url = ($request->agent_info != null)?$request->agent_info['hmdo_agent_photo_url'][1]:NULL;
+								        		$agent_info->hmdo_agent_email = ($request->agent_info != null)?$request->agent_info['hmdo_agent_email'][1]:NULL;
+								        		$agent_info->hmdo_office_main_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_main_phone'][1]:NULL;
+								        		$agent_info->hmdo_office_direct_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_direct_phone'][1]:NULL;
+								        		$agent_info->hmdo_agent_mobile_phone = ($request->agent_info != null)?$request->agent_info['hmdo_agent_mobile_phone'][1]:NULL;
+								        		$agent_info->hmdo_agent_skills = ($request->agent_info != null)?$request->agent_info['hmdo_agent_skills'][1]:NULL;
+								        		$agent_info->hmdo_office_id = ($request->agent_info != null)?$request->agent_info['hmdo_office_id'][1]:NULL;
+								        		$agent_info->hmdo_office_name = ($request->agent_info != null)?$request->agent_info['hmdo_office_name'][1]:NULL;
+								        		$agent_info->hmdo_office_photo = ($request->agent_info != null)?$request->agent_info['hmdo_office_photo'][1]:NULL;
+								        		$agent_info->hmdo_office_street = ($request->agent_info != null)?$request->agent_info['hmdo_office_street'][1]:NULL;
+								        		$agent_info->hmdo_office_city = ($request->agent_info != null)?$request->agent_info['hmdo_office_city'][1]:NULL;
+								        		$agent_info->hmdo_office_zipcode = ($request->agent_info != null)?$request->agent_info['hmdo_office_zipcode'][1]:NULL;
+								        		$agent_info->hmdo_office_state = ($request->agent_info != null)?$request->agent_info['hmdo_office_state'][1]:NULL;
+								        		$agent_info->hmdo_office_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_phone'][1]:NULL;
+								        		$agent_info->hmdo_office_website = ($request->agent_info != null)?$request->agent_info['hmdo_office_website'][1]:NULL;
+								        		$agent_info->hmdo_agent_website = ($request->agent_info != null)?$request->agent_info['hmdo_agent_website'][1]:NULL;
 								        		$agent_info->save();
 
 						            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
@@ -712,7 +711,7 @@ class PropertiesController extends Controller
 
 								            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 								            $verification_data = [
-																'name'=>$request->agent_info['hmdo_agent_name'][1],
+																'name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
 																'owner_name'=>$user->first_name.' '.$user->last_name,
 								                'property_id'=>$property->uuid,
 								                'property_link'=>$homendo->hmdo_mls_url,
