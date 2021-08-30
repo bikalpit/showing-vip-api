@@ -1205,6 +1205,7 @@ class PropertiesController extends Controller
 				$search_item = $request->search;
 				$sorting = $request->sorting;
 				$sort_by = $request->sort_by;
+				$filter  = $request->filter;
 	      $property_ids = PropertyAgents::where(['agent_id'=>$request->agent_id])->pluck('property_id')->toArray();
 
 	      if (sizeof($property_ids) > 0) {
@@ -1413,12 +1414,21 @@ class PropertiesController extends Controller
 
 				      			$property_info = PropertyAgents::where('property_id', $property->uuid)->first();
 				      			$property['agent_status'] = $property_info->status;
-				      			if ($property_info->agent_type == 'seller') {
-				      					$selling_properties[] = $property;
-				      			}else{
-				      					$buying_properties[] = $property;
-				      			}
-
+								if($filter == 'hide'){
+									if($property_info->status == $filter){
+										if ($property_info->agent_type == 'seller') {
+											$selling_properties[] = $property;
+										}else{
+												$buying_properties[] = $property;
+										}
+									}
+								}else{
+									if ($property_info->agent_type == 'seller') {
+										$selling_properties[] = $property;
+									}else{
+											$buying_properties[] = $property;
+									}
+								}
 				      			$all_properties = array('selling_properties'=>$selling_properties, 'buying_properties'=>$buying_properties);
 			      		}
 	      				return $this->sendResponse($all_properties);
