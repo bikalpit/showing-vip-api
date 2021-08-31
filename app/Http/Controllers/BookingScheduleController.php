@@ -14,6 +14,7 @@ use App\Models\PropertyHomendo;
 use App\Models\PropertyBuyers;
 use App\Models\ShowingFeedback;
 use App\Models\SurveySubCategories;
+use App\Models\SurveyCategories;
 use App\Models\Settings;
 use App\Models\PropertyAgents;
 use App\Models\PropertyOwners;
@@ -697,10 +698,27 @@ class BookingScheduleController extends Controller
                 $booking['showing_setup'] = $showing_setup;
                 $surveys = json_decode($booking['showing_setup']->showingSurvey->survey);
                 $answers = [];
-                foreach ($surveys as $survey) {
+                $newSurveys = [];
+                if(!empty($surveys)){
+                    $newSurveys = SurveySubCategories::whereIn('uuid',$surveys)
+                                    ->orderBy('id','ASC')->pluck('uuid')->toArray();
+                }
+                $categories = SurveyCategories::orderBy('id','ASC')->get();
+                foreach($categories as $newCategory){
+                    if(!empty($newSurveys)){
+                        foreach($newSurveys as $survey){
+                            $newSubCate = SurveySubCategories::with('category')
+                                ->where(['category_id'=>$newCategory['uuid'],'uuid'=>$survey])->first();
+                            if($newSubCate != null){
+                                $answers[] = $newSubCate;
+                            }
+                        }
+                    }
+                }
+                /*foreach ($surveys as $survey) {
                     $subCategory = SurveySubCategories::with('category')->where('uuid',$survey)->first();
                     $answers[] = $subCategory;
-                }
+                }*/
                 $booking['answers'] = $answers;
                 $booking['feedback'] = ShowingFeedback::where('booking_id', $booking->uuid)->first();
                 $booking['office'] = '';
@@ -746,10 +764,27 @@ class BookingScheduleController extends Controller
                 $booking['showing_setup'] = $showing_setup;
                 $surveys = json_decode($booking['showing_setup']->showingSurvey->survey);
                 $answers = [];
-                foreach ($surveys as $survey) {
+                $newSurveys = [];
+                if(!empty($surveys)){
+                    $newSurveys = SurveySubCategories::whereIn('uuid',$surveys)
+                                    ->orderBy('id','ASC')->pluck('uuid')->toArray();
+                }
+                $categories = SurveyCategories::orderBy('id','ASC')->get();
+                foreach($categories as $newCategory){
+                    if(!empty($newSurveys)){
+                        foreach($newSurveys as $survey){
+                            $newSubCate = SurveySubCategories::with('category')
+                                ->where(['category_id'=>$newCategory['uuid'],'uuid'=>$survey])->first();
+                            if($newSubCate != null){
+                                $answers[] = $newSubCate;
+                            }
+                        }
+                    }
+                }
+                /*foreach ($surveys as $survey) {
                     $subCategory = SurveySubCategories::with('category')->where('uuid',$survey)->first();
                     $answers[] = $subCategory;
-                }
+                }*/
                 $booking['answers'] = $answers;
                 $booking['feedback'] = ShowingFeedback::where('booking_id', $booking->uuid)->first();
                 $booking['office'] = '';
