@@ -722,4 +722,18 @@ class AgentController extends Controller
             return $this->sendResponse("Sorry, Property not found or Something went wrong!", 200, false);
         }
     }
+    public function unhideAgentProperty(Request $request){
+        $this->validate($request, [
+            'agent_id' => 'required',
+            'property_id' => 'required'
+        ]);
+
+        $unhide_property = PropertyAgents::where(['agent_id'=>$request->agent_id, 'property_id'=>$request->property_id])->update(['status'=>'show']);
+
+        if ($unhide_property) {
+            return $this->sendResponse("Property unhided!");
+        }else{
+            return $this->sendResponse("Sorry, Property not found or Something went wrong!", 200, false);
+        }
+    }
 }
