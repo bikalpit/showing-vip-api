@@ -524,6 +524,7 @@ class ShowingController extends Controller
 			      		return $this->sendResponse("Sorry, Showing setup not found!", 200, false);
 			      }
 	      }elseif ($checkAgent != null) {
+	      		$this->configSMTP();
 	      		$data = [
                 'name' => $checkAgent->first_name.' '.$checkAgent->last_name,
                 'mls_id' => $request->mls_id,
