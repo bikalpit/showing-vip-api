@@ -882,7 +882,7 @@ class BookingScheduleController extends Controller
             'interval'          => 'required',
             'showing_note'      => 'nullable',
         ]);
-        
+
         $formetted_date = date('Y-m-d', strtotime($request->booking_date));
         $property_id = $request->property_id;
         $booking_date = $request->booking_date;
@@ -952,6 +952,15 @@ class BookingScheduleController extends Controller
         $propertyBookingSchedule->cancel_at = null;
 
         if ($propertyBookingSchedule->save()) {
+            $check_buyer = PropertyBuyers::where(['buyer_id'=>$user->uuid, 'property_id'=>$property_id])->first();
+            if (empty($check_buyer)) {
+                $property_buyer = new PropertyBuyers;
+                $property_buyer->property_id = $property_id;
+                $property_buyer->buyer_id = $user->uuid;
+                $property_buyer->agent_id = $request->buyer_agent_id;
+                $property_buyer->save();
+            }
+
             if ($showing_setup != null || $showing_setup != '') {
                 if ($availibility !== null) {
                     foreach ($availibility_data as $data) {
