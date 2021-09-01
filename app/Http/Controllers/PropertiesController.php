@@ -206,7 +206,7 @@ class PropertiesController extends Controller
 								      			$owner = new PropertyOwners;
 										      	$owner->property_id = $mlsNameCheck->uuid;
 										      	$owner->user_id = $request->user_id;
-										      	$owner->type = 'sub_owner';
+										      	$owner->type = 'main_owner';
 										      	$owner->verify_status = $verify_status;
 										      	$property_owner = $owner->save();
 
