@@ -904,7 +904,8 @@ class PropertiesController extends Controller
 		      			}else{
 		      					$property['agent'] = null;
 		      			}
-				      			
+				      	$verify_ownership = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id])->first();
+				      	$property['verify_status'] = $verify_ownership->verify_status;
 		      			$property['owners'] = $selling_properties;
 		      			$property['showings'] = $showings;
 		      			$all_selling_properties[] = $property;

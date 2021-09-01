@@ -45,7 +45,7 @@ class BookingScheduleController extends Controller
             'seller_agent_id'       => 'nullable',
             'buyer_agent_id'        => 'nullable',
             'url'                   => 'nullable',
-            'interval'              => 'required',
+            'interval'              => 'nullable',
         ]);
 
         $formetted_date = date('Y-m-d', strtotime($request->booking_date));
