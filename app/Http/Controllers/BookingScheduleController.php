@@ -93,7 +93,7 @@ class BookingScheduleController extends Controller
             $propertyBookingSchedule->property_originator = $request->property_originator;
             $propertyBookingSchedule->booking_date = $formetted_date;
             $propertyBookingSchedule->booking_time = $booking_time;
-            $propertyBookingSchedule->booking_slots = $request->booking_slots;
+            $propertyBookingSchedule->booking_slots = json_encode($request->booking_slots);
             if ($showing_setup != null || $showing_setup != '') {
                 if ($showing_setup->type == 'VALID') {
                     $propertyBookingSchedule->status = 'P';
@@ -239,7 +239,7 @@ class BookingScheduleController extends Controller
                                     /*if ($slot->slot == date('H:i A', strtotime($booking_time))) {
                                         $slot->status = 'booked';
                                     }*/
-                                    foreach (json_decode($request->booking_slots) as $booking_slot) {
+                                    foreach ($request->booking_slots as $booking_slot) {
                                         if ($slot->slot == date('H:i A', strtotime($booking_slot))) {
                                             $slot->status = 'booked';
                                         }
@@ -342,7 +342,7 @@ class BookingScheduleController extends Controller
                 $propertyBookingSchedule->property_originator = $request->property_originator;
                 $propertyBookingSchedule->booking_date = $formetted_date;
                 $propertyBookingSchedule->booking_time = $booking_time;
-                $propertyBookingSchedule->booking_slots = $request->booking_slots;
+                $propertyBookingSchedule->booking_slots = json_encode($request->booking_slots);
                 $propertyBookingSchedule->status = 'P';
                 $propertyBookingSchedule->cv_status = 'on-hold';
                 if ($request->seller_agent_id != '' || $request->seller_agent_id != null) {
@@ -494,7 +494,7 @@ class BookingScheduleController extends Controller
                                         /*if ($slot->slot == date('H:i A', strtotime($booking_time))) {
                                             $slot->status = 'booked';
                                         }*/
-                                        foreach (json_decode($request->booking_slots) as $booking_slot) {
+                                        foreach ($request->booking_slots as $booking_slot) {
                                             if ($slot->slot == date('H:i A', strtotime($booking_slot))) {
                                                 $slot->status = 'booked';
                                             }
@@ -619,7 +619,7 @@ class BookingScheduleController extends Controller
                                 }else{
                                     $slot->status = 'confirm';
                                 }*/
-                                foreach (json_decode($booking->booking_slots) as $booking_slot) {
+                                foreach ($booking->booking_slots as $booking_slot) {
                                     if ($slot->slot == $booking_slot) {
                                         $slot->status = 'booked';
                                     }else{
@@ -882,7 +882,7 @@ class BookingScheduleController extends Controller
             'interval'          => 'required',
             'showing_note'      => 'nullable',
         ]);
-
+        
         $formetted_date = date('Y-m-d', strtotime($request->booking_date));
         $property_id = $request->property_id;
         $booking_date = $request->booking_date;
@@ -930,7 +930,7 @@ class BookingScheduleController extends Controller
         $propertyBookingSchedule->property_originator = $property->mls_name;
         $propertyBookingSchedule->booking_date = $formetted_date;
         $propertyBookingSchedule->booking_time = $booking_time;
-        $propertyBookingSchedule->booking_slots = $request->booking_slots;
+        $propertyBookingSchedule->booking_slots = json_encode($request->booking_slots);
         if ($showing_setup != null || $showing_setup != '') {
             if ($showing_setup->type == 'VALID') {
                 $propertyBookingSchedule->status = 'P';
@@ -960,7 +960,7 @@ class BookingScheduleController extends Controller
                                 /*if ($slot->slot == date('H:i A', strtotime($booking_time))) {
                                     $slot->status = 'booked';
                                 }*/
-                                foreach (json_decode($request->booking_slots) as $booking_slot) {
+                                foreach ($request->booking_slots as $booking_slot) {
                                     if ($slot->slot == date('H:i A', strtotime($booking_slot))) {
                                         $slot->status = 'booked';
                                     }
