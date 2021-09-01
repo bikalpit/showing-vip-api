@@ -30,9 +30,9 @@ class PropertiesController extends Controller
 		public function addProperty(Request $request){
 				$this->validate($request, [
 		    		'user_id' => 'required',
-		        	'data' => 'required',
-		        	'agent_info' => 'nullable',
-		        	'url' => 'required'
+	        	'data' => 'required',
+	        	'agent_info' => 'nullable',
+	        	'url' => 'required'
 		    ]);	
 				$user = Users::where('uuid', $request->user_id)->first();
 
@@ -481,7 +481,7 @@ class PropertiesController extends Controller
 							      		$verify_status = 'NO';
 								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
 								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
-										      			$verify_status = 'YES';
+										      			$verify_status = 'PV';
 										      	}else{
 										      			$verify_status = 'NO';
 								      			}
@@ -490,7 +490,7 @@ class PropertiesController extends Controller
 								      	if ($verify_status == 'NO') {
 								      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
 								      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
-										      					$verify_status = 'YES';
+										      					$verify_status = 'PV';
 										      			}else{
 										      					$verify_status = 'NO';
 										      			}
@@ -779,7 +779,7 @@ class PropertiesController extends Controller
 					      		$verify_status = 'NO';
 						      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
 						      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
-								      			$verify_status = 'YES';
+								      			$verify_status = 'PV';
 								      	}else{
 								      			$verify_status = 'NO';
 						      			}
@@ -788,7 +788,7 @@ class PropertiesController extends Controller
 						      	if ($verify_status == 'NO') {
 						      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
 						      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
-								      					$verify_status = 'YES';
+								      					$verify_status = 'PV';
 								      			}else{
 								      					$verify_status = 'NO';
 								      			}
