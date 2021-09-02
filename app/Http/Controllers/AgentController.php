@@ -651,7 +651,7 @@ class AgentController extends Controller
                 return $this->sendResponse("User verified successfully!");
             }else{
                 PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$request->property_id])->update(['verify_status'=>'VC']);
-                return $this->sendResponse("Verification cancelled!", 200, false);
+                return $this->sendResponse("Verification cancelled!");
             }
         }else{
             return $this->sendResponse("Sorry, User not found!", 200, false);
