@@ -572,7 +572,6 @@ class BookingScheduleController extends Controller
             'booking_id'        => 'required',
             'booking_date'      => 'required',
             'booking_time'      => 'required',
-            'booking_slots'     => 'required',
             'user_id'           => 'nullable',
             'status'            => 'required|in:A,R,P',
             'reason'            => 'nullable',
@@ -619,13 +618,15 @@ class BookingScheduleController extends Controller
                                 }else{
                                     $slot->status = 'confirm';
                                 }*/
-                                foreach ($booking->booking_slots as $booking_slot) {
-                                    if ($slot->slot == $booking_slot) {
-                                        $slot->status = 'booked';
-                                    }else{
-                                        $slot->status = 'confirm';
+                                if ($booking->booking_slots != null || $booking->booking_slots != '') {
+                                    foreach (json_decode($booking->booking_slots) as $booking_slot) {
+                                        if ($slot->slot == $booking_slot) {
+                                            $slot->status = 'booked';
+                                        }else{
+                                            $slot->status = 'confirm';
+                                        }
                                     }
-                                }
+                                } 
                             }
                         }
                     }
