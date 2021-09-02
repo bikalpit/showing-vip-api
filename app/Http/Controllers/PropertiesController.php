@@ -1282,8 +1282,7 @@ class PropertiesController extends Controller
 
 			      						$properties = Properties::join('property_homendo','property_homendo.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', array_unique($searched_property_ids))->orderBy('property_homendo.hmdo_mls_status',$sort_by)->get();
 										}else{
-												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
-	      										->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->orderBy('property_homendo.hmdo_mls_status',$sort_by)->get('properties.*');
+												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->orderBy('property_homendo.hmdo_mls_status',$sort_by)->get('properties.*');
 										}
 	      				}elseif ($sorting == 'property_type') {
 	      						$search_array = explode(' ', $search_item);
@@ -1320,8 +1319,7 @@ class PropertiesController extends Controller
 
 			      						$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', array_unique($searched_property_ids))->orderBy('property_homendo.hmdo_mls_proptype', $sort_by)->get();
 										}else{
-												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
-	      										->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->orderBy('property_homendo.hmdo_mls_proptype', $sort_by)->get('properties.*');
+												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->orderBy('property_homendo.hmdo_mls_proptype', $sort_by)->get('properties.*');
 										}
 	      				}elseif ($sorting == 'price') {
 	      						$search_array = explode(' ', $search_item);
@@ -1347,20 +1345,18 @@ class PropertiesController extends Controller
 						              			->orWhere('property_valuecheck.vs_county', 'LIKE', '%'.$search_array_item.'%')
 						              			->orWhere('property_valuecheck.vs_countyname', 'LIKE', '%'.$search_array_item.'%')
 						              			->orWhere('property_valuecheck.vs_country', 'LIKE', '%'.$search_array_item.'%');
-														})->orderBy('property_homendo.hmdo_mls_originator', $sort_by)->get('properties.*');
+														})->orderBy('properties.price', $sort_by)->get('properties.*');
 
 			      								if (sizeof($properties) > 0) {
 																foreach ($properties as $property) {
 																		$searched_property_ids[] = $property->uuid;
 																}
 														}
-										  }
+											  }
 
-										$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
-	      										->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', array_unique($searched_property_ids))->orderBy('property_homendo.hmdo_mls_price', $sort_by)->get('properties.*');
-									}else{
-												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')
-	      										->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->orderBy('property_homendo.hmdo_mls_price', $sort_by)->get('properties.*');
+												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', array_unique($searched_property_ids))->orderBy('properties.price', $sort_by)->get('properties.*');
+										}else{
+												$properties = Properties::join('property_homendo', 'property_homendo.property_id', '=', 'properties.uuid')->with('Valuecheck', 'Zillow', 'Homendo')->whereIn('properties.uuid', $property_ids)->orderBy('properties.price', $sort_by)->get('properties.*');
 										}
 	      				}
 	      		}else{
