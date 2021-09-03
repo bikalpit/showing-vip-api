@@ -51,8 +51,23 @@ class SuperAdminController extends Controller
 				
 				$all_showings = PropertyShowingSetup::get();
 
+				$showings = [];
+        $future_bookings = [];
+        $past_bookings = [];
+        $today_bookings = [];
+        
 				if (sizeof($all_showings) > 0) {
-						return $this->sendResponse($all_showings);
+						foreach ($all_showings as $showing) {
+                if (strtotime(date('Y-m-d')) < strtotime($showing->booking_date)) {
+                    $future_bookings[] = $showing;
+                }else if (strtotime(date('Y-m-d')) > strtotime($showing->booking_date)) {
+                    $past_bookings[] = $showing;
+                }else if (strtotime(date('Y-m-d')) == strtotime($showing->booking_date)) {
+                    $today_bookings[] = $showing;
+                }
+            }
+            $showings = array('future' => $future_bookings, 'past' => $past_bookings, 'today' => $today_bookings);
+						return $this->sendResponse($showings);
 				}else {
 						return $this->sendResponse("Sorry, Showings not found!", 200, false);
 				}
