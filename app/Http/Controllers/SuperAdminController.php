@@ -38,7 +38,7 @@ class SuperAdminController extends Controller
 
 		public function allProperties(Request $request){
 				
-				$all_properties = Properties::with('Valuecheck', 'Zillow', 'Homendo')->paginate(10);
+				$all_properties = Properties::with('propertySellers.User', 'Valuecheck', 'Zillow', 'Homendo')->paginate(10);
 
 				if (sizeof($all_properties) > 0) {
 						return $this->sendResponse($all_properties);
