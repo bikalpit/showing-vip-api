@@ -95,7 +95,9 @@ class ShowingController extends Controller
 		}
 
 		public function getAllCategories(Request $request){
-	      $categories = SurveyCategories::with('subCategory')->orderBy('id','ASC')->get();
+	      $categories = SurveyCategories::with(array('subCategory'=>function($query){
+			$query->orderBy('id','ASC');
+		  }))->orderBy('id','ASC')->get();
 
 	      if (sizeof($categories)) {
 	      		return $this->sendResponse($categories);
