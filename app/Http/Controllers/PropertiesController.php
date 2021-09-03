@@ -33,13 +33,15 @@ class PropertiesController extends Controller
 	        	'data' => 'required',
 	        	'agent_info' => 'nullable',
 	        	'url' => 'required'
-		    ]);	
+		    ]);
+
 				$user = Users::where('uuid', $request->user_id)->first();
 
 				$vs_listed = $request->data['property'][0][1]['vs_listed'][1];
 				$z_listed = $request->data['property'][1][1]['z_listed'][1];
 				$hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
-
+				$hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
+				
 				if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
 						$mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0];
 		    }else{
@@ -227,6 +229,7 @@ class PropertiesController extends Controller
 								      	$property->mls_name = $mls_name;
 								      	$property->data = json_encode($request->data);
 								      	$property->verified = 'NO';
+								      	$property->price = str_replace(array('$', ','), '', $hmdo_mls_price);
 								      	$property->last_update = date('Y-m-d H:i:s');
 								      	$add_property = $property->save();
 
@@ -525,6 +528,7 @@ class PropertiesController extends Controller
 						      	$property->mls_name = $mls_name;
 						      	$property->data = json_encode($request->data);
 						      	$property->verified = 'NO';
+						      	$property->price = str_replace(array('$', ','), '', $hmdo_mls_price);
 						      	$property->last_update = date('Y-m-d H:i:s');
 						      	$add_property = $property->save();
 

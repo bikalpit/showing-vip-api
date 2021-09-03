@@ -106,6 +106,7 @@ class AgentController extends Controller
                 $property->mls_name = $new_property['hmdo_mls_originator'][1];
                 $property->data = json_encode($new_property);
                 $property->verified = 'YES';
+                $property->price = str_replace(array('$', ','), '', $new_property['hmdo_mls_price'][1]);
                 $property->last_update = date('Y-m-d H:i:s');
                 $add_property = $property->save();
 
@@ -428,7 +429,8 @@ class AgentController extends Controller
         $vs_listed = $request->data['property'][0][1]['vs_listed'][1];
         $z_listed = $request->data['property'][1][1]['z_listed'][1];
         $hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
-
+        $hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
+        
         $mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
         $mls_name = $request->data['property'][2][1]['hmdo_mls_originator'][1];
 
@@ -443,6 +445,7 @@ class AgentController extends Controller
             $property->mls_name = $mls_name;
             $property->data = json_encode($request->data);
             $property->verified = 'YES';
+            $property->price = str_replace(array('$', ','), '', $hmdo_mls_price);
             $property->last_update = date('Y-m-d H:i:s');
             $add_property = $property->save();
 
