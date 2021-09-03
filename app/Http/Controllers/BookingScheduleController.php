@@ -582,8 +582,8 @@ class BookingScheduleController extends Controller
         $id      = $request->booking_id;
         $status  = $request->status;
         $reason  = $request->reason;
-        $users = Users::where('uuid',$user_id)->first();
-        $booking = PropertyBookingSchedule::where('uuid',$id)->first();
+        $user = Users::where('uuid', $user_id)->first();
+        $booking = PropertyBookingSchedule::where('uuid', $id)->first();
         $validator = Users::where('uuid', $booking->buyer_id)->first();
         $property = Properties::where('uuid', $booking->property_id)->first();
         $homendo = PropertyHomendo::where('property_id', $booking->property_id)->first();
@@ -597,6 +597,7 @@ class BookingScheduleController extends Controller
 
         if (!empty($booking)) {
             $update['status'] = $status;
+            $update['cancel_by'] = $user->role;
             $update['cancel_reason'] = $reason;
             $update['cancel_at'] = date('Y-m-d H:i:s');
             $result = PropertyBookingSchedule::where('uuid',$id)->update($update);
