@@ -724,7 +724,7 @@ class BookingScheduleController extends Controller
                 $booking['feedback'] = ShowingFeedback::where('booking_id', $booking->uuid)->first();
                 $booking['office'] = '';
 
-                $booking_count = PropertyBookingSchedule::where(['property_id'=>$booking->property_id, 'buyer_id'=>$booking->buyer_id, 'cv_status'=>'verify'])->get();
+                $booking_count = PropertyBookingSchedule::where(['property_id'=>$booking->property_id, 'buyer_id'=>$booking->buyer_id, 'cv_status'=>'verified'])->get();
                 $booking['booking_count'] = sizeof($booking_count);
                 if (strtotime(date('Y-m-d')) < strtotime($booking->booking_date)) {
                     $future_bookings[] = $booking;
@@ -790,7 +790,7 @@ class BookingScheduleController extends Controller
                 $booking['feedback'] = ShowingFeedback::where('booking_id', $booking->uuid)->first();
                 $booking['office'] = '';
 
-                $booking_count = PropertyBookingSchedule::where(['property_id'=>$booking->property_id, 'buyer_id'=>$booking->buyer_id, 'cv_status'=>'verify'])->get();
+                $booking_count = PropertyBookingSchedule::where(['property_id'=>$booking->property_id, 'buyer_id'=>$booking->buyer_id, 'cv_status'=>'verified'])->get();
                 $booking['booking_count'] = sizeof($booking_count);
                 if (strtotime(date('Y-m-d')) < strtotime($booking->booking_date)) {
                     $future_bookings[] = $booking;
@@ -810,7 +810,7 @@ class BookingScheduleController extends Controller
 
     public function allShowingBookings(Request $request){
 
-        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where('cv_status','verify')->get();
+        $bookings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->where('cv_status','verified')->get();
         if (sizeof($bookings) > 0) {
             return $this->sendResponse($bookings);
         }else{
