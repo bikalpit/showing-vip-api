@@ -18,7 +18,7 @@ use App\Models\PropertyBuyers;
 use App\Models\PropertyBookingSchedule;
 use App\Models\AgentInfo;
 use App\Models\PropertyShowingAvailability;
-use App\Models\PropertyShowingSurvey
+use App\Models\PropertyShowingSurvey;
 use App\Models\PropertyImages;
 use App\Mail\AssignAgent;
 use App\Mail\SignupMail;
@@ -48,7 +48,7 @@ class PropertiesController extends Controller
 				}else{
 						$hmdo_mls_price = null;
 				}
-				
+
 				if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
 						$mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0];
 		    }else{
