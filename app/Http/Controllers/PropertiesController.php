@@ -17,6 +17,9 @@ use App\Models\PropertyZillow;
 use App\Models\PropertyBuyers;
 use App\Models\PropertyBookingSchedule;
 use App\Models\AgentInfo;
+use App\Models\PropertyShowingAvailability;
+use App\Models\PropertyShowingSurvey
+use App\Models\PropertyImages;
 use App\Mail\AssignAgent;
 use App\Mail\SignupMail;
 use App\Mail\AssignOwner;
@@ -40,7 +43,11 @@ class PropertiesController extends Controller
 				$vs_listed = $request->data['property'][0][1]['vs_listed'][1];
 				$z_listed = $request->data['property'][1][1]['z_listed'][1];
 				$hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
-				$hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
+				if ($request->data['property'][2][1]['hmdo_mls_price'][1] != null || $request->data['property'][2][1]['hmdo_mls_price'][1] != '') {
+						$hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
+				}else{
+						$hmdo_mls_price = null;
+				}
 				
 				if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
 						$mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0];

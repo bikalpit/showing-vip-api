@@ -9,6 +9,7 @@ use App\Models\Properties;
 use App\Models\Users;
 use App\Models\PropertyShowingSetup;
 use App\Models\PropertyShowingSurvey;
+use App\Models\PropertyBookingSchedule;
 use Carbon\Carbon;
 use DB;
 
@@ -49,7 +50,7 @@ class SuperAdminController extends Controller
 
 		public function allShowings(Request $request){
 				
-				$all_showings = PropertyShowingSetup::get();
+				$all_showings = PropertyBookingSchedule::get();
 
 				$showings = [];
         $future_bookings = [];
