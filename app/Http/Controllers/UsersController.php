@@ -12,6 +12,7 @@ use App\Models\AgentInfo;
 use App\Models\ApiToken;
 use App\Models\PropertyAgents;
 use App\Models\PropertyOwners;
+use App\Models\PropertyShowingSetup;
 use App\Mail\SignupMail;
 use App\Mail\OwnerVerificationMail;
 use Carbon\Carbon;
@@ -456,6 +457,7 @@ class UsersController extends Controller
 										'owner_name'=>$owner->first_name.' '.$owner->last_name,
 										'agent_name'=>$agent->first_name.' '.$agent->last_name,
 		                'user_id'=>base64_encode($owner->uuid),
+		                'property_id'=>base64_encode($request->property_id),
 		                'token'=>base64_encode($verification_token)
 		            ];
 
@@ -477,6 +479,26 @@ class UsersController extends Controller
 				$check = PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->first();
 				if (!empty($check)) {
 						$status = 'verified';
+
+						$time = strtotime(Carbon::now());
+		    		$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
+		    		
+			      $setup = new PropertyShowingSetup;
+			      $setup->uuid = $setup_uuid;
+			      $setup->property_id = $request->property;
+			      $setup->notification_email = 'YES';
+			      $setup->notification_text = 'YES';
+			      $setup->type = 'VALID';
+			      $setup->validator = null;
+			      $setup->presence = null;
+			      $setup->instructions = null;
+			      $setup->lockbox_type = null;
+			      $setup->lockbox_location = null;
+	      		$setup->start_date = null;
+	      		$setup->end_date = null;
+			      $setup->timeframe = '30';
+			      $setup->overlap = 'NO';
+			      $save_setup = $setup->save();
 
 						PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id', base64_decode($request->user)])->update(['verify_status'=>'YES']);
 				}else{

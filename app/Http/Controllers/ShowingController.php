@@ -220,8 +220,8 @@ class ShowingController extends Controller
 	      $setup->notification_email = $request->notification_email;
 	      $setup->notification_text = $request->notification_text;
 	      $setup->type = $request->type;
-	      $setup->validator = $request->validator;
-	      $setup->presence = $request->presence;
+	      $setup->validator = json_encode($request->validator);
+	      $setup->presence = json_encode($request->presence);
 	      $setup->instructions = $request->instructions;
 	      $setup->lockbox_type = $request->lockbox_type;
 	      $setup->lockbox_location = $request->lockbox_location;

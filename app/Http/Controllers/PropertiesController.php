@@ -43,7 +43,7 @@ class PropertiesController extends Controller
 				$vs_listed = $request->data['property'][0][1]['vs_listed'][1];
 				$z_listed = $request->data['property'][1][1]['z_listed'][1];
 				$hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
-				
+
 				if ($request->data['property'][2][1]['hmdo_mls_price'][1] != null || $request->data['property'][2][1]['hmdo_mls_price'][1] != '') {
 						$hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
 				}else{
@@ -194,7 +194,7 @@ class PropertiesController extends Controller
 							      		$verify_status = 'NO';
 								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
 								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
-										      			$verify_status = 'PV';
+													      $verify_status = 'PV';
 										      	}else{
 										      			$verify_status = 'NO';
 								      			}
@@ -208,6 +208,28 @@ class PropertiesController extends Controller
 										      					$verify_status = 'NO';
 										      			}
 										      	}
+								      	}
+
+								      	if ($verify_status == 'PV') {
+								      			$time = strtotime(Carbon::now());
+								      			$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
+
+											      $setup = new PropertyShowingSetup;
+											      $setup->uuid = $setup_uuid;
+											      $setup->property_id = $mlsNameCheck->uuid;
+											      $setup->notification_email = 'YES';
+											      $setup->notification_text = 'YES';
+											      $setup->type = 'VALID';
+											      $setup->validator = null;
+											      $setup->presence = null;
+											      $setup->instructions = null;
+											      $setup->lockbox_type = null;
+											      $setup->lockbox_location = null;
+									      		$setup->start_date = null;
+									      		$setup->end_date = null;
+											      $setup->timeframe = '30';
+											      $setup->overlap = 'NO';
+											      $save_setup = $setup->save();
 								      	}
 
 								      	$checkOwner = PropertyOwners::where(['property_id'=>$mlsNameCheck->uuid, 'user_id'=>$request->user_id])->first();
@@ -505,6 +527,28 @@ class PropertiesController extends Controller
 										      					$verify_status = 'NO';
 										      			}
 										      	}
+								      	}
+
+								      	if ($verify_status == 'PV') {
+								      			$time = strtotime(Carbon::now());
+								      			$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
+
+											      $setup = new PropertyShowingSetup;
+											      $setup->uuid = $setup_uuid;
+											      $setup->property_id = $property->uuid;
+											      $setup->notification_email = 'YES';
+											      $setup->notification_text = 'YES';
+											      $setup->type = 'VALID';
+											      $setup->validator = null;
+											      $setup->presence = null;
+											      $setup->instructions = null;
+											      $setup->lockbox_type = null;
+											      $setup->lockbox_location = null;
+									      		$setup->start_date = null;
+									      		$setup->end_date = null;
+											      $setup->timeframe = '30';
+											      $setup->overlap = 'NO';
+											      $save_setup = $setup->save();
 								      	}
 
 								      	$checkOwner = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id])->first();
@@ -805,6 +849,28 @@ class PropertiesController extends Controller
 								      	}
 						      	}
 
+						      	if ($verify_status == 'PV') {
+						      			$time = strtotime(Carbon::now());
+						      			$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
+
+									      $setup = new PropertyShowingSetup;
+									      $setup->uuid = $setup_uuid;
+									      $setup->property_id = $property->uuid;
+									      $setup->notification_email = 'YES';
+									      $setup->notification_text = 'YES';
+									      $setup->type = 'VALID';
+									      $setup->validator = null;
+									      $setup->presence = null;
+									      $setup->instructions = null;
+									      $setup->lockbox_type = null;
+									      $setup->lockbox_location = null;
+							      		$setup->start_date = null;
+							      		$setup->end_date = null;
+									      $setup->timeframe = '30';
+									      $setup->overlap = 'NO';
+									      $save_setup = $setup->save();
+						      	}
+								      	
 						      	$checkOwner = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id])->first();
 						      	if ($checkOwner == null) {
 						      			$owner = new PropertyOwners;
@@ -1609,8 +1675,8 @@ class PropertiesController extends Controller
 						$status = 'verified';
 
 						$time = strtotime(Carbon::now());
-
 		    		$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
+
 			      $setup = new PropertyShowingSetup;
 			      $setup->uuid = $setup_uuid;
 			      $setup->property_id = $request->property;
