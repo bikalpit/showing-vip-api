@@ -88,6 +88,13 @@ class AgentController extends Controller
         $all_properties = Properties::with('Homendo')->get();
         
         foreach ($request->properties as $new_property) {
+
+            if ($new_property['hmdo_mls_price'][1] != null || $new_property['hmdo_mls_price'][1] != '') {
+                $hmdo_mls_price =$new_property['hmdo_mls_price'][1];
+            }else{
+                $hmdo_mls_price = 0;
+            }
+
             foreach ($all_properties as $property) {
                 $check = 0;
                 if ($property->mls_id == $new_property['hmdo_mls_id'][1] && $property->mls_name == $new_property['hmdo_mls_originator'][1]) {
@@ -106,7 +113,7 @@ class AgentController extends Controller
                 $property->mls_name = $new_property['hmdo_mls_originator'][1];
                 $property->data = json_encode($new_property);
                 $property->verified = 'YES';
-                $property->price = str_replace(array('$', ','), '', $new_property['hmdo_mls_price'][1]);
+                $property->price = str_replace(array('$', ','), '', $hmdo_mls_price);
                 $property->last_update = date('Y-m-d H:i:s');
                 $add_property = $property->save();
 
@@ -429,10 +436,24 @@ class AgentController extends Controller
         $vs_listed = $request->data['property'][0][1]['vs_listed'][1];
         $z_listed = $request->data['property'][1][1]['z_listed'][1];
         $hmdo_listed = $request->data['property'][2][1]['hmdo_listed'][1];
-        $hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
         
-        $mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
-        $mls_name = $request->data['property'][2][1]['hmdo_mls_originator'][1];
+        if ($request->data['property'][2][1]['hmdo_mls_price'][1] != null || $request->data['property'][2][1]['hmdo_mls_price'][1] != '') {
+            $hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
+        }else{
+            $hmdo_mls_price = 0;
+        }
+
+        if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
+            $mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1][0];
+        }else{
+            $mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
+        }
+
+        if (is_array($request->data['property'][2][1]['hmdo_mls_originator'][1]) == true) {
+            $mls_name = $request->data['property'][2][1]['hmdo_mls_originator'][1][0];
+        }else{
+            $mls_name = $request->data['property'][2][1]['hmdo_mls_originator'][1];
+        }
 
         $propertyCheck = Properties::where(['mls_id'=>$mls_id, 'mls_name'=>$mls_name])->first();
 
@@ -541,14 +562,34 @@ class AgentController extends Controller
             $homendo->property_id = $uuid;
             $homendo->hmdo_listed = $hmdo_listed;
             $homendo->hmdo_lastupdated = $request->data['property'][2][1]['hmdo_lastupdated'][1];
-            $homendo->hmdo_mls_id = $request->data['property'][2][1]['hmdo_mls_id'][1];
-            $homendo->hmdo_mls_originator = $request->data['property'][2][1]['hmdo_mls_originator'][1];
-            $homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1];
+            $homendo->hmdo_mls_agent_email = $request->data['property'][2][1]['hmdo_mls_agent_email'][1];
+            $homendo->hmdo_mls_agentid = $request->data['property'][2][1]['hmdo_mls_agentid'][1];
+            $homendo->hmdo_mls_description = $request->data['property'][2][1]['hmdo_mls_description'][1];
+            $homendo->hmdo_mls_id = $mls_id;
+            $homendo->hmdo_mls_originator = $mls_name;
+            if (is_array($request->data['property'][2][1]['hmdo_mls_proptype'][1]) == true) {
+                $homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1][0];
+            }else{
+                $homendo->hmdo_mls_proptype = $request->data['property'][2][1]['hmdo_mls_proptype'][1];
+            }
             $homendo->hmdo_mls_propname = $request->data['property'][2][1]['hmdo_mls_propname'][1];
-            $homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1];
+            if (is_array($request->data['property'][2][1]['hmdo_mls_status'][1]) == true) {
+                $homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1][0];
+            }else{
+                $homendo->hmdo_mls_status = $request->data['property'][2][1]['hmdo_mls_status'][1];
+            }
             $homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
-            $homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
-            $homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1];
+            if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
+                $homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0];
+            }else{
+                $homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
+            }
+            if (is_array($request->data['property'][2][1]['hmdo_mls_thumbnail'][1]) == true) {
+                $homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1][0];
+            }else{
+                $homendo->hmdo_mls_thumbnail = $request->data['property'][2][1]['hmdo_mls_thumbnail'][1];
+            }
+            $homendo->hmdo_mls_officeid = $request->data['property'][2][1]['hmdo_mls_officeid'][1];
             $add_homendo = $homendo->save();
               
             $agent = new PropertyAgents;
@@ -565,6 +606,7 @@ class AgentController extends Controller
             $property_owner = $owner->save();
 
             $showings = PropertyBookingSchedule::where('property_id', '')->orWhereNull('property_id')->get();
+
             foreach ($showings as $showing) {
                 if ($showing->property_mls_id == $property->mls_id) {
                     PropertyBookingSchedule::where('property_mls_id', $property->mls_id)->update(['property_id'=>$property->uuid]);
