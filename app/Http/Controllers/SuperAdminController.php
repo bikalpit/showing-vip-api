@@ -10,6 +10,9 @@ use App\Models\Users;
 use App\Models\PropertyShowingSetup;
 use App\Models\PropertyShowingSurvey;
 use App\Models\PropertyBookingSchedule;
+use App\Models\SurveySubCategories;
+use App\Models\SurveyCategories;
+use App\Models\ShowingFeedback;
 use Carbon\Carbon;
 use DB;
 
@@ -50,7 +53,7 @@ class SuperAdminController extends Controller
 
 		public function allShowings(Request $request){
 				
-				$all_showings = PropertyBookingSchedule::get();
+				$all_showings = PropertyBookingSchedule::with('Property', 'Buyer', 'Agent.agentInfo', 'BuyerAgent.agentInfo')->get();
 
 				$showings = [];
         $future_bookings = [];
@@ -59,6 +62,30 @@ class SuperAdminController extends Controller
         
 				if (sizeof($all_showings) > 0) {
 						foreach ($all_showings as $showing) {
+								$showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey')->where('property_id',$showing->property_id)->first();
+								$showing['showing_setup'] = $showing_setup;
+								$surveys = json_decode($showing['showing_setup']->showingSurvey->survey);
+                $answers = [];
+                $newSurveys = [];
+                if(!empty($surveys)){
+                    $newSurveys = SurveySubCategories::whereIn('uuid',$surveys)->orderBy('id','ASC')->pluck('uuid')->toArray();
+                }
+                $categories = SurveyCategories::orderBy('id','ASC')->get();
+                foreach($categories as $newCategory){
+                    if(!empty($newSurveys)){
+                        foreach($newSurveys as $survey){
+                            $newSubCate = SurveySubCategories::with('category')
+                                ->where(['category_id'=>$newCategory['uuid'],'uuid'=>$survey])->first();
+                            if($newSubCate != null){
+                                $answers[] = $newSubCate;
+                            }
+                        }
+                    }
+                }
+
+                $showing['answers'] = $answers;
+                $showing['feedback'] = ShowingFeedback::where('booking_id', $showing->uuid)->first();
+
                 if (strtotime(date('Y-m-d')) < strtotime($showing->booking_date)) {
                     $future_bookings[] = $showing;
                 }else if (strtotime(date('Y-m-d')) > strtotime($showing->booking_date)) {
