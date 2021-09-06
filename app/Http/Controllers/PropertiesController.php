@@ -46,7 +46,7 @@ class PropertiesController extends Controller
 				if ($request->data['property'][2][1]['hmdo_mls_price'][1] != null || $request->data['property'][2][1]['hmdo_mls_price'][1] != '') {
 						$hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
 				}else{
-						$hmdo_mls_price = null;
+						$hmdo_mls_price = 0;
 				}
 
 				if (is_array($request->data['property'][2][1]['hmdo_mls_id'][1]) == true) {
