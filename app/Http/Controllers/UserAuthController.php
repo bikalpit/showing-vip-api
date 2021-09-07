@@ -85,7 +85,7 @@ class UserAuthController extends Controller
 					      }
 
 		    				if ($updatePassword) {
-		    						return $this->sendResponse("Password created successfully!");
+		    						return $this->sendResponse($user->email);
 		    				}else{
 		    						return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 		    				}
