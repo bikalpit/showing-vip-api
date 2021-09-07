@@ -79,7 +79,7 @@ class PropertiesController extends Controller
 				    										return $this->sendResponse("Property already added!", 200, false);
 				    								}
 				    						}
-				    						
+
 				    						$verify_status = 'NO';
 								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
 								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
@@ -318,6 +318,7 @@ class PropertiesController extends Controller
 								      	$property->verified = 'NO';
 								      	$property->price = str_replace(array('$', ','), '', $hmdo_mls_price);
 								      	$property->last_update = date('Y-m-d H:i:s');
+								      	$property->added_by = 'Seller';
 								      	$add_property = $property->save();
 
 								      	$valuecheck = new PropertyValuecheck;
@@ -700,6 +701,7 @@ class PropertiesController extends Controller
 						      	$property->verified = 'NO';
 						      	$property->price = str_replace(array('$', ','), '', $hmdo_mls_price);
 						      	$property->last_update = date('Y-m-d H:i:s');
+						      	$property->added_by = 'Seller';
 						      	$add_property = $property->save();
 
 						      	$valuecheck = new PropertyValuecheck;
@@ -1083,6 +1085,7 @@ class PropertiesController extends Controller
 				      	$property->verified = 'NO';
 				      	$property->price = str_replace(array('$', ','), '', $hmdo_mls_price);
 				      	$property->last_update = date('Y-m-d H:i:s');
+				      	$property->added_by = 'Seller';
 				      	$add_property = $property->save();
 
 				      	$valuecheck = new PropertyValuecheck;
