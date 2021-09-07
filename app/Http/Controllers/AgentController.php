@@ -457,9 +457,22 @@ class AgentController extends Controller
 
         $propertyCheck = Properties::where(['mls_id'=>$mls_id, 'mls_name'=>$mls_name])->first();
 
+        $add_property = false;
         if (!empty($propertyCheck)) {
+            $checkClient = PropertyOwners::where(['user_id'=>$request->client_id, 'property_id'=>$propertyCheck->uuid])->first();
+            if (empty($propertyCheck)) {
+                $add_property = true;
+            }else{
+                $add_property = false;
+            }    
+        }else{
+            $add_property = true;
+        }
+
+        if ($add_property == true) {
             $time = strtotime(Carbon::now());
             $uuid = "prty".$time.rand(10,99)*rand(10,99);
+
             $property = new Properties;
             $property->uuid = $uuid;
             $property->mls_id = $mls_id;
