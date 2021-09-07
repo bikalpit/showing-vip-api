@@ -503,7 +503,7 @@ class UsersController extends Controller
 
 						PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id', base64_decode($request->user)])->update(['verify_status'=>'YES']);
 
-						PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user))->delete();
+						PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->delete();
 				}else{
 						$status = 'expired';
 				}
