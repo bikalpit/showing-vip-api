@@ -12,7 +12,7 @@ class PropertyAgents extends Model
      */
     protected $table = 'property_agents';
 
-    protected $fillable = ['property_id','property_mls_id','property_originator','seller_id','buyer_id','agent_id','agent_type','status'];
+    protected $fillable = ['property_id','property_mls_id','property_originator','seller_id','buyer_id','agent_id','agent_type','status','agent_status'];
 
     use SoftDeletes;
 

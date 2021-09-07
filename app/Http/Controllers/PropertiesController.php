@@ -72,6 +72,14 @@ class PropertiesController extends Controller
 		    		if ($mls_id != '' && $mls_name != '') {
 				    		if (!empty($mlsIdCheck)) {
 				    				if (!empty($mlsNameCheck)) {
+				    						$checkOwner = PropertyOwners::where(['property_id'=>$mlsNameCheck->uuid, 'user_id'=>$request->user_id])->first();
+
+				    						if (!empty($checkOwner)) {
+				    								if (!empty($checkAgent)) {
+				    										return $this->sendResponse("Property already added!", 200, false);
+				    								}
+				    						}
+				    						
 				    						$verify_status = 'NO';
 								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
 								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
@@ -91,7 +99,6 @@ class PropertiesController extends Controller
 										      	}
 								      	}
 
-								      	$checkOwner = PropertyOwners::where(['property_id'=>$mlsNameCheck->uuid, 'user_id'=>$request->user_id])->first();
 								      	if ($checkOwner == null) {
 								      			$owner = new PropertyOwners;
 										      	$owner->property_id = $mlsNameCheck->uuid;
@@ -151,6 +158,7 @@ class PropertiesController extends Controller
 				                            $property_agent->property_originator = $mlsNameCheck->mls_name;
 				                            $property_agent->agent_id = $agent->uuid;
 				                            $property_agent->agent_type = 'seller';
+				                            $property_agent->agent_status = 'PA';
 				                            $property_agent->save();
 				                        }
 
@@ -224,6 +232,7 @@ class PropertiesController extends Controller
 		                            $property_agent->property_originator = $mlsNameCheck->mls_name;
 		                            $property_agent->agent_id = $checkAgent->uuid;
 		                            $property_agent->agent_type = 'seller';
+		                            $property_agent->agent_status = 'PA';
 		                            $property_agent->save();
 		                        }
 
@@ -396,7 +405,11 @@ class PropertiesController extends Controller
 								      	$zillow->z_rental_highrange = $request->data['property'][1][1]['z_rental_highrange'][1];
 								      	$zillow->z_rental_lastupdated = $request->data['property'][1][1]['z_rental_lastupdated'][1];
 								      	if (is_array($request->data['property'][1][1]['z_prop_url'][1]) == true) {
-								  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'];
+								  					if (isset($request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'])) {
+																$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'];
+														}else{
+																$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1][0];
+														}
 								  			}else{
 								  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
 								  			}
@@ -433,7 +446,11 @@ class PropertiesController extends Controller
 								      	}
 								      	$homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
 								      	if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
-								      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'];
+								      			if (isset($request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'])) {
+																$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'];
+														}else{
+																$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0];
+														}
 								      	}else{
 								      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
 								      	}
@@ -581,6 +598,7 @@ class PropertiesController extends Controller
 				                            $property_agent->property_originator = $property->mls_name;
 				                            $property_agent->agent_id = $agent->uuid;
 				                            $property_agent->agent_type = 'seller';
+				                            $property_agent->agent_status = 'PA';
 				                            $property_agent->save();
 				                        }
 								            }
@@ -642,6 +660,7 @@ class PropertiesController extends Controller
 		                            $property_agent->property_originator = $property->mls_name;
 		                            $property_agent->agent_id = $checkAgent->uuid;
 		                            $property_agent->agent_type = 'seller';
+		                            $property_agent->agent_status = 'PA';
 		                            $property_agent->save();
 		                        }
 							      		}
@@ -768,7 +787,11 @@ class PropertiesController extends Controller
 						      	$zillow->z_rental_highrange = $request->data['property'][1][1]['z_rental_highrange'][1];
 						      	$zillow->z_rental_lastupdated = $request->data['property'][1][1]['z_rental_lastupdated'][1];
 						      	if (is_array($request->data['property'][1][1]['z_prop_url'][1]) == true) {
-						  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'];
+						  					if (isset($request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'])) {
+														$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'];
+												}else{
+														$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1][0];
+												}
 						  			}else{
 						  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
 						  			}
@@ -805,7 +828,11 @@ class PropertiesController extends Controller
 						      	}
 						      	$homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
 						      	if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
-						      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'];
+						      			if (isset($request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'])) {
+														$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'];
+												}else{
+														$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0];
+												}
 						      	}else{
 						      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
 						      	}
@@ -953,6 +980,7 @@ class PropertiesController extends Controller
 		                            $property_agent->property_originator = $property->mls_name;
 		                            $property_agent->agent_id = $agent->uuid;
 		                            $property_agent->agent_type = 'seller';
+		                            $property_agent->agent_status = 'PA';
 		                            $property_agent->save();
 		                        }
 						            }
@@ -1014,6 +1042,7 @@ class PropertiesController extends Controller
                             $property_agent->property_originator = $property->mls_name;
                             $property_agent->agent_id = $checkAgent->uuid;
                             $property_agent->agent_type = 'seller';
+                            $property_agent->agent_status = 'PA';
                             $property_agent->save();
                         }
 					      		}
@@ -1141,7 +1170,11 @@ class PropertiesController extends Controller
 				      	$zillow->z_rental_highrange = $request->data['property'][1][1]['z_rental_highrange'][1];
 				      	$zillow->z_rental_lastupdated = $request->data['property'][1][1]['z_rental_lastupdated'][1];
 				      	if (is_array($request->data['property'][1][1]['z_prop_url'][1]) == true) {
-				  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'];
+				  					if (isset($request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'])) {
+												$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'];
+										}else{
+												$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1][0];
+										}
 				  			}else{
 				  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
 				  			}
@@ -1178,7 +1211,11 @@ class PropertiesController extends Controller
 				      	}
 				      	$homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
 				      	if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
-				      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'];
+				      			if (isset($request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'])) {
+												$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'];
+										}else{
+												$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0];
+										}
 				      	}else{
 				      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
 				      	}
@@ -1381,6 +1418,8 @@ class PropertiesController extends Controller
 				if (!empty($property)) {
 						$property_agent = new PropertyAgents;
 						$property_agent->property_id = $request->property_id;
+						$property_agent->property_mls_id = $property->mls_id;
+		        $property_agent->property_originator = $property->mls_name;
 						$property_agent->agent_id = $request->agent_id;
 						$property_agent->agent_type = $request->agent_type;
 						$result = $property_agent->save();
@@ -1470,6 +1509,8 @@ class PropertiesController extends Controller
 
 			          $property_agent = new PropertyAgents;
 								$property_agent->property_id = $request->property_id;
+								$property_agent->property_mls_id = $property->mls_id;
+		        		$property_agent->property_originator = $property->mls_name;
 								$property_agent->agent_id = $request->agent_id;
 								//$property_agent->seller_id = $request->user_id;
 								$property_agent->agent_type = 'seller';
@@ -1588,9 +1629,9 @@ class PropertiesController extends Controller
 				$this->validate($request, [
 	      		'agent_id' => 'required',
 	      		'search' => 'nullable',
-				'sorting' => 'nullable|in:date,listing_status,property_type,price',
-				'sort_by' => 'required|in:ASC,DESC',
-				'filter'  => 'required|in:all,hide'
+						'sorting' => 'nullable|in:date,listing_status,property_type,price',
+						'sort_by' => 'required|in:ASC,DESC',
+						'filter'  => 'required|in:all,hide'
 	      ]);
 
 				$search_item = $request->search;
@@ -1792,6 +1833,7 @@ class PropertiesController extends Controller
 	      		if (sizeof($properties) > 0) {
 	      				$selling_properties = [];
 	      				$buying_properties = [];
+
 	      				foreach ($properties as $property) {
 			      				$user_ids = PropertyOwners::where('property_id', $property->uuid)->pluck('user_id')->toArray();
 			      				if (sizeof($user_ids) < 0) {
@@ -1802,21 +1844,23 @@ class PropertiesController extends Controller
 
 				      			$property_info = PropertyAgents::where('property_id', $property->uuid)->first();
 				      			$property['agent_status'] = $property_info->status;
-								if($filter == 'hide'){
-									if($property_info->status == $filter){
-										if ($property_info->agent_type == 'seller') {
-											$selling_properties[] = $property;
+
+										if($filter == 'hide'){
+												if($property_info->status == $filter){
+														if ($property_info->agent_type == 'seller') {
+																$selling_properties[] = $property;
+														}else{
+																$buying_properties[] = $property;
+														}
+												}
 										}else{
-												$buying_properties[] = $property;
+												if ($property_info->agent_type == 'seller') {
+														$selling_properties[] = $property;
+												}else{
+														$buying_properties[] = $property;
+												}
 										}
-									}
-								}else{
-									if ($property_info->agent_type == 'seller') {
-										$selling_properties[] = $property;
-									}else{
-											$buying_properties[] = $property;
-									}
-								}
+
 				      			$all_properties = array('selling_properties'=>$selling_properties, 'buying_properties'=>$buying_properties);
 			      		}
 	      				return $this->sendResponse($all_properties);
