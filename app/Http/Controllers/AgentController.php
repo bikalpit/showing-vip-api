@@ -159,6 +159,8 @@ class AgentController extends Controller
 
                 $property_agent = new PropertyAgents;
                 $property_agent->property_id = $uuid;
+                $property_agent->property_mls_id = $new_property['hmdo_mls_id'][1];
+                $property_agent->property_originator = $new_property['hmdo_mls_originator'][1];
                 $property_agent->agent_id = $request->agent_id;
                 $property_agent->agent_type = 'seller';
                 $property_agent->save();
@@ -457,19 +459,38 @@ class AgentController extends Controller
 
         $propertyCheck = Properties::where(['mls_id'=>$mls_id, 'mls_name'=>$mls_name])->first();
 
-        $add_property = false;
+        $add_property = '0';
         if (!empty($propertyCheck)) {
             $checkClient = PropertyOwners::where(['user_id'=>$request->client_id, 'property_id'=>$propertyCheck->uuid])->first();
             if (empty($propertyCheck)) {
-                $add_property = true;
+                $add_property = '1';
             }else{
-                $add_property = false;
+                $add_property = '0';
             }    
         }else{
-            $add_property = true;
+            $add_property = '2';
         }
 
-        if ($add_property == true) {
+        if ($add_property == '1') {
+            $check_agent = PropertyAgents::where(['property_id'=>$propertyCheck->uuid, 'agent_id'=>$request->agent_id, 'agent_type'=>'seller'])->first();
+
+            if (empty($check_agent)) {
+                $agent = new PropertyAgents;
+                $agent->property_id = $propertyCheck->uuid;
+                $agent->property_mls_id = $mls_id;
+                $agent->property_originator = $mls_name;
+                $agent->agent_id = $request->agent_id;
+                $agent->agent_type = 'seller';
+                $property_agent = $agent->save();
+            }
+
+            $owner = new PropertyOwners;
+            $owner->property_id = $propertyCheck->uuid;
+            $owner->user_id = $request->client_id;
+            $owner->type = 'main_owner';
+            $owner->verify_status = 'YES';
+            $property_owner = $owner->save();
+        }elseif ($add_property == '2') {
             $time = strtotime(Carbon::now());
             $uuid = "prty".$time.rand(10,99)*rand(10,99);
 
@@ -481,7 +502,7 @@ class AgentController extends Controller
             $property->verified = 'YES';
             $property->price = str_replace(array('$', ','), '', $hmdo_mls_price);
             $property->last_update = date('Y-m-d H:i:s');
-            $add_property = $property->save();
+            $property->save();
 
             $valuecheck = new PropertyValuecheck;
             $valuecheck->uuid = "vlck".$time.rand(10,99)*rand(10,99);
@@ -611,6 +632,8 @@ class AgentController extends Controller
               
             $agent = new PropertyAgents;
             $agent->property_id = $property->uuid;
+            $agent->property_mls_id = $mls_id;
+            $agent->property_originator = $mls_name;
             $agent->agent_id = $request->agent_id;
             $agent->agent_type = 'seller';
             $property_agent = $agent->save();
