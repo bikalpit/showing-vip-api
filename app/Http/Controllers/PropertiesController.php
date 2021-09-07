@@ -25,6 +25,7 @@ use App\Mail\SignupMail;
 use App\Mail\AssignOwner;
 use App\Mail\PropertyOwnerVerificationMail;
 use App\Mail\PropertyVerificationMail;
+use App\Mail\OwnerVerificationMail;
 use Carbon\Carbon;
 use DB;
 
@@ -71,6 +72,35 @@ class PropertiesController extends Controller
 		    		if ($mls_id != '' && $mls_name != '') {
 				    		if (!empty($mlsIdCheck)) {
 				    				if (!empty($mlsNameCheck)) {
+				    						$verify_status = 'NO';
+								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
+								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
+													      $verify_status = 'PV';
+										      	}else{
+										      			$verify_status = 'NO';
+								      			}
+								      	}
+
+								      	if ($verify_status == 'NO') {
+								      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
+								      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
+										      					$verify_status = 'PV';
+										      			}else{
+										      					$verify_status = 'NO';
+										      			}
+										      	}
+								      	}
+
+								      	$checkOwner = PropertyOwners::where(['property_id'=>$mlsNameCheck->uuid, 'user_id'=>$request->user_id])->first();
+								      	if ($checkOwner == null) {
+								      			$owner = new PropertyOwners;
+										      	$owner->property_id = $mlsNameCheck->uuid;
+										      	$owner->user_id = $request->user_id;
+										      	$owner->type = 'main_owner';
+										      	$owner->verify_status = $verify_status;
+										      	$property_owner = $owner->save();
+								      	}
+
 				    						$property_homendo = PropertyHomendo::where('property_id', $mlsNameCheck->uuid)->first();
 				    						
 								      	if (empty($checkAgent) || $checkAgent == null) {
@@ -112,6 +142,18 @@ class PropertiesController extends Controller
 										        		$agent_info->hmdo_agent_website = ($request->agent_info != null)?$request->agent_info['hmdo_agent_website'][1]:NULL;
 										        		$agent_info->save();
 
+										        		$check_agent = PropertyAgents::where(['property_id'=>$mlsNameCheck->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
+				                        
+				                        if (empty($check_agent)) {
+				                            $property_agent = new PropertyAgents;
+				                            $property_agent->property_id = $mlsNameCheck->uuid;
+				                            $property_agent->property_mls_id = $mlsNameCheck->mls_id;
+				                            $property_agent->property_originator = $mlsNameCheck->mls_name;
+				                            $property_agent->agent_id = $agent->uuid;
+				                            $property_agent->agent_type = 'seller';
+				                            $property_agent->save();
+				                        }
+
 								            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 										            Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
 
@@ -125,7 +167,8 @@ class PropertiesController extends Controller
 										            Mail::to($agent->email)->send(new SignupMail($data));
 
 										            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-										            $verification_data = [
+
+										            /*$verification_data = [
 																		'name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
 																		'owner_name'=>$user->first_name.' '.$user->last_name,
 										                'property_id'=>$mlsNameCheck->uuid,
@@ -133,52 +176,38 @@ class PropertiesController extends Controller
 										                'site_url'=>env('APP_URL'),
 										                'token'=>$property_varification_token
 										            ];
-
 										            Mail::to($agent->email)->send(new PropertyVerificationMail($verification_data));
 
-											          $property_varification = new PropertyVerification;
+										            $property_varification = new PropertyVerification;
 											          $property_varification->property_id = $mlsNameCheck->uuid;
 											          $property_varification->agent_id = $agent->uuid;
 											          $property_varification->user_id = $request->user_id;
 											          $property_varification->token = $property_varification_token;
 											          $property_varification->send_time = date('Y-m-d h:i:s');
-											          $result = $property_varification->save();
+											          $result = $property_varification->save();*/
 
-											          $check_agent = PropertyAgents::where(['property_id'=>$mlsNameCheck->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
-				                        
-				                        if (empty($check_agent)) {
-				                            $property_agent = new PropertyAgents;
-				                            $property_agent->property_id = $mlsNameCheck->uuid;
-				                            $property_agent->property_mls_id = $mlsNameCheck->mls_id;
-				                            $property_agent->property_originator = $mlsNameCheck->mls_name;
-				                            $property_agent->agent_id = $agent->uuid;
-				                            $property_agent->agent_type = 'seller';
-				                            $property_agent->save();
-				                        }
+										            if ($verify_status == 'NO') {
+										            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$mlsNameCheck->uuid])->update(['verification_token'=>$property_varification_token]);
+												            if ($update_token) {
+												            		$this->configSMTP();
+																				$verification_data = [
+																						'owner_name'=>$user->first_name.' '.$user->last_name,
+																						'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
+														                'user_id'=>base64_encode($request->user_id),
+														                'property_id'=>base64_encode($mlsNameCheck->uuid),
+														                'token'=>base64_encode($property_varification_token)
+														            ];
+														            try{
+																	          Mail::to($agent->email)->send(new OwnerVerificationMail($verification_data));
+																	      }catch(\Exception $e){
+
+																	      }
+												            }
+										            }
 								            }
 							      		}else{
 							      				$this->configSMTP();
-							      				$property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-							      				$verification_data = [
-																'name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
-																'owner_name'=>$user->first_name.' '.$user->last_name,
-								                'property_id'=>$mlsNameCheck->uuid,
-								                'property_link'=>$property_homendo->hmdo_mls_url,
-								                'site_url'=>env('APP_URL'),
-								                'token'=>$property_varification_token
-								            ];
-
-								            Mail::to($checkAgent->email)->send(new PropertyVerificationMail($verification_data));
-
-									          $property_varification = new PropertyVerification;
-									          $property_varification->property_id = $mlsNameCheck->uuid;
-									          $property_varification->agent_id = $checkAgent->uuid;
-									          $property_varification->user_id = $request->user_id;
-									          $property_varification->token = $property_varification_token;
-									          $property_varification->send_time = date('Y-m-d h:i:s');
-									          $result = $property_varification->save();
-
-									          $check_agent = PropertyAgents::where(['property_id'=>$mlsNameCheck->uuid, 'agent_id'=>$checkAgent->uuid, 'agent_type'=>'seller'])->first();
+							      				$check_agent = PropertyAgents::where(['property_id'=>$mlsNameCheck->uuid, 'agent_id'=>$checkAgent->uuid, 'agent_type'=>'seller'])->first();
 									          
 		                        if (empty($check_agent)) {
 		                            $property_agent = new PropertyAgents;
@@ -189,28 +218,48 @@ class PropertiesController extends Controller
 		                            $property_agent->agent_type = 'seller';
 		                            $property_agent->save();
 		                        }
+
+							      				$property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+							      				
+							      				/*$verification_data = [
+																'name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
+																'owner_name'=>$user->first_name.' '.$user->last_name,
+								                'property_id'=>$mlsNameCheck->uuid,
+								                'property_link'=>$property_homendo->hmdo_mls_url,
+								                'site_url'=>env('APP_URL'),
+								                'token'=>$property_varification_token
+								            ];
+								            Mail::to($checkAgent->email)->send(new PropertyVerificationMail($verification_data));
+
+									          $property_varification = new PropertyVerification;
+									          $property_varification->property_id = $mlsNameCheck->uuid;
+									          $property_varification->agent_id = $checkAgent->uuid;
+									          $property_varification->user_id = $request->user_id;
+									          $property_varification->token = $property_varification_token;
+									          $property_varification->send_time = date('Y-m-d h:i:s');
+									          $result = $property_varification->save();*/
+
+									          if ($verify_status == 'NO') {
+								            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$mlsNameCheck->uuid])->update(['verification_token'=>$property_varification_token]);
+										            if ($update_token) {
+										            		$this->configSMTP();
+																		$verification_data = [
+																				'owner_name'=>$user->first_name.' '.$user->last_name,
+																				'agent_name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
+												                'user_id'=>base64_encode($request->user_id),
+												                'property_id'=>base64_encode($mlsNameCheck->uuid),
+												                'token'=>base64_encode($property_varification_token)
+												            ];
+												            try{
+															          Mail::to($checkAgent->email)->send(new OwnerVerificationMail($verification_data));
+															      }catch(\Exception $e){
+
+															      }
+										            }
+								            }
 							      		}
 
-							      		$verify_status = 'NO';
-								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
-								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
-													      $verify_status = 'PV';
-										      	}else{
-										      			$verify_status = 'NO';
-								      			}
-								      	}
-
-								      	if ($verify_status == 'NO') {
-								      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
-								      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
-										      					$verify_status = 'PV';
-										      			}else{
-										      					$verify_status = 'NO';
-										      			}
-										      	}
-								      	}
-
-								      	if ($verify_status == 'PV') {
+							      		if ($verify_status == 'PV') {
 								      			$time = strtotime(Carbon::now());
 								      			$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
 
@@ -232,22 +281,12 @@ class PropertiesController extends Controller
 											      $save_setup = $setup->save();
 								      	}
 
-								      	$checkOwner = PropertyOwners::where(['property_id'=>$mlsNameCheck->uuid, 'user_id'=>$request->user_id])->first();
-								      	if ($checkOwner == null) {
-								      			$owner = new PropertyOwners;
-										      	$owner->property_id = $mlsNameCheck->uuid;
-										      	$owner->user_id = $request->user_id;
-										      	$owner->type = 'main_owner';
-										      	$owner->verify_status = $verify_status;
-										      	$property_owner = $owner->save();
-
-										      	if ($property_owner) {
-										      			return $this->sendResponse("Property added successfully!");
-										      	}else{
-										      			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
-										      	}
+								      	if ($property_owner) {
+								      			return $this->sendResponse("Property added successfully!");
+								      	}else{
+								      			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 								      	}
-								      	
+
 								      	return $this->sendResponse("Property added successfully!");
 				    				}else{
 						    				$time = strtotime(Carbon::now());
@@ -346,7 +385,11 @@ class PropertiesController extends Controller
 								      	$zillow->z_rental_lowrange = $request->data['property'][1][1]['z_rental_lowrange'][1];
 								      	$zillow->z_rental_highrange = $request->data['property'][1][1]['z_rental_highrange'][1];
 								      	$zillow->z_rental_lastupdated = $request->data['property'][1][1]['z_rental_lastupdated'][1];
-								      	$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
+								      	if (is_array($request->data['property'][1][1]['z_prop_url'][1]) == true) {
+								  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'];
+								  			}else{
+								  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
+								  			}
 								      	$add_zillow = $zillow->save();
 
 								      	$homendo = new PropertyHomendo;
@@ -380,7 +423,7 @@ class PropertiesController extends Controller
 								      	}
 								      	$homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
 								      	if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
-								      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0];
+								      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'];
 								      	}else{
 								      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
 								      	}
@@ -391,6 +434,35 @@ class PropertiesController extends Controller
 								      	}
 								      	$homendo->hmdo_mls_officeid = $request->data['property'][2][1]['hmdo_mls_officeid'][1];
 								      	$add_homendo = $homendo->save();
+
+								      	$verify_status = 'NO';
+								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
+								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
+										      			$verify_status = 'PV';
+										      	}else{
+										      			$verify_status = 'NO';
+								      			}
+								      	}
+
+								      	if ($verify_status == 'NO') {
+								      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
+								      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
+										      					$verify_status = 'PV';
+										      			}else{
+										      					$verify_status = 'NO';
+										      			}
+										      	}
+								      	}
+
+								      	$checkOwner = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id])->first();
+								      	if ($checkOwner == null) {
+								      			$owner = new PropertyOwners;
+										      	$owner->property_id = $property->uuid;
+										      	$owner->user_id = $request->user_id;
+										      	$owner->type = 'main_owner';
+										      	$owner->verify_status = $verify_status;
+										      	$property_owner = $owner->save();
+								      	}
 
 								      	if (empty($checkAgent) || $checkAgent == null) {
 									      		$time = strtotime(Carbon::now());
@@ -444,7 +516,8 @@ class PropertiesController extends Controller
 										            Mail::to($agent->email)->send(new SignupMail($data));
 
 										            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-										            $verification_data = [
+
+										            /*$verification_data = [
 																		'name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
 																		'owner_name'=>$user->first_name.' '.$user->last_name,
 										                'property_id'=>$property->uuid,
@@ -452,7 +525,6 @@ class PropertiesController extends Controller
 										                'site_url'=>env('APP_URL'),
 										                'token'=>$property_varification_token
 										            ];
-
 										            Mail::to($agent->email)->send(new PropertyVerificationMail($verification_data));
 
 											          $property_varification = new PropertyVerification;
@@ -461,7 +533,26 @@ class PropertiesController extends Controller
 											          $property_varification->user_id = $request->user_id;
 											          $property_varification->token = $property_varification_token;
 											          $property_varification->send_time = date('Y-m-d h:i:s');
-											          $result = $property_varification->save();
+											          $result = $property_varification->save();*/
+
+											          if ($verify_status == 'NO') {
+										            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$property->uuid])->update(['verification_token'=>$property_varification_token]);
+												            if ($update_token) {
+												            		$this->configSMTP();
+																				$verification_data = [
+																						'owner_name'=>$user->first_name.' '.$user->last_name,
+																						'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
+														                'user_id'=>base64_encode($request->user_id),
+														                'property_id'=>base64_encode($property->uuid),
+														                'token'=>base64_encode($property_varification_token)
+														            ];
+														            try{
+																	          Mail::to($agent->uuid)->send(new OwnerVerificationMail($verification_data));
+																	      }catch(\Exception $e){
+
+																	      }
+												            }
+										            }
 
 											          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
 				                        
@@ -478,7 +569,8 @@ class PropertiesController extends Controller
 							      		}else{
 							      				$this->configSMTP();
 							      				$property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-							      				$verification_data = [
+
+							      				/*$verification_data = [
 																'name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
 																'owner_name'=>$user->first_name.' '.$user->last_name,
 								                'property_id'=>$property->uuid,
@@ -486,7 +578,6 @@ class PropertiesController extends Controller
 								                'site_url'=>env('APP_URL'),
 								                'token'=>$property_varification_token
 								            ];
-
 								            Mail::to($checkAgent->email)->send(new PropertyVerificationMail($verification_data));
 
 									          $property_varification = new PropertyVerification;
@@ -495,7 +586,26 @@ class PropertiesController extends Controller
 									          $property_varification->user_id = $request->user_id;
 									          $property_varification->token = $property_varification_token;
 									          $property_varification->send_time = date('Y-m-d h:i:s');
-									          $result = $property_varification->save();
+									          $result = $property_varification->save();*/
+
+									          if ($verify_status == 'NO') {
+								            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$property->uuid])->update(['verification_token'=>$property_varification_token]);
+										            if ($update_token) {
+										            		$this->configSMTP();
+																		$verification_data = [
+																				'owner_name'=>$user->first_name.' '.$user->last_name,
+																				'agent_name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
+												                'user_id'=>base64_encode($request->user_id),
+												                'property_id'=>base64_encode($property->uuid),
+												                'token'=>base64_encode($property_varification_token)
+												            ];
+												            try{
+															          Mail::to($checkAgent->email)->send(new OwnerVerificationMail($verification_data));
+															      }catch(\Exception $e){
+
+															      }
+										            }
+								            }
 
 									          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$checkAgent->uuid, 'agent_type'=>'seller'])->first();
 				                        
@@ -509,25 +619,6 @@ class PropertiesController extends Controller
 		                            $property_agent->save();
 		                        }
 							      		}
-
-							      		$verify_status = 'NO';
-								      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
-								      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
-										      			$verify_status = 'PV';
-										      	}else{
-										      			$verify_status = 'NO';
-								      			}
-								      	}
-
-								      	if ($verify_status == 'NO') {
-								      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
-								      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
-										      					$verify_status = 'PV';
-										      			}else{
-										      					$verify_status = 'NO';
-										      			}
-										      	}
-								      	}
 
 								      	if ($verify_status == 'PV') {
 								      			$time = strtotime(Carbon::now());
@@ -551,20 +642,10 @@ class PropertiesController extends Controller
 											      $save_setup = $setup->save();
 								      	}
 
-								      	$checkOwner = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id])->first();
-								      	if ($checkOwner == null) {
-								      			$owner = new PropertyOwners;
-										      	$owner->property_id = $property->uuid;
-										      	$owner->user_id = $request->user_id;
-										      	$owner->type = 'main_owner';
-										      	$owner->verify_status = $verify_status;
-										      	$property_owner = $owner->save();
-
-										      	if ($property_owner) {
-										      			return $this->sendResponse("Property added successfully!");
-										      	}else{
-										      			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
-										      	}
+								      	if ($property_owner) {
+								      			return $this->sendResponse("Property added successfully!");
+								      	}else{
+								      			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 								      	}
 
 								      	return $this->sendResponse("Property added successfully!");
@@ -666,7 +747,11 @@ class PropertiesController extends Controller
 						      	$zillow->z_rental_lowrange = $request->data['property'][1][1]['z_rental_lowrange'][1];
 						      	$zillow->z_rental_highrange = $request->data['property'][1][1]['z_rental_highrange'][1];
 						      	$zillow->z_rental_lastupdated = $request->data['property'][1][1]['z_rental_lastupdated'][1];
-						      	$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
+						      	if (is_array($request->data['property'][1][1]['z_prop_url'][1]) == true) {
+						  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'];
+						  			}else{
+						  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
+						  			}
 						      	$add_zillow = $zillow->save();
 
 						      	$homendo = new PropertyHomendo;
@@ -700,7 +785,7 @@ class PropertiesController extends Controller
 						      	}
 						      	$homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
 						      	if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
-						      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0];
+						      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'];
 						      	}else{
 						      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
 						      	}
@@ -711,6 +796,35 @@ class PropertiesController extends Controller
 						      	}
 						      	$homendo->hmdo_mls_officeid = $request->data['property'][2][1]['hmdo_mls_officeid'][1];
 						      	$add_homendo = $homendo->save();
+
+						      	$verify_status = 'NO';
+						      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
+						      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
+								      			$verify_status = 'PV';
+								      	}else{
+								      			$verify_status = 'NO';
+						      			}
+						      	}
+
+						      	if ($verify_status == 'NO') {
+						      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
+						      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
+								      					$verify_status = 'PV';
+								      			}else{
+								      					$verify_status = 'NO';
+								      			}
+								      	}
+						      	}
+
+						      	$checkOwner = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id])->first();
+						      	if ($checkOwner == null) {
+						      			$owner = new PropertyOwners;
+								      	$owner->property_id = $property->uuid;
+								      	$owner->user_id = $request->user_id;
+								      	$owner->type = 'main_owner';
+								      	$owner->verify_status = $verify_status;
+								      	$property_owner = $owner->save();
+						      	}
 
 						      	if (empty($checkAgent) || $checkAgent == null) {
 							      		$time = strtotime(Carbon::now());
@@ -764,7 +878,8 @@ class PropertiesController extends Controller
 								            Mail::to($agent->email)->send(new SignupMail($data));
 
 								            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-								            $verification_data = [
+
+								            /*$verification_data = [
 																'name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
 																'owner_name'=>$user->first_name.' '.$user->last_name,
 								                'property_id'=>$property->uuid,
@@ -772,7 +887,6 @@ class PropertiesController extends Controller
 								                'site_url'=>env('APP_URL'),
 								                'token'=>$property_varification_token
 								            ];
-
 								            Mail::to($agent->email)->send(new PropertyVerificationMail($verification_data));
 
 									          $property_varification = new PropertyVerification;
@@ -781,7 +895,26 @@ class PropertiesController extends Controller
 									          $property_varification->user_id = $request->user_id;
 									          $property_varification->token = $property_varification_token;
 									          $property_varification->send_time = date('Y-m-d h:i:s');
-									          $result = $property_varification->save();
+									          $result = $property_varification->save();*/
+
+									          if ($verify_status == 'NO') {
+								            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$property->uuid])->update(['verification_token'=>$property_varification_token]);
+										            if ($update_token) {
+										            		$this->configSMTP();
+																		$verification_data = [
+																				'owner_name'=>$user->first_name.' '.$user->last_name,
+																				'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
+												                'user_id'=>base64_encode($request->user_id),
+												                'property_id'=>base64_encode($property->uuid),
+												                'token'=>base64_encode($property_varification_token)
+												            ];
+												            try{
+															          Mail::to($agent->email)->send(new OwnerVerificationMail($verification_data));
+															      }catch(\Exception $e){
+
+															      }
+										            }
+								            }
 
 									          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
 				                        
@@ -798,7 +931,8 @@ class PropertiesController extends Controller
 					      		}else{
 					      				$this->configSMTP();
 					      				$property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-					      				$verification_data = [
+
+					      				/*$verification_data = [
 														'name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
 														'owner_name'=>$user->first_name.' '.$user->last_name,
 						                'property_id'=>$property->uuid,
@@ -806,7 +940,6 @@ class PropertiesController extends Controller
 						                'site_url'=>env('APP_URL'),
 						                'token'=>$property_varification_token
 						            ];
-
 						            Mail::to($checkAgent->email)->send(new PropertyVerificationMail($verification_data));
 
 							          $property_varification = new PropertyVerification;
@@ -815,7 +948,26 @@ class PropertiesController extends Controller
 							          $property_varification->user_id = $request->user_id;
 							          $property_varification->token = $property_varification_token;
 							          $property_varification->send_time = date('Y-m-d h:i:s');
-							          $result = $property_varification->save();
+							          $result = $property_varification->save();*/
+
+							          if ($verify_status == 'NO') {
+						            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$property->uuid])->update(['verification_token'=>$property_varification_token]);
+								            if ($update_token) {
+								            		$this->configSMTP();
+																$verification_data = [
+																		'owner_name'=>$user->first_name.' '.$user->last_name,
+																		'agent_name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
+										                'user_id'=>base64_encode($request->user_id),
+										                'property_id'=>base64_encode($property->uuid),
+										                'token'=>base64_encode($property_varification_token)
+										            ];
+										            try{
+													          Mail::to($checkAgent->email)->send(new OwnerVerificationMail($verification_data));
+													      }catch(\Exception $e){
+
+													      }
+								            }
+						            }
 
 							          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$checkAgent->uuid, 'agent_type'=>'seller'])->first();
 				                        
@@ -829,25 +981,6 @@ class PropertiesController extends Controller
                             $property_agent->save();
                         }
 					      		}
-
-					      		$verify_status = 'NO';
-						      	if ($request->data['property'][0][1]['vs_ownername'][1] != null || $request->data['property'][0][1]['vs_ownername'][1] != '') {
-						      			if (strpos($request->data['property'][0][1]['vs_ownername'][1], $user->last_name) == true) {
-								      			$verify_status = 'PV';
-								      	}else{
-								      			$verify_status = 'NO';
-						      			}
-						      	}
-
-						      	if ($verify_status == 'NO') {
-						      			if ($request->data['property'][0][1]['vs_ownername2'][1] != null || $request->data['property'][0][1]['vs_ownername2'][1] != '') {
-						      					if (strpos($request->data['property'][0][1]['vs_ownername2'][1], $user->last_name) == true) {
-								      					$verify_status = 'PV';
-								      			}else{
-								      					$verify_status = 'NO';
-								      			}
-								      	}
-						      	}
 
 						      	if ($verify_status == 'PV') {
 						      			$time = strtotime(Carbon::now());
@@ -870,23 +1003,13 @@ class PropertiesController extends Controller
 									      $setup->overlap = 'NO';
 									      $save_setup = $setup->save();
 						      	}
-								      	
-						      	$checkOwner = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id])->first();
-						      	if ($checkOwner == null) {
-						      			$owner = new PropertyOwners;
-								      	$owner->property_id = $property->uuid;
-								      	$owner->user_id = $request->user_id;
-								      	$owner->type = 'main_owner';
-								      	$owner->verify_status = $verify_status;
-								      	$property_owner = $owner->save();
-								      	
-								      	if ($property_owner) {
-								      			return $this->sendResponse("Property added successfully!");
-								      	}else{
-								      			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
-								      	}
+
+						      	if ($property_owner) {
+						      			return $this->sendResponse("Property added successfully!");
+						      	}else{
+						      			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 						      	}
-								     
+
 								    return $this->sendResponse("Property added successfully!");	
 						    }
 				  	}else{
@@ -987,7 +1110,11 @@ class PropertiesController extends Controller
 				      	$zillow->z_rental_lowrange = $request->data['property'][1][1]['z_rental_lowrange'][1];
 				      	$zillow->z_rental_highrange = $request->data['property'][1][1]['z_rental_highrange'][1];
 				      	$zillow->z_rental_lastupdated = $request->data['property'][1][1]['z_rental_lastupdated'][1];
-				      	$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
+				      	if (is_array($request->data['property'][1][1]['z_prop_url'][1]) == true) {
+				  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'];
+				  			}else{
+				  					$zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
+				  			}
 				      	$add_zillow = $zillow->save();
 
 				      	$homendo = new PropertyHomendo;
@@ -1021,7 +1148,7 @@ class PropertiesController extends Controller
 				      	}
 				      	$homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
 				      	if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
-				      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0];
+				      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'];
 				      	}else{
 				      			$homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
 				      	}
