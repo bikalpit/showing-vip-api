@@ -554,7 +554,11 @@ class AgentController extends Controller
             $zillow->z_rental_lowrange = $request->data['property'][1][1]['z_rental_lowrange'][1];
             $zillow->z_rental_highrange = $request->data['property'][1][1]['z_rental_highrange'][1];
             $zillow->z_rental_lastupdated = $request->data['property'][1][1]['z_rental_lastupdated'][1];
-            $zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
+            if (is_array($request->data['property'][1][1]['z_prop_url'][1]) == true) {
+                $zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1]['changingThisBreaksApplicationSecurity'];
+            }else{
+                $zillow->z_prop_url = $request->data['property'][1][1]['z_prop_url'][1];
+            }
             $add_zillow = $zillow->save();
 
             $homendo = new PropertyHomendo;
@@ -580,7 +584,7 @@ class AgentController extends Controller
             }
             $homendo->hmdo_mls_price = $request->data['property'][2][1]['hmdo_mls_price'][1];
             if (is_array($request->data['property'][2][1]['hmdo_mls_url'][1]) == true) {
-                $homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1][0];
+                $homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1]['changingThisBreaksApplicationSecurity'];
             }else{
                 $homendo->hmdo_mls_url = $request->data['property'][2][1]['hmdo_mls_url'][1];
             }
