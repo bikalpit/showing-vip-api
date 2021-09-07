@@ -1329,6 +1329,7 @@ class PropertiesController extends Controller
 		      					if ($agent_property->agent_id != null || $agent_property->agent_id != '') {
 				      					$agent = Users::where('uuid', $agent_property->agent_id)->first();
 				      					$property['agent'] = $agent;
+				      					$property['agent_status'] = $agent_property->agent_status;
 				      			}else{
 				      					$property['agent'] = null;
 				      			}
