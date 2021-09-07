@@ -463,7 +463,7 @@ class AgentController extends Controller
         $add_property = '0';
         if (!empty($propertyCheck)) {
             $checkClient = PropertyOwners::where(['user_id'=>$request->client_id, 'property_id'=>$propertyCheck->uuid])->first();
-            if (empty($propertyCheck)) {
+            if (empty($checkClient)) {
                 $add_property = '1';
             }else{
                 $add_property = '0';
@@ -471,9 +471,32 @@ class AgentController extends Controller
         }else{
             $add_property = '2';
         }
-
+        
         if ($add_property == '1') {
-            return $this->sendResponse("Property already exist!", 200, false);
+            $check_agent = PropertyAgents::where(['property_id'=>$propertyCheck->uuid, 'agent_id'=>$request->agent_id, 'agent_type'=>'seller'])->first();
+
+            if (empty($check_agent)) {
+                $agent = new PropertyAgents;
+                $agent->property_id = $propertyCheck->uuid;
+                $agent->property_mls_id = $mls_id;
+                $agent->property_originator = $mls_name;
+                $agent->agent_id = $request->agent_id;
+                $agent->agent_type = 'seller';
+                $property_agent = $agent->save();
+            }
+
+            $owner = new PropertyOwners;
+            $owner->property_id = $propertyCheck->uuid;
+            $owner->user_id = $request->client_id;
+            $owner->type = 'main_owner';
+            $owner->verify_status = 'YES';
+            $property_owner = $owner->save();
+
+            if ($property_owner) {
+                return $this->sendResponse("Property added successfully!");
+            }else{
+                return $this->sendResponse("Sorry, Something went wrong!", 200, false);
+            }
         }elseif ($add_property == '2') {
             $time = strtotime(Carbon::now());
             $uuid = "prty".$time.rand(10,99)*rand(10,99);
@@ -652,30 +675,7 @@ class AgentController extends Controller
                 return $this->sendResponse("Sorry, Something went wrong!", 200, false);
             }
         }else{
-            $check_agent = PropertyAgents::where(['property_id'=>$propertyCheck->uuid, 'agent_id'=>$request->agent_id, 'agent_type'=>'seller'])->first();
-
-            if (empty($check_agent)) {
-                $agent = new PropertyAgents;
-                $agent->property_id = $propertyCheck->uuid;
-                $agent->property_mls_id = $mls_id;
-                $agent->property_originator = $mls_name;
-                $agent->agent_id = $request->agent_id;
-                $agent->agent_type = 'seller';
-                $property_agent = $agent->save();
-            }
-
-            $owner = new PropertyOwners;
-            $owner->property_id = $propertyCheck->uuid;
-            $owner->user_id = $request->client_id;
-            $owner->type = 'main_owner';
-            $owner->verify_status = 'YES';
-            $property_owner = $owner->save();
-
-            if ($property_agent) {
-                return $this->sendResponse("Property added successfully!");
-            }else{
-                return $this->sendResponse("Sorry, Something went wrong!", 200, false);
-            }
+            return $this->sendResponse("Property already exist!", 200, false);
         }
     }
 
