@@ -297,12 +297,6 @@ class PropertiesController extends Controller
 											      $save_setup = $setup->save();
 								      	}
 
-								      	if ($property_owner) {
-								      			return $this->sendResponse("Property added successfully!");
-								      	}else{
-								      			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
-								      	}
-
 								      	return $this->sendResponse("Property added successfully!");
 				    				}else{
 						    				$time = strtotime(Carbon::now());
@@ -672,12 +666,6 @@ class PropertiesController extends Controller
 											      $setup->timeframe = '30';
 											      $setup->overlap = 'NO';
 											      $save_setup = $setup->save();
-								      	}
-
-								      	if ($property_owner) {
-								      			return $this->sendResponse("Property added successfully!");
-								      	}else{
-								      			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 								      	}
 
 								      	return $this->sendResponse("Property added successfully!");
@@ -1052,12 +1040,6 @@ class PropertiesController extends Controller
 									      $save_setup = $setup->save();
 						      	}
 
-						      	if ($property_owner) {
-						      			return $this->sendResponse("Property added successfully!");
-						      	}else{
-						      			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
-						      	}
-
 								    return $this->sendResponse("Property added successfully!");	
 						    }
 				  	}else{
@@ -1223,6 +1205,8 @@ class PropertiesController extends Controller
 						      			return $this->sendResponse("Sorry, Something went wrong!", 200, false);
 						      	}
 				      	}
+
+				      	return $this->sendResponse("Property added successfully!");
 				  	}
 		  	}else{
 		  			return $this->sendResponse("Sorry this property can not be added to your account yet.", 200, false);
