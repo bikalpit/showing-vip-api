@@ -416,7 +416,7 @@ class AgentController extends Controller
                     }
                 }
                 $buyer['proprties'] = $buyer_properties;
-                $buyers[] = $seller;
+                $buyers[] = $buyer;
             }
         }
 
