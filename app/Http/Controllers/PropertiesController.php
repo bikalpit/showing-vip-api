@@ -199,6 +199,14 @@ class PropertiesController extends Controller
 														            ];
 														            try{
 																	          Mail::to($agent->email)->send(new OwnerVerificationMail($verification_data));
+
+																	          $property_varification = new PropertyVerification;
+																	          $property_varification->property_id = $mlsNameCheck->uuid;
+																	          $property_varification->agent_id = $agent->uuid;
+																	          $property_varification->user_id = $request->user_id;
+																	          $property_varification->token = $property_varification_token;
+																	          $property_varification->send_time = date('Y-m-d h:i:s');
+																	          $result = $property_varification->save();
 																	      }catch(\Exception $e){
 
 																	      }
@@ -252,6 +260,14 @@ class PropertiesController extends Controller
 												            ];
 												            try{
 															          Mail::to($checkAgent->email)->send(new OwnerVerificationMail($verification_data));
+
+															          $property_varification = new PropertyVerification;
+															          $property_varification->property_id = $mlsNameCheck->uuid;
+															          $property_varification->agent_id = $checkAgent->uuid;
+															          $property_varification->user_id = $request->user_id;
+															          $property_varification->token = $property_varification_token;
+															          $property_varification->send_time = date('Y-m-d h:i:s');
+															          $result = $property_varification->save();
 															      }catch(\Exception $e){
 
 															      }
@@ -548,6 +564,14 @@ class PropertiesController extends Controller
 														            ];
 														            try{
 																	          Mail::to($agent->uuid)->send(new OwnerVerificationMail($verification_data));
+
+																	          $property_varification = new PropertyVerification;
+																	          $property_varification->property_id = $property->uuid;
+																	          $property_varification->agent_id = $agent->uuid;
+																	          $property_varification->user_id = $request->user_id;
+																	          $property_varification->token = $property_varification_token;
+																	          $property_varification->send_time = date('Y-m-d h:i:s');
+																	          $result = $property_varification->save();
 																	      }catch(\Exception $e){
 
 																	      }
@@ -601,6 +625,14 @@ class PropertiesController extends Controller
 												            ];
 												            try{
 															          Mail::to($checkAgent->email)->send(new OwnerVerificationMail($verification_data));
+
+															          $property_varification = new PropertyVerification;
+															          $property_varification->property_id = $property->uuid;
+															          $property_varification->agent_id = $checkAgent->uuid;
+															          $property_varification->user_id = $request->user_id;
+															          $property_varification->token = $property_varification_token;
+															          $property_varification->send_time = date('Y-m-d h:i:s');
+															          $result = $property_varification->save();
 															      }catch(\Exception $e){
 
 															      }
@@ -910,6 +942,14 @@ class PropertiesController extends Controller
 												            ];
 												            try{
 															          Mail::to($agent->email)->send(new OwnerVerificationMail($verification_data));
+
+															          $property_varification = new PropertyVerification;
+															          $property_varification->property_id = $property->uuid;
+															          $property_varification->agent_id = $agent->uuid;
+															          $property_varification->user_id = $request->user_id;
+															          $property_varification->token = $property_varification_token;
+															          $property_varification->send_time = date('Y-m-d h:i:s');
+															          $result = $property_varification->save();
 															      }catch(\Exception $e){
 
 															      }
@@ -963,6 +1003,14 @@ class PropertiesController extends Controller
 										            ];
 										            try{
 													          Mail::to($checkAgent->email)->send(new OwnerVerificationMail($verification_data));
+
+													          $property_varification = new PropertyVerification;
+													          $property_varification->property_id = $property->uuid;
+													          $property_varification->agent_id = $checkAgent->uuid;
+													          $property_varification->user_id = $request->user_id;
+													          $property_varification->token = $property_varification_token;
+													          $property_varification->send_time = date('Y-m-d h:i:s');
+													          $result = $property_varification->save();
 													      }catch(\Exception $e){
 
 													      }
@@ -1823,7 +1871,7 @@ class PropertiesController extends Controller
 
 			      Properties::where('uuid', $request->property)->update(['verified' => 'YES']);
 
-			      PropertyVerification::where('property_id', $request->token)->delete();
+			      PropertyVerification::where('token', $request->token)->delete();
 				}else{
 						$status = 'expired';
 				}

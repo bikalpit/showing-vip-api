@@ -476,7 +476,8 @@ class UsersController extends Controller
 		}
 
 		public function verifiedOwner(Request $request){
-				$check = PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->first();
+				//$check = PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->first();
+				$check = PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->first();
 				if (!empty($check)) {
 						$status = 'verified';
 
@@ -501,6 +502,8 @@ class UsersController extends Controller
 			      $save_setup = $setup->save();
 
 						PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id', base64_decode($request->user)])->update(['verify_status'=>'YES']);
+
+						PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user))->delete();
 				}else{
 						$status = 'expired';
 				}
