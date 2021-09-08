@@ -1340,6 +1340,16 @@ class PropertiesController extends Controller
 				      	$property['verify_status'] = $verify_ownership->verify_status;
 		      			$property['owners'] = $selling_properties;
 		      			$property['showings'] = $showings;
+
+		      			$bookings = PropertyBookingSchedule::where(['property_id'=>$property->uuid])->get();
+		      			$booking_count = 0;
+                foreach ($bookings as $booking) {
+            				if (strtotime(date('Y-m-d H:i A')) <= strtotime($booking->booking_date.' '.$booking->booking_time)) {
+		                    $booking_count++;
+		                }
+                }
+                $property['booking_count'] = $booking_count;
+
 		      			$all_selling_properties[] = $property;
 	      		}
 	      }
@@ -1365,6 +1375,16 @@ class PropertiesController extends Controller
 		      			$all_properties = PropertyOwners::with('User')->where('property_id', $buying_property->uuid)->get();
 		      			$buying_property['owners'] = $all_properties;
 		      			$buying_property['showings'] = $showings;
+
+		      			$b_bookings = PropertyBookingSchedule::where(['property_id'=>$buying_property->uuid])->get();
+		      			$b_booking_count = 0;
+                foreach ($b_bookings as $b_booking) {
+            				if (strtotime(date('Y-m-d H:i A')) <= strtotime($b_booking->booking_date.' '.$b_booking->booking_time)) {
+		                    $b_booking_count++;
+		                }
+                }
+                $buying_property['booking_count'] = $b_booking_count;
+
 		      			$all_buying_properties[] = $buying_property;
 	      		}
 	      }
