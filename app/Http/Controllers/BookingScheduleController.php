@@ -963,6 +963,20 @@ class BookingScheduleController extends Controller
                 $property_buyer->save();
             }
 
+            $check_agent = PropertyAgents::where(['property_id'=>$property_id, 'agent_id'=>$request->buyer_agent_id, 'agent_type'=>'buyer'])->first();
+            
+            if (empty($check_agent)) {
+                $property_agent = new PropertyAgents;
+                $property_agent->property_id = $property_id;
+                $property_agent->property_mls_id = $property->mls_id;
+                $property_agent->property_originator = $property->mls_name;
+                //$property_agent->seller_id = $seller_id;
+                $property_agent->buyer_id = $request->buyer_id;
+                $property_agent->agent_id = $request->buyer_agent_id;
+                $property_agent->agent_type = 'buyer';
+                $property_agent->save();
+            }
+
             if ($showing_setup != null || $showing_setup != '') {
                 if ($availibility !== null) {
                     foreach ($availibility_data as $data) {
