@@ -428,7 +428,7 @@
                                                 align="left">
                                                 <div style="line-height: 160%; text-align: center; word-wrap: break-word;">
                                                    <p style="font-size: 14px; line-height: 160%;"><span
-                                                      style="font-size: 22px; line-height: 35.2px;">Hi, {{$name}}</span></p>
+                                                      style="font-size: 22px; line-height: 35.2px;">Hi, {{$name}},</span></p>
                                                    <p style="font-size: 14px; line-height: 160%;"><span
                                                       style="font-size: 18px; line-height: 28.8px;">Your Showing.VIP verification code is </span></p>
                                                 </div>

@@ -1866,7 +1866,7 @@ class PropertiesController extends Controller
 				      					$property['owners'] = Users::whereIn('uuid', array_unique($user_ids))->get();
 				      			}
 
-				      			$property_info = PropertyAgents::where('property_id', $property->uuid)->first();
+				      			$property_info = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$request->agent_id])->first();
 				      			$property['agent_status'] = $property_info->status;
 
 										if($filter == 'hide'){
