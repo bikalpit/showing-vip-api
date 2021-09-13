@@ -1869,6 +1869,15 @@ class PropertiesController extends Controller
 				      			$property_info = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$request->agent_id])->first();
 				      			$property['agent_status'] = $property_info->status;
 
+				      			$bookings = PropertyBookingSchedule::where(['property_id'=>$property->uuid])->get();
+				      			$booking_count = 0;
+		                foreach ($bookings as $booking) {
+		            				if (strtotime(date('Y-m-d H:i A')) <= strtotime($booking->booking_date.' '.$booking->booking_time)) {
+				                    $booking_count++;
+				                }
+		                }
+		                $property['booking_count'] = $booking_count;
+                
 										if($filter == 'hide'){
 												if($property_info->status == $filter){
 														if ($property_info->agent_type == 'seller') {
