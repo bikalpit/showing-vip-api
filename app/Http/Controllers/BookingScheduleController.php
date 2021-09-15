@@ -63,7 +63,7 @@ class BookingScheduleController extends Controller
         }
         $showing_setup = PropertyShowingSetup::where('property_id', $property_id)->first();
         if ($showing_setup != null || $showing_setup != '') {
-            if ($showing_setup->validator != null || $showing_setup->validator != '') {
+            if ($showing_setup->validator != null || $showing_setup->validator != '' || sizeof($showing_setup->validator) > 0) {
                 $validator = $showing_setup->validator[0];
             }else{
                 $validator = '';
@@ -250,7 +250,7 @@ class BookingScheduleController extends Controller
                         PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
                     }
 
-                    if ($showing_setup->validator != null || $showing_setup->validator != '') {
+                    if ($showing_setup->validator != null || $showing_setup->validator != '' || sizeof($showing_setup->validator) > 0) {
                         if ($twilio_setting->status == true) {
                             try {
                                 $this->twilioClient = new TwilioClient($twilio_setting->account_sid, $twilio_setting->auth_token);
@@ -505,7 +505,7 @@ class BookingScheduleController extends Controller
                             PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
                         }
 
-                        if ($showing_setup->validator != null || $showing_setup->validator != '') {
+                        if ($showing_setup->validator != null || $showing_setup->validator != '' || sizeof($showing_setup->validator) > 0) {
                             if ($twilio_setting->status == true) {
                                 try {
                                     $this->twilioClient = new TwilioClient($twilio_setting->account_sid, $twilio_setting->auth_token);
@@ -897,8 +897,9 @@ class BookingScheduleController extends Controller
         }else{
             $hmdo_mls_propname = '';
         }
+
         $showing_setup = PropertyShowingSetup::where('property_id', $property_id)->first();
-        if ($showing_setup != null || $showing_setup != '') {
+        if ($showing_setup != null || $showing_setup != '' || sizeof($showing_setup->validator) > 0) {
             if ($showing_setup->validator != null || $showing_setup->validator != '') {
                 $validator = $showing_setup->validator[0];
             }else{
@@ -996,7 +997,7 @@ class BookingScheduleController extends Controller
                     PropertyShowingAvailability::where('showing_setup_id', $showing_setup->uuid)->update(['availability'=>json_encode($availibility_data)]);
                 }
                 
-                if ($showing_setup->validator != null || $showing_setup->validator != '') {
+                if ($showing_setup->validator != null || $showing_setup->validator != '' || sizeof($showing_setup->validator) > 0) {
                     if ($twilio_setting->status == true) {
                         try {
                             $this->twilioClient = new TwilioClient($twilio_setting->account_sid, $twilio_setting->auth_token);
