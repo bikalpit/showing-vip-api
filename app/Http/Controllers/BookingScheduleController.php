@@ -48,7 +48,12 @@ class BookingScheduleController extends Controller
             'interval'              => 'nullable',
         ]);
 
-        $formetted_date = date('Y-m-d', strtotime($request->booking_date));
+        if ($request->booking_date != null || $request->booking_date != '') {
+            $formetted_date = date('Y-m-d', strtotime($request->booking_date));
+        }else{
+            $formetted_date = null;
+        }
+
         $phone = $request->phone;
         $email = $request->email;
         $property_id = $request->property_id;
@@ -891,7 +896,12 @@ class BookingScheduleController extends Controller
             'showing_note'      => 'nullable',
         ]);
 
-        $formetted_date = date('Y-m-d', strtotime($request->booking_date));
+        if ($request->booking_date != null || $request->booking_date != '') {
+            $formetted_date = date('Y-m-d', strtotime($request->booking_date));
+        }else{
+            $formetted_date = null;
+        }
+        
         $property_id = $request->property_id;
         $booking_date = $request->booking_date;
         $booking_time = $request->booking_time;
