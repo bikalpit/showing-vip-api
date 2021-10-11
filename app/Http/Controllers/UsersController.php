@@ -439,12 +439,13 @@ class UsersController extends Controller
     public function verifyOwner(Request $request){
 				$this->validate($request, [
 	      		'user_id' => 'required',
+	      		'agent_id' => 'required',
 	      		'property_id' => 'required',
 	      ]);
 				
 	      $owner = Users::where('uuid', $request->user_id)->first();
 	      $property = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_type'=>'seller'])->first();
-	      $agent = Users::where('uuid', $property->agent_id)->first();
+	      $agent = Users::where('uuid', $request->agent_id)->first();
 	      
 	      if (!empty($agent)) {
 	      		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
