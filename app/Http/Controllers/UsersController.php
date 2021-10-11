@@ -451,9 +451,17 @@ class UsersController extends Controller
 	      if (!empty($agent)) {
 	      		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 
-	      		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$request->property_id])->update(['verification_token'=>$verification_token]);
+	      		//$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$request->property_id])->update(['verification_token'=>$verification_token]);
 
-	      		if ($update_token) {
+	      		$property_varification = new PropertyVerification;
+	          $property_varification->property_id = $request->property_id;
+	          $property_varification->agent_id = $request->agent_id;
+	          $property_varification->user_id = $request->user_id;
+	          $property_varification->token = $verification_token;
+	          $property_varification->send_time = date('Y-m-d h:i:s');
+	          $result = $property_varification->save();
+																	          
+	      		if ($result) {
 	      				$this->configSMTP();	
 								$data = [
 										'owner_name'=>$owner->first_name.' '.$owner->last_name,
@@ -478,7 +486,9 @@ class UsersController extends Controller
 		}
 
 		public function verifiedOwner(Request $request){
-				$check = PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->first();
+				//$check = PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->first();
+
+				$check = PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->first();
 				if (!empty($check)) {
 						$status = 'verified';
 
@@ -504,8 +514,10 @@ class UsersController extends Controller
 				      $setup->overlap = 'NO';
 				      $save_setup = $setup->save();
 						}
-						
-						PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id', base64_decode($request->user)])->update(['verify_status'=>'YES']);
+
+						PropertyOwners::where(['user_id', base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->update(['verify_status'=>'YES']);
+
+						PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->delete();
 				}else{
 						$status = 'expired';
 				}
