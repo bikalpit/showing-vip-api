@@ -15,6 +15,7 @@ use App\Models\PropertyOwners;
 use App\Models\PropertyShowingSetup;
 use App\Mail\SignupMail;
 use App\Mail\OwnerVerificationMail;
+use App\Mail\PropertyVerification;
 use Carbon\Carbon;
 use DB;
 
