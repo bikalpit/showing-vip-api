@@ -14,6 +14,7 @@ use App\Models\PropertyAgents;
 use App\Models\PropertyOwners;
 use App\Models\PropertyShowingSetup;
 use App\Models\PropertyVerification;
+use App\Models\Properties;
 use App\Mail\SignupMail;
 use App\Mail\OwnerVerificationMail;
 use Carbon\Carbon;
@@ -445,9 +446,9 @@ class UsersController extends Controller
 	      ]);
 				
 	      $owner = Users::where('uuid', $request->user_id)->first();
-	      $property = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_type'=>'seller'])->first();
 	      $agent = Users::where('uuid', $request->agent_id)->first();
-	      
+	      $property = Properties::where('uuid', $request->property_id)->first();
+
 	      if (!empty($agent)) {
 	      		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 
@@ -474,6 +475,18 @@ class UsersController extends Controller
 
 		            try{
 					          Mail::to($agent->email)->send(new OwnerVerificationMail($data));
+
+					          $check_agent = PropertyAgents::where(['property_id'=>$request->property_id, 'agent_id'=>$request->agent_id, 'agent_type'=>'seller'])->first();
+				            if (empty($check_agent)) {
+				                $property_agent = new PropertyAgents;
+				                $property_agent->property_id = $request->property_id;
+				                $property_agent->property_mls_id = $property->mls_id;
+				                $property_agent->property_originator = $property->mls_name;
+				                $property_agent->agent_id = $request->agent_id;
+				                $property_agent->agent_type = 'seller';
+				                $property_agent->agent_status = 'TA';
+				                $property_agent->save();
+				            }
 					      }catch(\Exception $e){
 					          $msg = $e->getMessage();
 					          return $this->sendResponse($msg, 200, false);
@@ -492,20 +505,6 @@ class UsersController extends Controller
 				$check = PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->first();
 				if (!empty($check)) {
 						$status = 'verified';
-
-						$check_agent = PropertyAgents::where(['property_id'=>base64_decode($request->property), 'agent_id'=>base64_decode($request->agent), 'agent_type'=>'seller'])->first();
-            if (empty($check_agent)) {
-            		$property = Properties::where('uuid', base64_decode($request->property))->first();
-
-                $property_agent = new PropertyAgents;
-                $property_agent->property_id = base64_decode($request->property);
-                $property_agent->property_mls_id = $property->mls_id;
-                $property_agent->property_originator = $property->mls_name;
-                $property_agent->agent_id = base64_decode($request->agent);
-                $property_agent->agent_type = 'seller';
-                $property_agent->agent_status = 'TA';
-                $property_agent->save();
-            }
 
 						$check_setup = PropertyShowingSetup::where('property_id', base64_decode($request->property))->first();
 						if (empty($check_setup)) {
