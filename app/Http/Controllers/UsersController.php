@@ -478,34 +478,34 @@ class UsersController extends Controller
 		}
 
 		public function verifiedOwner(Request $request){
-				//$check = PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->first();
-				$check = PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->first();
+				$check = PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->first();
 				if (!empty($check)) {
 						$status = 'verified';
 
-						$time = strtotime(Carbon::now());
-		    		$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
-		    		
-			      $setup = new PropertyShowingSetup;
-			      $setup->uuid = $setup_uuid;
-			      $setup->property_id = base64_decode($request->property);
-			      $setup->notification_email = 'YES';
-			      $setup->notification_text = 'YES';
-			      $setup->type = 'VALID';
-			      $setup->validator = null;
-			      $setup->presence = null;
-			      $setup->instructions = null;
-			      $setup->lockbox_type = null;
-			      $setup->lockbox_location = null;
-	      		$setup->start_date = null;
-	      		$setup->end_date = null;
-			      $setup->timeframe = '30';
-			      $setup->overlap = 'NO';
-			      $save_setup = $setup->save();
-
+						$check_setup = PropertyShowingSetup::where('property_id', base64_decode($request->property))->first();
+						if (empty($check_setup)) {
+							$time = strtotime(Carbon::now());
+			    		$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
+			    		
+				      $setup = new PropertyShowingSetup;
+				      $setup->uuid = $setup_uuid;
+				      $setup->property_id = base64_decode($request->property);
+				      $setup->notification_email = 'YES';
+				      $setup->notification_text = 'YES';
+				      $setup->type = 'VALID';
+				      $setup->validator = null;
+				      $setup->presence = null;
+				      $setup->instructions = null;
+				      $setup->lockbox_type = null;
+				      $setup->lockbox_location = null;
+		      		$setup->start_date = null;
+		      		$setup->end_date = null;
+				      $setup->timeframe = '30';
+				      $setup->overlap = 'NO';
+				      $save_setup = $setup->save();
+						}
+						
 						PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id', base64_decode($request->user)])->update(['verify_status'=>'YES']);
-
-						PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->delete();
 				}else{
 						$status = 'expired';
 				}
