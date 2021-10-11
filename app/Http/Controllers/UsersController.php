@@ -467,6 +467,7 @@ class UsersController extends Controller
 										'owner_name'=>$owner->first_name.' '.$owner->last_name,
 										'agent_name'=>$agent->first_name.' '.$agent->last_name,
 		                'user_id'=>base64_encode($owner->uuid),
+		                'agent_id'=>base64_encode($agent->uuid),
 		                'property_id'=>base64_encode($request->property_id),
 		                'token'=>base64_encode($verification_token)
 		            ];
@@ -491,6 +492,20 @@ class UsersController extends Controller
 				$check = PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->first();
 				if (!empty($check)) {
 						$status = 'verified';
+
+						$check_agent = PropertyAgents::where(['property_id'=>base64_decode($request->property), 'agent_id'=>base64_decode($request->agent), 'agent_type'=>'seller'])->first();
+            if (empty($check_agent)) {
+            		$property = Properties::where('uuid', base64_decode($request->property))->first();
+
+                $property_agent = new PropertyAgents;
+                $property_agent->property_id = base64_decode($request->property);
+                $property_agent->property_mls_id = $property->mls_id;
+                $property_agent->property_originator = $property->mls_name;
+                $property_agent->agent_id = base64_decode($request->agent);
+                $property_agent->agent_type = 'seller';
+                $property_agent->agent_status = 'TA';
+                $property_agent->save();
+            }
 
 						$check_setup = PropertyShowingSetup::where('property_id', base64_decode($request->property))->first();
 						if (empty($check_setup)) {
