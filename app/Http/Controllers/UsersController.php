@@ -515,7 +515,7 @@ class UsersController extends Controller
 				      $save_setup = $setup->save();
 						}
 
-						PropertyOwners::where(['user_id', base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->update(['verify_status'=>'YES']);
+						PropertyOwners::where(['user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->update(['verify_status'=>'YES']);
 
 						PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->delete();
 				}else{
