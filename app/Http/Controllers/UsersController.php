@@ -488,7 +488,7 @@ class UsersController extends Controller
 		    		
 			      $setup = new PropertyShowingSetup;
 			      $setup->uuid = $setup_uuid;
-			      $setup->property_id = $request->property;
+			      $setup->property_id = base64_decode($request->property);
 			      $setup->notification_email = 'YES';
 			      $setup->notification_text = 'YES';
 			      $setup->type = 'VALID';
