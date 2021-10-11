@@ -30,6 +30,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 		$router->post('send-verify-email',  ['uses'=>'UserAuthController@sendVerifyEmail']);
 		$router->post('verify-email',  ['uses'=>'UserAuthController@verifyEmail']);
 		$router->post('check-token',  ['uses'=>'UserAuthController@checkToken']);
+		$router->get('get-ip',  ['uses'=>'UserAuthController@getIP']);
 		/* UserAuthController APIs End */
 
 		/* UsersController APIs Start */
