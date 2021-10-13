@@ -202,6 +202,7 @@ class PropertiesController extends Controller
 																						'owner_name'=>$user->first_name.' '.$user->last_name,
 																						'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
 														                'user_id'=>base64_encode($request->user_id),
+														                'agent_id'=>base64_encode($agent->uuid),
 														                'property_id'=>base64_encode($mlsNameCheck->uuid),
 														                'token'=>base64_encode($property_varification_token)
 														            ];
@@ -264,6 +265,7 @@ class PropertiesController extends Controller
 																				'owner_name'=>$user->first_name.' '.$user->last_name,
 																				'agent_name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
 												                'user_id'=>base64_encode($request->user_id),
+												                'agent_id'=>base64_encode($checkAgent->uuid),
 												                'property_id'=>base64_encode($mlsNameCheck->uuid),
 												                'token'=>base64_encode($property_varification_token)
 												            ];
@@ -571,6 +573,7 @@ class PropertiesController extends Controller
 																						'owner_name'=>$user->first_name.' '.$user->last_name,
 																						'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
 														                'user_id'=>base64_encode($request->user_id),
+														                'agent_id'=>base64_encode($agent->uuid),
 														                'property_id'=>base64_encode($property->uuid),
 														                'token'=>base64_encode($property_varification_token)
 														            ];
@@ -633,6 +636,7 @@ class PropertiesController extends Controller
 																				'owner_name'=>$user->first_name.' '.$user->last_name,
 																				'agent_name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
 												                'user_id'=>base64_encode($request->user_id),
+												                'agent_id'=>base64_encode($checkAgent->uuid),
 												                'property_id'=>base64_encode($property->uuid),
 												                'token'=>base64_encode($property_varification_token)
 												            ];
@@ -954,6 +958,7 @@ class PropertiesController extends Controller
 																				'owner_name'=>$user->first_name.' '.$user->last_name,
 																				'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
 												                'user_id'=>base64_encode($request->user_id),
+												                'agent_id'=>base64_encode($agent->uuid),
 												                'property_id'=>base64_encode($property->uuid),
 												                'token'=>base64_encode($property_varification_token)
 												            ];
@@ -1016,6 +1021,7 @@ class PropertiesController extends Controller
 																		'owner_name'=>$user->first_name.' '.$user->last_name,
 																		'agent_name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
 										                'user_id'=>base64_encode($request->user_id),
+										                'agent_id'=>base64_encode($checkAgent->uuid),
 										                'property_id'=>base64_encode($property->uuid),
 										                'token'=>base64_encode($property_varification_token)
 										            ];
