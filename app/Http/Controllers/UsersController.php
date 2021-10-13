@@ -536,7 +536,7 @@ class UsersController extends Controller
 						$status = 'expired';
 				}
 
-				return view('verified-owner', ["status"=>$status]);
+				return view('verified-owner', ["status"=>$status, "verification"=>$request->d]);
 		}
 
 		public function checkAgent(){
