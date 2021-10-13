@@ -20,7 +20,7 @@ use App\Models\AgentInfo;
 use App\Models\PropertyShowingAvailability;
 use App\Models\PropertyShowingSurvey;
 use App\Models\PropertyImages;
-use App\Models\UserAgents
+use App\Models\UserAgents;
 use App\Mail\AssignAgent;
 use App\Mail\SignupMail;
 use App\Mail\AssignOwner;
