@@ -222,7 +222,7 @@ class PropertiesController extends Controller
 				                            $property_agent->save();
 				                        }
 
-				                        $check_user_agent = UserAgents::where('user_id'=>$request->user_id, 'agent_id'=>$agent->uuid)->first();
+				                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$agent->uuid])->first();
 				                        if (empty($check_agent)) {
 				                        		$user_agent = new UserAgents;
 														    		$user_agent->user_id = $request->user_id;
@@ -292,7 +292,7 @@ class PropertiesController extends Controller
 		                            $property_agent->save();
 		                        }
 
-		                        $check_user_agent = UserAgents::where('user_id'=>$request->user_id, 'agent_id'=>$checkAgent->uuid)->first();
+		                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$checkAgent->uuid])->first();
 		                        if (empty($check_agent)) {
 		                        		$user_agent = new UserAgents;
 												    		$user_agent->user_id = $request->user_id;
@@ -620,7 +620,7 @@ class PropertiesController extends Controller
 				                            $property_agent->save();
 				                        }
 
-				                        $check_user_agent = UserAgents::where('user_id'=>$request->user_id, 'agent_id'=>$agent->uuid)->first();
+				                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$agent->uuid])->first();
 				                        if (empty($check_agent)) {
 				                        		$user_agent = new UserAgents;
 														    		$user_agent->user_id = $request->user_id;
@@ -690,7 +690,7 @@ class PropertiesController extends Controller
 		                            $property_agent->save();
 		                        }
 
-		                        $check_user_agent = UserAgents::where('user_id'=>$request->user_id, 'agent_id'=>$checkAgent->uuid)->first();
+		                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$checkAgent->uuid])->first();
 		                        if (empty($check_agent)) {
 		                        		$user_agent = new UserAgents;
 												    		$user_agent->user_id = $request->user_id;
@@ -1019,7 +1019,7 @@ class PropertiesController extends Controller
 		                            $property_agent->save();
 		                        }
 
-		                        $check_user_agent = UserAgents::where('user_id'=>$request->user_id, 'agent_id'=>$agent->uuid)->first();
+		                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$agent->uuid])->first();
 		                        if (empty($check_agent)) {
 		                        		$user_agent = new UserAgents;
 												    		$user_agent->user_id = $request->user_id;
@@ -1089,7 +1089,7 @@ class PropertiesController extends Controller
                             $property_agent->save();
                         }
 
-                        $check_user_agent = UserAgents::where('user_id'=>$request->user_id, 'agent_id'=>$checkAgent->uuid)->first();
+                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$checkAgent->uuid])->first();
                         if (empty($check_agent)) {
                         		$user_agent = new UserAgents;
 										    		$user_agent->user_id = $request->user_id;
