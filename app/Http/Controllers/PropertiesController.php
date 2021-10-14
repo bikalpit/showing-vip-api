@@ -112,144 +112,110 @@ class PropertiesController extends Controller
 				    						$property_homendo = PropertyHomendo::where('property_id', $mlsNameCheck->uuid)->first();
 				    						
 								      	if (empty($checkAgent) || $checkAgent == null) {
-									      		$time = strtotime(Carbon::now());
-								            $agent_uuid = "usr".$time.rand(10,99)*rand(10,99);
+								      			if ($request->data['property'][2][1]['hmdo_mls_agent_email'][1] != '') {
+								      					$time = strtotime(Carbon::now());
+										            $agent_uuid = "usr".$time.rand(10,99)*rand(10,99);
 
-								            $agent = new Users;
-								            $agent->uuid = $agent_uuid;
-								            $agent->email = $request->data['property'][2][1]['hmdo_mls_agent_email'][1];
-								            $agent->role = "AGENT";
-								            $agent->mls_id = $request->data['property'][2][1]['hmdo_mls_agentid'][1];
-								            $agent->mls_name = $mls_name;
-								            $agent->phone_verified = "NO";
-								            $agent->email_verified = "NO";
-								            $agent->image = env("APP_URL")."public/user-images/default.png";
-								            $result = $agent->save();
-								            if ($result) {
-									            	$agent_info = new AgentInfo;
-										        		$agent_info->agent_id = $agent_uuid;
-										        		$agent_info->hmdo_lastupdated = ($request->agent_info != null)?$request->agent_info['hmdo_lastupdated'][1]:NULL;
-										        		$agent_info->hmdo_mls_originator = ($request->agent_info != null)?$request->agent_info['hmdo_mls_originator'][1]:NULL;
-										        		$agent_info->hmdo_agent_name = ($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:NULL;
-										        		$agent_info->hmdo_agent_title = ($request->agent_info != null)?$request->agent_info['hmdo_agent_title'][1]:NULL;
-										        		$agent_info->hmdo_agent_photo_url = ($request->agent_info != null)?$request->agent_info['hmdo_agent_photo_url'][1]:NULL;
-										        		$agent_info->hmdo_agent_email = ($request->agent_info != null)?$request->agent_info['hmdo_agent_email'][1]:NULL;
-										        		$agent_info->hmdo_office_main_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_main_phone'][1]:NULL;
-										        		$agent_info->hmdo_office_direct_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_direct_phone'][1]:NULL;
-										        		$agent_info->hmdo_agent_mobile_phone = ($request->agent_info != null)?$request->agent_info['hmdo_agent_mobile_phone'][1]:NULL;
-										        		$agent_info->hmdo_agent_skills = ($request->agent_info != null)?$request->agent_info['hmdo_agent_skills'][1]:NULL;
-										        		$agent_info->hmdo_office_id = ($request->agent_info != null)?$request->agent_info['hmdo_office_id'][1]:NULL;
-										        		$agent_info->hmdo_office_name = ($request->agent_info != null)?$request->agent_info['hmdo_office_name'][1]:NULL;
-										        		$agent_info->hmdo_office_photo = ($request->agent_info != null)?$request->agent_info['hmdo_office_photo'][1]:NULL;
-										        		$agent_info->hmdo_office_street = ($request->agent_info != null)?$request->agent_info['hmdo_office_street'][1]:NULL;
-										        		$agent_info->hmdo_office_city = ($request->agent_info != null)?$request->agent_info['hmdo_office_city'][1]:NULL;
-										        		$agent_info->hmdo_office_zipcode = ($request->agent_info != null)?$request->agent_info['hmdo_office_zipcode'][1]:NULL;
-										        		$agent_info->hmdo_office_state = ($request->agent_info != null)?$request->agent_info['hmdo_office_state'][1]:NULL;
-										        		$agent_info->hmdo_office_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_phone'][1]:NULL;
-										        		$agent_info->hmdo_office_website = ($request->agent_info != null)?$request->agent_info['hmdo_office_website'][1]:NULL;
-										        		$agent_info->hmdo_agent_website = ($request->agent_info != null)?$request->agent_info['hmdo_agent_website'][1]:NULL;
-										        		$agent_info->save();
+										            $agent = new Users;
+										            $agent->uuid = $agent_uuid;
+										            $agent->email = $request->data['property'][2][1]['hmdo_mls_agent_email'][1];
+										            $agent->role = "AGENT";
+										            $agent->mls_id = $request->data['property'][2][1]['hmdo_mls_agentid'][1];
+										            $agent->mls_name = $mls_name;
+										            $agent->phone_verified = "NO";
+										            $agent->email_verified = "NO";
+										            $agent->image = env("APP_URL")."public/user-images/default.png";
+										            $result = $agent->save();
+										            if ($result) {
+											            	$agent_info = new AgentInfo;
+												        		$agent_info->agent_id = $agent_uuid;
+												        		$agent_info->hmdo_lastupdated = ($request->agent_info != null)?$request->agent_info['hmdo_lastupdated'][1]:NULL;
+												        		$agent_info->hmdo_mls_originator = ($request->agent_info != null)?$request->agent_info['hmdo_mls_originator'][1]:NULL;
+												        		$agent_info->hmdo_agent_name = ($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:NULL;
+												        		$agent_info->hmdo_agent_title = ($request->agent_info != null)?$request->agent_info['hmdo_agent_title'][1]:NULL;
+												        		$agent_info->hmdo_agent_photo_url = ($request->agent_info != null)?$request->agent_info['hmdo_agent_photo_url'][1]:NULL;
+												        		$agent_info->hmdo_agent_email = ($request->agent_info != null)?$request->agent_info['hmdo_agent_email'][1]:NULL;
+												        		$agent_info->hmdo_office_main_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_main_phone'][1]:NULL;
+												        		$agent_info->hmdo_office_direct_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_direct_phone'][1]:NULL;
+												        		$agent_info->hmdo_agent_mobile_phone = ($request->agent_info != null)?$request->agent_info['hmdo_agent_mobile_phone'][1]:NULL;
+												        		$agent_info->hmdo_agent_skills = ($request->agent_info != null)?$request->agent_info['hmdo_agent_skills'][1]:NULL;
+												        		$agent_info->hmdo_office_id = ($request->agent_info != null)?$request->agent_info['hmdo_office_id'][1]:NULL;
+												        		$agent_info->hmdo_office_name = ($request->agent_info != null)?$request->agent_info['hmdo_office_name'][1]:NULL;
+												        		$agent_info->hmdo_office_photo = ($request->agent_info != null)?$request->agent_info['hmdo_office_photo'][1]:NULL;
+												        		$agent_info->hmdo_office_street = ($request->agent_info != null)?$request->agent_info['hmdo_office_street'][1]:NULL;
+												        		$agent_info->hmdo_office_city = ($request->agent_info != null)?$request->agent_info['hmdo_office_city'][1]:NULL;
+												        		$agent_info->hmdo_office_zipcode = ($request->agent_info != null)?$request->agent_info['hmdo_office_zipcode'][1]:NULL;
+												        		$agent_info->hmdo_office_state = ($request->agent_info != null)?$request->agent_info['hmdo_office_state'][1]:NULL;
+												        		$agent_info->hmdo_office_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_phone'][1]:NULL;
+												        		$agent_info->hmdo_office_website = ($request->agent_info != null)?$request->agent_info['hmdo_office_website'][1]:NULL;
+												        		$agent_info->hmdo_agent_website = ($request->agent_info != null)?$request->agent_info['hmdo_agent_website'][1]:NULL;
+												        		$agent_info->save();
 
-								            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-										            Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+										            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+												            Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
 
-										            $this->configSMTP();
-										            $data = [
-										                'name'=>'',
-										                'verification_token'=>$verification_token,
-										                'email'=>$agent->email,
-										                'url'=>$request->url
-										            ];
-										            Mail::to($agent->email)->send(new SignupMail($data));
+												            $this->configSMTP();
+												            $data = [
+												                'name'=>'',
+												                'verification_token'=>$verification_token,
+												                'email'=>$agent->email,
+												                'url'=>$request->url
+												            ];
+												            Mail::to($agent->email)->send(new SignupMail($data));
 
-										            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+												            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 
-										            /*$verification_data = [
-																		'name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
-																		'owner_name'=>$user->first_name.' '.$user->last_name,
-										                'property_id'=>$mlsNameCheck->uuid,
-										                'property_link'=>$property_homendo->hmdo_mls_url,
-										                'site_url'=>env('APP_URL'),
-										                'token'=>$property_varification_token
-										            ];
-										            Mail::to($agent->email)->send(new PropertyVerificationMail($verification_data));
+												            if ($verify_status == 'NO') {
+												            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$mlsNameCheck->uuid])->update(['verification_token'=>$property_varification_token]);
+														            if ($update_token) {
+														            		$this->configSMTP();
+																						$verification_data = [
+																								'owner_name'=>$user->first_name.' '.$user->last_name,
+																								'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
+																                'user_id'=>base64_encode($request->user_id),
+																                'agent_id'=>base64_encode($agent->uuid),
+																                'property_id'=>base64_encode($mlsNameCheck->uuid),
+																                'token'=>base64_encode($property_varification_token)
+																            ];
+																            try{
+																			          Mail::to($agent->email)->send(new OwnerVerificationMail($verification_data));
 
-										            $property_varification = new PropertyVerification;
-											          $property_varification->property_id = $mlsNameCheck->uuid;
-											          $property_varification->agent_id = $agent->uuid;
-											          $property_varification->user_id = $request->user_id;
-											          $property_varification->token = $property_varification_token;
-											          $property_varification->send_time = date('Y-m-d h:i:s');
-											          $result = $property_varification->save();*/
+																			          $property_varification = new PropertyVerification;
+																			          $property_varification->property_id = $mlsNameCheck->uuid;
+																			          $property_varification->agent_id = $agent->uuid;
+																			          $property_varification->user_id = $request->user_id;
+																			          $property_varification->token = $property_varification_token;
+																			          $property_varification->send_time = date('Y-m-d h:i:s');
+																			          $result = $property_varification->save();
+																			      }catch(\Exception $e){
 
-										            if ($verify_status == 'NO') {
-										            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$mlsNameCheck->uuid])->update(['verification_token'=>$property_varification_token]);
-												            if ($update_token) {
-												            		$this->configSMTP();
-																				$verification_data = [
-																						'owner_name'=>$user->first_name.' '.$user->last_name,
-																						'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
-														                'user_id'=>base64_encode($request->user_id),
-														                'agent_id'=>base64_encode($agent->uuid),
-														                'property_id'=>base64_encode($mlsNameCheck->uuid),
-														                'token'=>base64_encode($property_varification_token)
-														            ];
-														            try{
-																	          Mail::to($agent->email)->send(new OwnerVerificationMail($verification_data));
-
-																	          $property_varification = new PropertyVerification;
-																	          $property_varification->property_id = $mlsNameCheck->uuid;
-																	          $property_varification->agent_id = $agent->uuid;
-																	          $property_varification->user_id = $request->user_id;
-																	          $property_varification->token = $property_varification_token;
-																	          $property_varification->send_time = date('Y-m-d h:i:s');
-																	          $result = $property_varification->save();
-																	      }catch(\Exception $e){
-
-																	      }
+																			      }
+														            }
 												            }
+
+												            $check_agent = PropertyAgents::where(['property_id'=>$mlsNameCheck->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
+						                        if (empty($check_agent)) {
+						                            $property_agent = new PropertyAgents;
+						                            $property_agent->property_id = $mlsNameCheck->uuid;
+						                            $property_agent->property_mls_id = $mlsNameCheck->mls_id;
+						                            $property_agent->property_originator = $mlsNameCheck->mls_name;
+						                            $property_agent->agent_id = $agent->uuid;
+						                            $property_agent->agent_type = 'seller';
+						                            $property_agent->agent_status = 'PA';
+						                            $property_agent->save();
+						                        }
+
+						                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$agent->uuid])->first();
+						                        if (empty($check_agent)) {
+						                        		$user_agent = new UserAgents;
+																    		$user_agent->user_id = $request->user_id;
+																    		$user_agent->agent_id = $agent->uuid;
+																    		$save_user_agent = $user_agent->save();
+						                        }
 										            }
-
-										            $check_agent = PropertyAgents::where(['property_id'=>$mlsNameCheck->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
-				                        if (empty($check_agent)) {
-				                            $property_agent = new PropertyAgents;
-				                            $property_agent->property_id = $mlsNameCheck->uuid;
-				                            $property_agent->property_mls_id = $mlsNameCheck->mls_id;
-				                            $property_agent->property_originator = $mlsNameCheck->mls_name;
-				                            $property_agent->agent_id = $agent->uuid;
-				                            $property_agent->agent_type = 'seller';
-				                            $property_agent->agent_status = 'PA';
-				                            $property_agent->save();
-				                        }
-
-				                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$agent->uuid])->first();
-				                        if (empty($check_agent)) {
-				                        		$user_agent = new UserAgents;
-														    		$user_agent->user_id = $request->user_id;
-														    		$user_agent->agent_id = $agent->uuid;
-														    		$save_user_agent = $user_agent->save();
-				                        }
-								            }
+								      			}
 							      		}else{
 							      				$property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-							      				
-							      				/*$verification_data = [
-																'name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
-																'owner_name'=>$user->first_name.' '.$user->last_name,
-								                'property_id'=>$mlsNameCheck->uuid,
-								                'property_link'=>$property_homendo->hmdo_mls_url,
-								                'site_url'=>env('APP_URL'),
-								                'token'=>$property_varification_token
-								            ];
-								            Mail::to($checkAgent->email)->send(new PropertyVerificationMail($verification_data));
-
-									          $property_varification = new PropertyVerification;
-									          $property_varification->property_id = $mlsNameCheck->uuid;
-									          $property_varification->agent_id = $checkAgent->uuid;
-									          $property_varification->user_id = $request->user_id;
-									          $property_varification->token = $property_varification_token;
-									          $property_varification->send_time = date('Y-m-d h:i:s');
-									          $result = $property_varification->save();*/
 
 									          if ($verify_status == 'NO') {
 								            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$mlsNameCheck->uuid])->update(['verification_token'=>$property_varification_token]);
@@ -510,145 +476,111 @@ class PropertiesController extends Controller
 								      	}
 
 								      	if (empty($checkAgent) || $checkAgent == null) {
-									      		$time = strtotime(Carbon::now());
-								            $agent_uuid = "usr".$time.rand(10,99)*rand(10,99);
+								      			if ($request->data['property'][2][1]['hmdo_mls_agent_email'][1] != '') {
+								      					$time = strtotime(Carbon::now());
+										            $agent_uuid = "usr".$time.rand(10,99)*rand(10,99);
 
-								            $agent = new Users;
-								            $agent->uuid = $agent_uuid;
-								            $agent->email = $request->data['property'][2][1]['hmdo_mls_agent_email'][1];
-								            $agent->role = "AGENT";
-								            $agent->mls_id = $request->data['property'][2][1]['hmdo_mls_agentid'][1];
-								            $agent->mls_name = $mls_name;
-								            $agent->phone_verified = "NO";
-								            $agent->email_verified = "NO";
-								            $agent->image = env("APP_URL")."public/user-images/default.png";
-								            $result = $agent->save();
-								            if ($result) {
-									            	$agent_info = new AgentInfo;
-										        		$agent_info->agent_id = $agent_uuid;
-										        		$agent_info->hmdo_lastupdated = ($request->agent_info != null)?$request->agent_info['hmdo_lastupdated'][1]:NULL;
-										        		$agent_info->hmdo_mls_originator = ($request->agent_info != null)?$request->agent_info['hmdo_mls_originator'][1]:NULL;
-										        		$agent_info->hmdo_agent_name = ($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:NULL;
-										        		$agent_info->hmdo_agent_title = ($request->agent_info != null)?$request->agent_info['hmdo_agent_title'][1]:NULL;
-										        		$agent_info->hmdo_agent_photo_url = ($request->agent_info != null)?$request->agent_info['hmdo_agent_photo_url'][1]:NULL;
-										        		$agent_info->hmdo_agent_email = ($request->agent_info != null)?$request->agent_info['hmdo_agent_email'][1]:NULL;
-										        		$agent_info->hmdo_office_main_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_main_phone'][1]:NULL;
-										        		$agent_info->hmdo_office_direct_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_direct_phone'][1]:NULL;
-										        		$agent_info->hmdo_agent_mobile_phone = ($request->agent_info != null)?$request->agent_info['hmdo_agent_mobile_phone'][1]:NULL;
-										        		$agent_info->hmdo_agent_skills = ($request->agent_info != null)?$request->agent_info['hmdo_agent_skills'][1]:NULL;
-										        		$agent_info->hmdo_office_id = ($request->agent_info != null)?$request->agent_info['hmdo_office_id'][1]:NULL;
-										        		$agent_info->hmdo_office_name = ($request->agent_info != null)?$request->agent_info['hmdo_office_name'][1]:NULL;
-										        		$agent_info->hmdo_office_photo = ($request->agent_info != null)?$request->agent_info['hmdo_office_photo'][1]:NULL;
-										        		$agent_info->hmdo_office_street = ($request->agent_info != null)?$request->agent_info['hmdo_office_street'][1]:NULL;
-										        		$agent_info->hmdo_office_city = ($request->agent_info != null)?$request->agent_info['hmdo_office_city'][1]:NULL;
-										        		$agent_info->hmdo_office_zipcode = ($request->agent_info != null)?$request->agent_info['hmdo_office_zipcode'][1]:NULL;
-										        		$agent_info->hmdo_office_state = ($request->agent_info != null)?$request->agent_info['hmdo_office_state'][1]:NULL;
-										        		$agent_info->hmdo_office_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_phone'][1]:NULL;
-										        		$agent_info->hmdo_office_website = ($request->agent_info != null)?$request->agent_info['hmdo_office_website'][1]:NULL;
-										        		$agent_info->hmdo_agent_website = ($request->agent_info != null)?$request->agent_info['hmdo_agent_website'][1]:NULL;
-										        		$agent_info->save();
+										            $agent = new Users;
+										            $agent->uuid = $agent_uuid;
+										            $agent->email = $request->data['property'][2][1]['hmdo_mls_agent_email'][1];
+										            $agent->role = "AGENT";
+										            $agent->mls_id = $request->data['property'][2][1]['hmdo_mls_agentid'][1];
+										            $agent->mls_name = $mls_name;
+										            $agent->phone_verified = "NO";
+										            $agent->email_verified = "NO";
+										            $agent->image = env("APP_URL")."public/user-images/default.png";
+										            $result = $agent->save();
+										            if ($result) {
+											            	$agent_info = new AgentInfo;
+												        		$agent_info->agent_id = $agent_uuid;
+												        		$agent_info->hmdo_lastupdated = ($request->agent_info != null)?$request->agent_info['hmdo_lastupdated'][1]:NULL;
+												        		$agent_info->hmdo_mls_originator = ($request->agent_info != null)?$request->agent_info['hmdo_mls_originator'][1]:NULL;
+												        		$agent_info->hmdo_agent_name = ($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:NULL;
+												        		$agent_info->hmdo_agent_title = ($request->agent_info != null)?$request->agent_info['hmdo_agent_title'][1]:NULL;
+												        		$agent_info->hmdo_agent_photo_url = ($request->agent_info != null)?$request->agent_info['hmdo_agent_photo_url'][1]:NULL;
+												        		$agent_info->hmdo_agent_email = ($request->agent_info != null)?$request->agent_info['hmdo_agent_email'][1]:NULL;
+												        		$agent_info->hmdo_office_main_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_main_phone'][1]:NULL;
+												        		$agent_info->hmdo_office_direct_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_direct_phone'][1]:NULL;
+												        		$agent_info->hmdo_agent_mobile_phone = ($request->agent_info != null)?$request->agent_info['hmdo_agent_mobile_phone'][1]:NULL;
+												        		$agent_info->hmdo_agent_skills = ($request->agent_info != null)?$request->agent_info['hmdo_agent_skills'][1]:NULL;
+												        		$agent_info->hmdo_office_id = ($request->agent_info != null)?$request->agent_info['hmdo_office_id'][1]:NULL;
+												        		$agent_info->hmdo_office_name = ($request->agent_info != null)?$request->agent_info['hmdo_office_name'][1]:NULL;
+												        		$agent_info->hmdo_office_photo = ($request->agent_info != null)?$request->agent_info['hmdo_office_photo'][1]:NULL;
+												        		$agent_info->hmdo_office_street = ($request->agent_info != null)?$request->agent_info['hmdo_office_street'][1]:NULL;
+												        		$agent_info->hmdo_office_city = ($request->agent_info != null)?$request->agent_info['hmdo_office_city'][1]:NULL;
+												        		$agent_info->hmdo_office_zipcode = ($request->agent_info != null)?$request->agent_info['hmdo_office_zipcode'][1]:NULL;
+												        		$agent_info->hmdo_office_state = ($request->agent_info != null)?$request->agent_info['hmdo_office_state'][1]:NULL;
+												        		$agent_info->hmdo_office_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_phone'][1]:NULL;
+												        		$agent_info->hmdo_office_website = ($request->agent_info != null)?$request->agent_info['hmdo_office_website'][1]:NULL;
+												        		$agent_info->hmdo_agent_website = ($request->agent_info != null)?$request->agent_info['hmdo_agent_website'][1]:NULL;
+												        		$agent_info->save();
 
-								            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-										            Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+										            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+												            Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
 
-										            $this->configSMTP();
-										            $data = [
-										                'name'=>'',
-										                'verification_token'=>$verification_token,
-										                'email'=>$agent->email,
-										                'url'=>$request->url
-										            ];
-										            Mail::to($agent->email)->send(new SignupMail($data));
+												            $this->configSMTP();
+												            $data = [
+												                'name'=>'',
+												                'verification_token'=>$verification_token,
+												                'email'=>$agent->email,
+												                'url'=>$request->url
+												            ];
+												            Mail::to($agent->email)->send(new SignupMail($data));
 
-										            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+												            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 
-										            /*$verification_data = [
-																		'name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
-																		'owner_name'=>$user->first_name.' '.$user->last_name,
-										                'property_id'=>$property->uuid,
-										                'property_link'=>$homendo->hmdo_mls_url,
-										                'site_url'=>env('APP_URL'),
-										                'token'=>$property_varification_token
-										            ];
-										            Mail::to($agent->email)->send(new PropertyVerificationMail($verification_data));
+													          if ($verify_status == 'NO') {
+												            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$property->uuid])->update(['verification_token'=>$property_varification_token]);
+														            if ($update_token) {
+														            		$this->configSMTP();
+																						$verification_data = [
+																								'owner_name'=>$user->first_name.' '.$user->last_name,
+																								'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
+																                'user_id'=>base64_encode($request->user_id),
+																                'agent_id'=>base64_encode($agent->uuid),
+																                'property_id'=>base64_encode($property->uuid),
+																                'token'=>base64_encode($property_varification_token)
+																            ];
+																            try{
+																			          Mail::to($agent->uuid)->send(new OwnerVerificationMail($verification_data));
 
-											          $property_varification = new PropertyVerification;
-											          $property_varification->property_id = $property->uuid;
-											          $property_varification->agent_id = $agent->uuid;
-											          $property_varification->user_id = $request->user_id;
-											          $property_varification->token = $property_varification_token;
-											          $property_varification->send_time = date('Y-m-d h:i:s');
-											          $result = $property_varification->save();*/
+																			          $property_varification = new PropertyVerification;
+																			          $property_varification->property_id = $property->uuid;
+																			          $property_varification->agent_id = $agent->uuid;
+																			          $property_varification->user_id = $request->user_id;
+																			          $property_varification->token = $property_varification_token;
+																			          $property_varification->send_time = date('Y-m-d h:i:s');
+																			          $result = $property_varification->save();
+																			      }catch(\Exception $e){
 
-											          if ($verify_status == 'NO') {
-										            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$property->uuid])->update(['verification_token'=>$property_varification_token]);
-												            if ($update_token) {
-												            		$this->configSMTP();
-																				$verification_data = [
-																						'owner_name'=>$user->first_name.' '.$user->last_name,
-																						'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
-														                'user_id'=>base64_encode($request->user_id),
-														                'agent_id'=>base64_encode($agent->uuid),
-														                'property_id'=>base64_encode($property->uuid),
-														                'token'=>base64_encode($property_varification_token)
-														            ];
-														            try{
-																	          Mail::to($agent->uuid)->send(new OwnerVerificationMail($verification_data));
-
-																	          $property_varification = new PropertyVerification;
-																	          $property_varification->property_id = $property->uuid;
-																	          $property_varification->agent_id = $agent->uuid;
-																	          $property_varification->user_id = $request->user_id;
-																	          $property_varification->token = $property_varification_token;
-																	          $property_varification->send_time = date('Y-m-d h:i:s');
-																	          $result = $property_varification->save();
-																	      }catch(\Exception $e){
-
-																	      }
+																			      }
+														            }
 												            }
+
+													          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
+						                        if (empty($check_agent)) {
+						                            $property_agent = new PropertyAgents;
+						                            $property_agent->property_id = $property->uuid;
+						                            $property_agent->property_mls_id = $property->mls_id;
+						                            $property_agent->property_originator = $property->mls_name;
+						                            $property_agent->agent_id = $agent->uuid;
+						                            $property_agent->agent_type = 'seller';
+						                            $property_agent->agent_status = 'PA';
+						                            $property_agent->save();
+						                        }
+
+						                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$agent->uuid])->first();
+						                        if (empty($check_agent)) {
+						                        		$user_agent = new UserAgents;
+																    		$user_agent->user_id = $request->user_id;
+																    		$user_agent->agent_id = $agent->uuid;
+																    		$save_user_agent = $user_agent->save();
+						                        }
 										            }
-
-											          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
-				                        if (empty($check_agent)) {
-				                            $property_agent = new PropertyAgents;
-				                            $property_agent->property_id = $property->uuid;
-				                            $property_agent->property_mls_id = $property->mls_id;
-				                            $property_agent->property_originator = $property->mls_name;
-				                            $property_agent->agent_id = $agent->uuid;
-				                            $property_agent->agent_type = 'seller';
-				                            $property_agent->agent_status = 'PA';
-				                            $property_agent->save();
-				                        }
-
-				                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$agent->uuid])->first();
-				                        if (empty($check_agent)) {
-				                        		$user_agent = new UserAgents;
-														    		$user_agent->user_id = $request->user_id;
-														    		$user_agent->agent_id = $agent->uuid;
-														    		$save_user_agent = $user_agent->save();
-				                        }
-								            }
+								      			}
 							      		}else{
 							      				$this->configSMTP();
 							      				$property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-
-							      				/*$verification_data = [
-																'name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
-																'owner_name'=>$user->first_name.' '.$user->last_name,
-								                'property_id'=>$property->uuid,
-								                'property_link'=>$homendo->hmdo_mls_url,
-								                'site_url'=>env('APP_URL'),
-								                'token'=>$property_varification_token
-								            ];
-								            Mail::to($checkAgent->email)->send(new PropertyVerificationMail($verification_data));
-
-									          $property_varification = new PropertyVerification;
-									          $property_varification->property_id = $property->uuid;
-									          $property_varification->agent_id = $checkAgent->uuid;
-									          $property_varification->user_id = $request->user_id;
-									          $property_varification->token = $property_varification_token;
-									          $property_varification->send_time = date('Y-m-d h:i:s');
-									          $result = $property_varification->save();*/
 
 									          if ($verify_status == 'NO') {
 								            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$property->uuid])->update(['verification_token'=>$property_varification_token]);
@@ -909,145 +841,111 @@ class PropertiesController extends Controller
 						      	}
 
 						      	if (empty($checkAgent) || $checkAgent == null) {
-							      		$time = strtotime(Carbon::now());
-						            $agent_uuid = "usr".$time.rand(10,99)*rand(10,99);
+						      			if ($request->data['property'][2][1]['hmdo_mls_agent_email'][1] != '') {
+						      					$time = strtotime(Carbon::now());
+								            $agent_uuid = "usr".$time.rand(10,99)*rand(10,99);
 
-						            $agent = new Users;
-						            $agent->uuid = $agent_uuid;
-						            $agent->email = $request->data['property'][2][1]['hmdo_mls_agent_email'][1];
-						            $agent->role = "AGENT";
-						            $agent->mls_id = $request->data['property'][2][1]['hmdo_mls_agentid'][1];
-						            $agent->mls_name = $mls_name;
-						            $agent->phone_verified = "NO";
-						            $agent->email_verified = "NO";
-						            $agent->image = env("APP_URL")."public/user-images/default.png";
-						            $result = $agent->save();
-						            if ($result) {
-							            	$agent_info = new AgentInfo;
-								        		$agent_info->agent_id = $agent_uuid;
-								        		$agent_info->hmdo_lastupdated = ($request->agent_info != null)?$request->agent_info['hmdo_lastupdated'][1]:NULL;
-								        		$agent_info->hmdo_mls_originator = ($request->agent_info != null)?$request->agent_info['hmdo_mls_originator'][1]:NULL;
-								        		$agent_info->hmdo_agent_name = ($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:NULL;
-								        		$agent_info->hmdo_agent_title = ($request->agent_info != null)?$request->agent_info['hmdo_agent_title'][1]:NULL;
-								        		$agent_info->hmdo_agent_photo_url = ($request->agent_info != null)?$request->agent_info['hmdo_agent_photo_url'][1]:NULL;
-								        		$agent_info->hmdo_agent_email = ($request->agent_info != null)?$request->agent_info['hmdo_agent_email'][1]:NULL;
-								        		$agent_info->hmdo_office_main_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_main_phone'][1]:NULL;
-								        		$agent_info->hmdo_office_direct_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_direct_phone'][1]:NULL;
-								        		$agent_info->hmdo_agent_mobile_phone = ($request->agent_info != null)?$request->agent_info['hmdo_agent_mobile_phone'][1]:NULL;
-								        		$agent_info->hmdo_agent_skills = ($request->agent_info != null)?$request->agent_info['hmdo_agent_skills'][1]:NULL;
-								        		$agent_info->hmdo_office_id = ($request->agent_info != null)?$request->agent_info['hmdo_office_id'][1]:NULL;
-								        		$agent_info->hmdo_office_name = ($request->agent_info != null)?$request->agent_info['hmdo_office_name'][1]:NULL;
-								        		$agent_info->hmdo_office_photo = ($request->agent_info != null)?$request->agent_info['hmdo_office_photo'][1]:NULL;
-								        		$agent_info->hmdo_office_street = ($request->agent_info != null)?$request->agent_info['hmdo_office_street'][1]:NULL;
-								        		$agent_info->hmdo_office_city = ($request->agent_info != null)?$request->agent_info['hmdo_office_city'][1]:NULL;
-								        		$agent_info->hmdo_office_zipcode = ($request->agent_info != null)?$request->agent_info['hmdo_office_zipcode'][1]:NULL;
-								        		$agent_info->hmdo_office_state = ($request->agent_info != null)?$request->agent_info['hmdo_office_state'][1]:NULL;
-								        		$agent_info->hmdo_office_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_phone'][1]:NULL;
-								        		$agent_info->hmdo_office_website = ($request->agent_info != null)?$request->agent_info['hmdo_office_website'][1]:NULL;
-								        		$agent_info->hmdo_agent_website = ($request->agent_info != null)?$request->agent_info['hmdo_agent_website'][1]:NULL;
-								        		$agent_info->save();
+								            $agent = new Users;
+								            $agent->uuid = $agent_uuid;
+								            $agent->email = $request->data['property'][2][1]['hmdo_mls_agent_email'][1];
+								            $agent->role = "AGENT";
+								            $agent->mls_id = $request->data['property'][2][1]['hmdo_mls_agentid'][1];
+								            $agent->mls_name = $mls_name;
+								            $agent->phone_verified = "NO";
+								            $agent->email_verified = "NO";
+								            $agent->image = env("APP_URL")."public/user-images/default.png";
+								            $result = $agent->save();
+								            if ($result) {
+									            	$agent_info = new AgentInfo;
+										        		$agent_info->agent_id = $agent_uuid;
+										        		$agent_info->hmdo_lastupdated = ($request->agent_info != null)?$request->agent_info['hmdo_lastupdated'][1]:NULL;
+										        		$agent_info->hmdo_mls_originator = ($request->agent_info != null)?$request->agent_info['hmdo_mls_originator'][1]:NULL;
+										        		$agent_info->hmdo_agent_name = ($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:NULL;
+										        		$agent_info->hmdo_agent_title = ($request->agent_info != null)?$request->agent_info['hmdo_agent_title'][1]:NULL;
+										        		$agent_info->hmdo_agent_photo_url = ($request->agent_info != null)?$request->agent_info['hmdo_agent_photo_url'][1]:NULL;
+										        		$agent_info->hmdo_agent_email = ($request->agent_info != null)?$request->agent_info['hmdo_agent_email'][1]:NULL;
+										        		$agent_info->hmdo_office_main_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_main_phone'][1]:NULL;
+										        		$agent_info->hmdo_office_direct_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_direct_phone'][1]:NULL;
+										        		$agent_info->hmdo_agent_mobile_phone = ($request->agent_info != null)?$request->agent_info['hmdo_agent_mobile_phone'][1]:NULL;
+										        		$agent_info->hmdo_agent_skills = ($request->agent_info != null)?$request->agent_info['hmdo_agent_skills'][1]:NULL;
+										        		$agent_info->hmdo_office_id = ($request->agent_info != null)?$request->agent_info['hmdo_office_id'][1]:NULL;
+										        		$agent_info->hmdo_office_name = ($request->agent_info != null)?$request->agent_info['hmdo_office_name'][1]:NULL;
+										        		$agent_info->hmdo_office_photo = ($request->agent_info != null)?$request->agent_info['hmdo_office_photo'][1]:NULL;
+										        		$agent_info->hmdo_office_street = ($request->agent_info != null)?$request->agent_info['hmdo_office_street'][1]:NULL;
+										        		$agent_info->hmdo_office_city = ($request->agent_info != null)?$request->agent_info['hmdo_office_city'][1]:NULL;
+										        		$agent_info->hmdo_office_zipcode = ($request->agent_info != null)?$request->agent_info['hmdo_office_zipcode'][1]:NULL;
+										        		$agent_info->hmdo_office_state = ($request->agent_info != null)?$request->agent_info['hmdo_office_state'][1]:NULL;
+										        		$agent_info->hmdo_office_phone = ($request->agent_info != null)?$request->agent_info['hmdo_office_phone'][1]:NULL;
+										        		$agent_info->hmdo_office_website = ($request->agent_info != null)?$request->agent_info['hmdo_office_website'][1]:NULL;
+										        		$agent_info->hmdo_agent_website = ($request->agent_info != null)?$request->agent_info['hmdo_agent_website'][1]:NULL;
+										        		$agent_info->save();
 
-						            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-								            Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
+								            		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+										            Users::where('email', $request->email)->update(['email_verification_token'=>$verification_token]);
 
-								            $this->configSMTP();
-								            $data = [
-								                'name'=>'',
-								                'verification_token'=>$verification_token,
-								                'email'=>$agent->email,
-								                'url'=>$request->url
-								            ];
-								            Mail::to($agent->email)->send(new SignupMail($data));
+										            $this->configSMTP();
+										            $data = [
+										                'name'=>'',
+										                'verification_token'=>$verification_token,
+										                'email'=>$agent->email,
+										                'url'=>$request->url
+										            ];
+										            Mail::to($agent->email)->send(new SignupMail($data));
 
-								            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
+										            $property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 
-								            /*$verification_data = [
-																'name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
-																'owner_name'=>$user->first_name.' '.$user->last_name,
-								                'property_id'=>$property->uuid,
-								                'property_link'=>$homendo->hmdo_mls_url,
-								                'site_url'=>env('APP_URL'),
-								                'token'=>$property_varification_token
-								            ];
-								            Mail::to($agent->email)->send(new PropertyVerificationMail($verification_data));
+											          if ($verify_status == 'NO') {
+										            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$property->uuid])->update(['verification_token'=>$property_varification_token]);
+												            if ($update_token) {
+												            		$this->configSMTP();
+																				$verification_data = [
+																						'owner_name'=>$user->first_name.' '.$user->last_name,
+																						'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
+														                'user_id'=>base64_encode($request->user_id),
+														                'agent_id'=>base64_encode($agent->uuid),
+														                'property_id'=>base64_encode($property->uuid),
+														                'token'=>base64_encode($property_varification_token)
+														            ];
+														            try{
+																	          Mail::to($agent->email)->send(new OwnerVerificationMail($verification_data));
 
-									          $property_varification = new PropertyVerification;
-									          $property_varification->property_id = $property->uuid;
-									          $property_varification->agent_id = $agent->uuid;
-									          $property_varification->user_id = $request->user_id;
-									          $property_varification->token = $property_varification_token;
-									          $property_varification->send_time = date('Y-m-d h:i:s');
-									          $result = $property_varification->save();*/
+																	          $property_varification = new PropertyVerification;
+																	          $property_varification->property_id = $property->uuid;
+																	          $property_varification->agent_id = $agent->uuid;
+																	          $property_varification->user_id = $request->user_id;
+																	          $property_varification->token = $property_varification_token;
+																	          $property_varification->send_time = date('Y-m-d h:i:s');
+																	          $result = $property_varification->save();
+																	      }catch(\Exception $e){
 
-									          if ($verify_status == 'NO') {
-								            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$property->uuid])->update(['verification_token'=>$property_varification_token]);
-										            if ($update_token) {
-										            		$this->configSMTP();
-																		$verification_data = [
-																				'owner_name'=>$user->first_name.' '.$user->last_name,
-																				'agent_name'=>($request->agent_info != null)?$request->agent_info['hmdo_agent_name'][1]:'',
-												                'user_id'=>base64_encode($request->user_id),
-												                'agent_id'=>base64_encode($agent->uuid),
-												                'property_id'=>base64_encode($property->uuid),
-												                'token'=>base64_encode($property_varification_token)
-												            ];
-												            try{
-															          Mail::to($agent->email)->send(new OwnerVerificationMail($verification_data));
-
-															          $property_varification = new PropertyVerification;
-															          $property_varification->property_id = $property->uuid;
-															          $property_varification->agent_id = $agent->uuid;
-															          $property_varification->user_id = $request->user_id;
-															          $property_varification->token = $property_varification_token;
-															          $property_varification->send_time = date('Y-m-d h:i:s');
-															          $result = $property_varification->save();
-															      }catch(\Exception $e){
-
-															      }
+																	      }
+												            }
 										            }
+
+											          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
+				                        if (empty($check_agent)) {
+				                            $property_agent = new PropertyAgents;
+				                            $property_agent->property_id = $property->uuid;
+				                            $property_agent->property_mls_id = $property->mls_id;
+				                            $property_agent->property_originator = $property->mls_name;
+				                            $property_agent->agent_id = $agent->uuid;
+				                            $property_agent->agent_type = 'seller';
+				                            $property_agent->agent_status = 'PA';
+				                            $property_agent->save();
+				                        }
+
+				                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$agent->uuid])->first();
+				                        if (empty($check_agent)) {
+				                        		$user_agent = new UserAgents;
+														    		$user_agent->user_id = $request->user_id;
+														    		$user_agent->agent_id = $agent->uuid;
+														    		$save_user_agent = $user_agent->save();
+				                        }
 								            }
-
-									          $check_agent = PropertyAgents::where(['property_id'=>$property->uuid, 'agent_id'=>$agent->uuid, 'agent_type'=>'seller'])->first();
-		                        if (empty($check_agent)) {
-		                            $property_agent = new PropertyAgents;
-		                            $property_agent->property_id = $property->uuid;
-		                            $property_agent->property_mls_id = $property->mls_id;
-		                            $property_agent->property_originator = $property->mls_name;
-		                            $property_agent->agent_id = $agent->uuid;
-		                            $property_agent->agent_type = 'seller';
-		                            $property_agent->agent_status = 'PA';
-		                            $property_agent->save();
-		                        }
-
-		                        $check_user_agent = UserAgents::where(['user_id'=>$request->user_id, 'agent_id'=>$agent->uuid])->first();
-		                        if (empty($check_agent)) {
-		                        		$user_agent = new UserAgents;
-												    		$user_agent->user_id = $request->user_id;
-												    		$user_agent->agent_id = $agent->uuid;
-												    		$save_user_agent = $user_agent->save();
-		                        }
-						            }
+						      			}
 					      		}else{
 					      				$this->configSMTP();
 					      				$property_varification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
-
-					      				/*$verification_data = [
-														'name'=>$checkAgent->first_name.' '.$checkAgent->last_name,
-														'owner_name'=>$user->first_name.' '.$user->last_name,
-						                'property_id'=>$property->uuid,
-						                'property_link'=>$homendo->hmdo_mls_url,
-						                'site_url'=>env('APP_URL'),
-						                'token'=>$property_varification_token
-						            ];
-						            Mail::to($checkAgent->email)->send(new PropertyVerificationMail($verification_data));
-
-							          $property_varification = new PropertyVerification;
-							          $property_varification->property_id = $property->uuid;
-							          $property_varification->agent_id = $checkAgent->uuid;
-							          $property_varification->user_id = $request->user_id;
-							          $property_varification->token = $property_varification_token;
-							          $property_varification->send_time = date('Y-m-d h:i:s');
-							          $result = $property_varification->save();*/
 
 							          if ($verify_status == 'NO') {
 						            		$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$property->uuid])->update(['verification_token'=>$property_varification_token]);
@@ -1123,7 +1021,6 @@ class PropertiesController extends Controller
 								    return $this->sendResponse("Property added successfully!");	
 						    }
 				  	}else{
-				  			//return $this->sendResponse("Sorry this property can not be added to your account yet.", 200, false);
 				  			$time = strtotime(Carbon::now());
 					    	$uuid = "prty".$time.rand(10,99)*rand(10,99);
 				      	$property = new Properties;
@@ -1359,7 +1256,7 @@ class PropertiesController extends Controller
 	      		$properties = Properties::with('Verification', 'Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $property_ids)->get();
 
 	      		foreach ($properties as $property) {
-								$last_verification = PropertyVerification::where('property_id', $property->uuid)->orderBy('send_time', 'desc')->first();
+								$last_verification = PropertyVerification::where(['user_id'=>$request->user_id, 'property_id'=>$property->uuid])->orderBy('send_time', 'desc')->first();
 								if(!empty($last_verification)){
 										$start_date = strtotime($last_verification->send_time);
 										$end_date = strtotime("+7 day", $start_date);
@@ -1385,6 +1282,7 @@ class PropertiesController extends Controller
 		      			}else{
 		      					$property['agent'] = null;
 		      			}
+
 				      	$verify_ownership = PropertyOwners::where(['property_id'=>$property->uuid, 'user_id'=>$request->user_id])->first();
 				      	$property['verify_status'] = $verify_ownership->verify_status;
 		      			$property['owners'] = $selling_properties;
@@ -1408,7 +1306,7 @@ class PropertiesController extends Controller
 	      		$buying_properties = Properties::with('Verification', 'Valuecheck', 'Zillow', 'Homendo')->whereIn('uuid', $buying_property_ids)->get();
 
 	      		foreach ($buying_properties as $buying_property) {
-								$last_verification = PropertyVerification::where('property_id', $buying_property->uuid)->orderBy('send_time', 'desc')->first();
+								$last_verification = PropertyVerification::where(['user_id'=>$request->user_id, 'property_id'=>$buying_property->uuid])->orderBy('send_time', 'desc')->first();
 								if(!empty($last_verification)){
 										$start_date = strtotime($last_verification->send_time);
 										$end_date = strtotime("+7 day", $start_date);
@@ -1603,8 +1501,6 @@ class PropertiesController extends Controller
 
 						try{
 			          Mail::to($agent->email)->send(new PropertyVerificationMail($data));
-
-			          //PropertyVerification::where('property_id', $request->property_id)->delete();
 
 			          $property_varification = new PropertyVerification;
 			          $property_varification->property_id = $request->property_id;
