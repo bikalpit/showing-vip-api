@@ -452,8 +452,6 @@ class UsersController extends Controller
 	      if (!empty($agent)) {
 	      		$verification_token = substr( str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 20 );
 
-	      		//$update_token = PropertyOwners::where(['user_id'=>$request->user_id, 'property_id'=>$request->property_id])->update(['verification_token'=>$verification_token]);
-
 	      		$property_varification = new PropertyVerification;
 	          $property_varification->property_id = $request->property_id;
 	          $property_varification->agent_id = $request->agent_id;
@@ -500,38 +498,41 @@ class UsersController extends Controller
 		}
 
 		public function verifiedOwner(Request $request){
-				//$check = PropertyOwners::where(['verification_token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user)])->first();
-
+				
 				$check = PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->first();
 				if (!empty($check)) {
 						$status = 'verified';
 
 						$check_setup = PropertyShowingSetup::where('property_id', base64_decode($request->property))->first();
 						if (empty($check_setup)) {
-							$time = strtotime(Carbon::now());
-			    		$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
-			    		
-				      $setup = new PropertyShowingSetup;
-				      $setup->uuid = $setup_uuid;
-				      $setup->property_id = base64_decode($request->property);
-				      $setup->notification_email = 'YES';
-				      $setup->notification_text = 'YES';
-				      $setup->type = 'VALID';
-				      $setup->validator = null;
-				      $setup->presence = null;
-				      $setup->instructions = null;
-				      $setup->lockbox_type = null;
-				      $setup->lockbox_location = null;
-		      		$setup->start_date = null;
-		      		$setup->end_date = null;
-				      $setup->timeframe = '30';
-				      $setup->overlap = 'NO';
-				      $save_setup = $setup->save();
+								$time = strtotime(Carbon::now());
+				    		$setup_uuid = "show".$time.rand(10,99)*rand(10,99);
+				    		
+					      $setup = new PropertyShowingSetup;
+					      $setup->uuid = $setup_uuid;
+					      $setup->property_id = base64_decode($request->property);
+					      $setup->notification_email = 'YES';
+					      $setup->notification_text = 'YES';
+					      $setup->type = 'VALID';
+					      $setup->validator = null;
+					      $setup->presence = null;
+					      $setup->instructions = null;
+					      $setup->lockbox_type = null;
+					      $setup->lockbox_location = null;
+			      		$setup->start_date = null;
+			      		$setup->end_date = null;
+					      $setup->timeframe = '30';
+					      $setup->overlap = 'NO';
+					      $save_setup = $setup->save();
 						}
 
-						PropertyOwners::where(['user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->update(['verify_status'=>'YES']);
+						if ($request->d == 'accept') {
+								PropertyOwners::where(['user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->update(['verify_status'=>'YES']);
+						}else{
+								PropertyOwners::where(['user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->update(['verify_status'=>'VC']);
+						}
 
-						PropertyVerification::where(['token'=>base64_decode($request->auth), 'user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->delete();
+						PropertyVerification::where(['user_id'=>base64_decode($request->user), 'property_id'=>base64_decode($request->property)])->delete();
 				}else{
 						$status = 'expired';
 				}
@@ -552,13 +553,13 @@ class UsersController extends Controller
 					  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 					  CURLOPT_CUSTOMREQUEST => 'POST',
 					  CURLOPT_POSTFIELDS => array(
-					  	'login' => '@*8Dom0sH0Ag3#DI',
-					  	'token' => md5(strtotime('now')),
-					  	'agentid' => 'rxm_999991',
-					  	'email' => 'kalpit@broadview-innovations.com',
-					  	'originator' => 'RECOLORADO',
-					  	'deviceid' => $_SERVER['HTTP_USER_AGENT'],
-					  	'hmdoapp' => 'Showing.VIP-1.0'
+						  	'login' => '@*8Dom0sH0Ag3#DI',
+						  	'token' => md5(strtotime('now')),
+						  	'agentid' => 'rxm_999991',
+						  	'email' => 'kalpit@broadview-innovations.com',
+						  	'originator' => 'RECOLORADO',
+						  	'deviceid' => $_SERVER['HTTP_USER_AGENT'],
+						  	'hmdoapp' => 'Showing.VIP-1.0'
 					  ),
 				));
 

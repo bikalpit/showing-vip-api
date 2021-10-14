@@ -219,7 +219,7 @@
                                                       </a>
                                              
                                                       <a href="{{$site_url}}api/verified-owner?auth={{$token}}&user={{$user_id}}&property={{$property_id}}&agent={{$agent_id}}&d=reject" target="_blank" style="margin-left: 20px;float: left;width: 46%;box-sizing: border-box;display: inline-block;font-family:'Cabin',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #f50606; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;">
-                                                       <span style="display:block;padding:14px 44px 13px;line-height:120%;"><span style="font-size: 16px; line-height: 19.2px;"><strong><span style="line-height: 19.2px; font-size: 16px;">NOT APPROVE</span></strong></span></span>
+                                                       <span style="display:block;padding:14px 44px 13px;line-height:120%;"><span style="font-size: 16px; line-height: 19.2px;"><strong><span style="line-height: 19.2px; font-size: 16px;">REJECT</span></strong></span></span>
                                                       </a>
                                                    </div>
                                                 </div>
