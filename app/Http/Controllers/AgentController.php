@@ -15,6 +15,7 @@ use App\Models\PropertyHomendo;
 use App\Models\PropertyOwners;
 use App\Models\PropertyBookingSchedule;
 use App\Models\PropertyBuyers;
+use App\Models\PropertyVerification;
 use App\Mail\TestMail;
 use App\Mail\AssignOwner;
 use App\Mail\SignupMail;
