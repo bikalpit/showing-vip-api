@@ -889,9 +889,9 @@ class BookingScheduleController extends Controller
             'property_id'       => 'required',
             'buyer_id'          => 'required',
             'buyer_agent_id'    => 'required',
-            'booking_date'      => 'required',
-            'booking_time'      => 'required',
-            'booking_slots'     => 'required',
+            'booking_date'      => 'nullable',
+            'booking_time'      => 'nullable',
+            'booking_slots'     => 'nullable',
             'interval'          => 'required',
             'showing_note'      => 'nullable',
         ]);
