@@ -709,24 +709,28 @@ class BookingScheduleController extends Controller
             $showing_setup = PropertyShowingSetup::with('showingAvailability', 'showingSurvey')->where('property_id',$request->property_id)->first();
             foreach ($bookings as $booking) {
                 $booking['showing_setup'] = $showing_setup;
-                $surveys = json_decode($booking['showing_setup']->showingSurvey->survey);
-                $answers = [];
-                $newSurveys = [];
-                if(!empty($surveys)){
-                    $newSurveys = SurveySubCategories::whereIn('uuid',$surveys)
-                                    ->orderBy('id','ASC')->pluck('uuid')->toArray();
-                }
-                $categories = SurveyCategories::orderBy('id','ASC')->get();
-                foreach($categories as $newCategory){
-                    if(!empty($newSurveys)){
-                        foreach($newSurveys as $survey){
-                            $newSubCate = SurveySubCategories::with('category')
-                                ->where(['category_id'=>$newCategory['uuid'],'uuid'=>$survey])->first();
-                            if($newSubCate != null){
-                                $answers[] = $newSubCate;
+                if (!empty($booking['showing_setup']->showingSurvey)) {
+                    $surveys = json_decode($booking['showing_setup']->showingSurvey->survey);
+                    $answers = [];
+                    $newSurveys = [];
+                    if(!empty($surveys)){
+                        $newSurveys = SurveySubCategories::whereIn('uuid',$surveys)
+                                        ->orderBy('id','ASC')->pluck('uuid')->toArray();
+                    }
+                    $categories = SurveyCategories::orderBy('id','ASC')->get();
+                    foreach($categories as $newCategory){
+                        if(!empty($newSurveys)){
+                            foreach($newSurveys as $survey){
+                                $newSubCate = SurveySubCategories::with('category')
+                                    ->where(['category_id'=>$newCategory['uuid'],'uuid'=>$survey])->first();
+                                if($newSubCate != null){
+                                    $answers[] = $newSubCate;
+                                }
                             }
                         }
                     }
+                }else{
+                    $answers = null;
                 }
                 /*foreach ($surveys as $survey) {
                     $subCategory = SurveySubCategories::with('category')->where('uuid',$survey)->first();
